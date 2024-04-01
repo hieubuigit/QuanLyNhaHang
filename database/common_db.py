@@ -1,21 +1,20 @@
+from abc import ABC, abstractmethod
 import connection
 
+class CommonDb(ABC):
 
-EMPLOYEE = "employee"
+    @abstractmethod
+    def get(self, tableName, **condition):
+        return;
 
-class CommonDb:
+    @abstractmethod
+    def insert(self, insert_model):
+        pass
 
-    # def __init__(self) -> None:
-    #     connection.cnx.cursor()
+    @abstractmethod
+    def update(self, id, update_model):
+        pass
 
-    # def get_all(tableName, **condition):
-    #     return;
-
-    # def insert(tableName, data):
-    #     return;
-
-    # def delete(id, tableName, **otherCondition):
-    #     return;
-
-    # def update(id, tableName, dataUpdate, **where):
-    #     return;
+    @abstractmethod
+    def delete(self, id):
+        pass
