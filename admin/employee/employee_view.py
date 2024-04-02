@@ -37,7 +37,7 @@ class EmployeeUI:
 
         # Column 1
         # Avatar
-        ttk.Label(empFrame, text="Employee Avatar").grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
+        ttk.Label(empFrame, text="Employee Avatar").grid(row=3, column=0, padx=5, pady=5, sticky="swse")
 
         # Employee Id
         column1 = ttk.Frame(empFrame)
@@ -49,25 +49,25 @@ class EmployeeUI:
         employeeFields['empId_lbl'].grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
 
         employeeFields['emp_id'] = ttk.Entry(master=column1)
-        employeeFields['emp_id'].grid(column=1, row=0, sticky=tk.E, padx=5, pady=5)
+        employeeFields['emp_id'].grid(column=1, row=0, sticky='we', padx=5, pady=5)
 
         #First name
         employeeFields['first_name_lbl'] = tk.Label(column1, text='First Name:')
         employeeFields['first_name_lbl'].grid(column=0, row=1, sticky=tk.W, padx=5, pady=5)
         employeeFields['first_name'] = ttk.Entry(master=column1)
-        employeeFields['first_name'].grid(column=1, row=1, sticky=tk.E, padx=5, pady=5)
+        employeeFields['first_name'].grid(column=1, row=1, sticky='we', padx=5, pady=5)
 
         #Last name
         employeeFields['last_name_lbl'] = tk.Label(column1, text='Last Name:')
         employeeFields['last_name_lbl'].grid(column=0, row=2, sticky=tk.W, padx=5, pady=5)
         employeeFields['last_name'] = ttk.Entry(master=column1)
-        employeeFields['last_name'].grid(column=1, row=2, sticky=tk.E, padx=5, pady=5)
+        employeeFields['last_name'].grid(column=1, row=2, sticky='we', padx=5, pady=5)
 
         # Birthday
         employeeFields['birthday_lbl'] = tk.Label(column1, text='Birthday:')
         employeeFields['birthday_lbl'].grid(column=0, row=3, sticky=tk.W, padx=5, pady=5)
         employeeFields['birthday'] = Calendar(column1)
-        employeeFields['birthday'].grid(column=1, row=3, sticky=tk.E, padx=5, pady=5)
+        employeeFields['birthday'].grid(column=1, row=3, sticky='we', padx=5, pady=5)
 
 
         # Column 2
@@ -80,53 +80,72 @@ class EmployeeUI:
         employeeFields['gender_lbl'] = tk.Label(column2, text='Gender:')
         employeeFields['gender_lbl'].grid(column=0, row=0, sticky='nw', padx=5, pady=5)
         employeeFields['gender'] = tk.StringVar()
-        r1 = ttk.Radiobutton(column2, text='Option 1', value='Value 1', variable=employeeFields['gender'])
-        r2 = ttk.Radiobutton(column2, text='Option 2', value='Value 2', variable=employeeFields['gender'])
-        r3 = ttk.Radiobutton(column2, text='Option 3', value='value 3', variable=employeeFields['gender'])
-        r1.grid(column=1, row=0, sticky=tk.E, padx=5, pady=5)
-        r2.grid(column=1, row=1, sticky=tk.E, padx=5, pady=5)
-        r3.grid(column=1, row=2, sticky=tk.E, padx=5, pady=5)
+        # gender_data = [{"text": 'Male', 'value': '0'}, {"text": 'Female', 'value': '1'}, {"text": 'Other', 'value': '2'}]
+        r1 = ttk.Radiobutton(column2, text='Male', value='0', variable=employeeFields['gender'])
+        r2 = ttk.Radiobutton(column2, text='Female', value='1', variable=employeeFields['gender'])
+        r3 = ttk.Radiobutton(column2, text='Other', value='2', variable=employeeFields['gender'])
+        r1.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
+        r2.grid(column=1, row=1, sticky=tk.W, padx=5, pady=5)
+        r3.grid(column=1, row=2, sticky=tk.W, padx=5, pady=5)
 
         #Phone number
         employeeFields['phone_number_lbl'] = tk.Label(column2, text='Phone Number:')
         employeeFields['phone_number_lbl'].grid(column=0, row=3, sticky=tk.W, padx=5, pady=5)
         employeeFields['phone_number'] = ttk.Entry(master=column2)
-        employeeFields['phone_number'].grid(column=1, row=3, sticky=tk.E, padx=5, pady=5)
+        employeeFields['phone_number'].grid(column=1, row=3, sticky='we', padx=5, pady=5)
 
         # Email
-        # employeeFields['email_lbl'] = tk.Label(text='Email:')
-        # employeeFields['email_lbl'] = tk.Entry(empFrame)
+        employeeFields['email_lbl'] = tk.Label(column2, text='Email:')
+        employeeFields['email_lbl'].grid(column=0, row=4, sticky=tk.W, padx=5, pady=5)
+        employeeFields['email'] = tk.Entry(column2)
+        employeeFields['email'].grid(column=1, row=4, sticky='we', padx=5, pady=5)
 
         # Basic salary
-        # employeeFields['basic_salary_lbl'] = tk.Label(text='Basic Salary:')
-        # employeeFields['basic_salary'] = tk.Entry(empFrame)
+        employeeFields['basic_salary_lbl'] = tk.Label(column2, text='Basic Salary:')
+        employeeFields['basic_salary_lbl'].grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
+        employeeFields['basic_salary'] = tk.Entry(column2)
+        employeeFields['basic_salary'].grid(column=1, row=5, sticky='we', padx=5, pady=5)
 
         # Address
-        # employeeFields['address_lbl'] = tk.Label(text='Address:')
-        # employeeFields['address'] = tk.Entry(empFrame)
+        employeeFields['address_lbl'] = ttk.Label(column2, text='Address:')
+        employeeFields['address_lbl'].grid(column=0, row=6, sticky=tk.W, padx=5, pady=5)
+        employeeFields['address'] = ttk.Entry(column2)
+        employeeFields['address'].grid(column=1, row=6, sticky='we', padx=5, pady=5)
 
         # Material Status
-        # employeeFields['material_status_lbl'] = tk.Label(text='Material Status:')
-        # employeeFields['material_status'] = tk.Entry(empFrame)
+        employeeFields['material_status_lbl'] = ttk.Label(column2, text='Material Status:')
+        employeeFields['material_status_lbl'].grid(column=0, row=6, sticky=tk.W, padx=5, pady=5)
+        employeeFields['material_status'] = ttk.Combobox(column2)
+        employeeFields['material_status']['value'] = ("Alone", "Married", "Other")
+        employeeFields['material_status'].grid(column=1, row=6, sticky='we', padx=5, pady=5)
+
+
+        # Column 3
+        column3 = ttk.Frame(empFrame)
+        column3.columnconfigure(0, weight=1)
+        column3.columnconfigure(1, weight=1)
+        column3.grid(column=3, row=0, sticky='nw')
 
         # Save button
-        # save_button = ttk.Button(empFrame,
-        #                         text="Save",
-        #                         width='5',
-        #                         height='3',
-        #                         bg='red',
-        #                         command=self.save_emp)
-        # save_button.grid(column=2, row=4)
+        save_button = tk.Button(column3,
+                                text="Save",
+                                width=5,
+                                height=3,
+                                bg='blue',
+                                fg="white",
+                                command=self.save_emp)
+        save_button.grid(column=0, row=2)
 
         # Update button
-        # update_btn = tk.Button(text='Update', width=20, height=10, bg='green')
-        # update_btn.bind('<Button>', self.update_emp)
-        # update_btn.pack()
+        update_btn = tk.Button(master=column3, text='Update', width=5, height=3, bg='orange', fg="black")
+        update_btn.bind('<Button>', self.update_emp)
+        update_btn.grid(column=1, row=2)
         return empFrame
+
 
     def init_employee_grid_data(self, container, empList):
         """Grid data contain employee data"""
-        columnTitles = ("Employee Id", "First Name", 'Last Name', 'Birthday', 'Gender', 'Email', 'Phone number', 'Basic salary', 'Address', 'Material Status')
+        columnTitles = ("employee_id", "first_name", 'last_name', 'birthday', 'gender', 'email', 'phone_number', 'basic_salary', 'address', 'material_status')
         tree = ttk.Treeview(container, columns=columnTitles, show='headings')
         tree.heading('employee_id', text='Employee Id')
         tree.heading('first_name', text='First Name')
@@ -142,10 +161,10 @@ class EmployeeUI:
         # Init sample data
         records = []
         for i in range(1, 100):
-            records.append((f'Id{i}', f'first {i}', f'last {i}', f'{i}/{i}/{i}', f'Gender {i}', f'email{i}@gmail.com'), f'Phone number: {i}', f'Salary: {i}', f'Address {i}', f'Material status {i}')
+            records.append((f'Id{i}', f'first {i}', f'last {i}', f'{i}/{i}/{i}', f'Gender {i}', f'email{i}@gmail.com', f'Phone number: {i}', f'Salary: {i}', f'Address {i}', f'Material status {i}'))
         # Add add to tree
         for r in records:
-            tree.insert('', tk.END, values=records)
+            tree.insert('', tk.END, values=r)
 
         return tree
 
@@ -172,14 +191,14 @@ class EmployeeUI:
         root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
         root.rowconfigure(0, weight=1)
-        root.rowconfigure(0, weight=3)
+        root.rowconfigure(1, weight=5)
 
         root['bg'] = 'gray'
         emp_form = self.init_emp_frame(root)
-        emp_form.grid(column=0, row=0, sticky=tk.N)
+        emp_form.grid(column=0, row=0, sticky='nwse')
 
-        # grid_data = self.init_employee_grid_data(root, [])
-        # grid_data.grid(column=0, row=1, sticky=tk.N)
+        grid_data = self.init_employee_grid_data(root, [])
+        grid_data.grid(column=0, row=1, sticky='nwse')
 
         root.mainloop()
 
