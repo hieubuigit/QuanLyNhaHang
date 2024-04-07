@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import connection
 
 class CommonDb(ABC):
     def __init__(self) -> None:
