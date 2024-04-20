@@ -5,15 +5,14 @@ from ctypes import windll
 from tkinter.messagebox import showinfo
 from tkcalendar import Calendar
 import random
-from PIL import ImageTk, Image
-from admin.employee.employee_model import EmployeeModel
+# from PIL import ImageTk, Image
 
 class EmployeeUI:
 
-    def __init__(self, emp: EmployeeModel):
+    def __init__(self):
         self.controller = None
         self.employee_fields = {}
-        self.__emp_model = EmployeeModel(emp)
+        self.__emp_model = {}
 
     @property
     def emp_model(self):
