@@ -1,4 +1,4 @@
-from database.common_db import CommonDb
+from database.abc_common_db import CommonDb
 
 class EmployeeModel(CommonDb):
     def __init__(self, **kwargs: dict()):
