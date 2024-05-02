@@ -1,6 +1,5 @@
 import mysql.connector
 from mysql.connector import errorcode
-from peewee import *
 
 
 class Connection:
@@ -12,18 +11,13 @@ class Connection:
     }
 
     def __init__(self):
-        db = MySQLDatabase(self.CONFIG['database'])
-        db.connect()
         self.__connection = None
         self.__cursor = None
+        self.connect()
 
     @property
     def cursor(self):
         return self.__cursor
-
-    @cursor.setter
-    def cursor(self, cursor):
-        self.__cursor = cursor
 
     def connect(self):
         try:
@@ -36,8 +30,6 @@ class Connection:
                 print("Database does not exist")
             else:
                 print(err)
-        else:
-            self.__connection.close()
 
     def close(self):
         self.__connection.close()

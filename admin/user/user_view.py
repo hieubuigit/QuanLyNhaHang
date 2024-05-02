@@ -4,11 +4,7 @@ import tkinter as tk
 import tkinter.messagebox as tkMessageBox
 import os
 from PIL import Image, ImageTk
-
 from admin.user.user_controller import UserController
-
-
-# from admin.user.user_model import UserMapping
 
 class UserView:
     def __init__(self, container):
@@ -22,9 +18,7 @@ class UserView:
         password = tk.StringVar()
 
         login_style = ttk.Style()
-        login_form = ttk.Frame(container)
-        login_form.width = 700
-        login_form.height = 500
+        login_form = ttk.Frame(container, width=700)
 
         heading = ttk.Label(login_form, text="Đăng nhập", font=('', 20, 'bold'))
         heading.grid(column=0, row=0, padx=5, pady=5)
@@ -58,7 +52,6 @@ class UserView:
         login_btn.bind('<Button>', lambda event: self.on_login_click(event, user_name.get(), password_ent.get()))
         login_btn.grid(column=0, row=6, sticky='ew', pady=20, padx=20)
 
-        # login_form.grid(column=0, row=0, padx=5, pady=5)
         login_form.place(relx=0.5, rely=0.5, anchor='center')
 
     def on_login_click(self, event, username, password):

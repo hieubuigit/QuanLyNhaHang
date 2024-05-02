@@ -1,7 +1,7 @@
-from admin.user.user_controller import UserController
 from peewee import *
 from datetime import date, datetime
 from database.abc_common_db import abcCommonDb
+from database.connection import Connection
 
 
 class User(Model):
@@ -53,7 +53,8 @@ class UserModel(abcCommonDb):
 
     def __init__(self):
         super().__init__()
-        self.__controller = UserController()
+        # self.__controller = UserController()
+        self.__connection = Connection()
 
     def get(self, **condition):
         sql = "GetAllUser"
@@ -68,3 +69,9 @@ class UserModel(abcCommonDb):
 
     def delete(self, id):
         pass
+
+    def get_password_hash(self, user_name):
+        sql = f"SELECT * FROM user where UserName = '{user_name}'"
+        self.__connection.cursor.execute(sql)
+        record = self.__connection.cursor.fetchone()
+        return record[12]
