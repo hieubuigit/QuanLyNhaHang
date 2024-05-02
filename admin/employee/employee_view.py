@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import END, ttk
-# from ctypes import windll
+from ctypes import windll
 from tkinter.messagebox import showinfo
 from tkcalendar import Calendar
 import random
@@ -243,7 +243,7 @@ class EmployeeUI:
 
     def create_main_window(self):
         """Create init main windows include employee form and grid data"""
-        # windll.shcore.SetProcessDpiAwareness(1)     # improve quality on UI
+        windll.shcore.SetProcessDpiAwareness(1)     # improve quality on UI
         root = tk.Tk()
 
         root.iconbitmap(r'D:\$ STUDY\Learn University at UIT\Semester 3\Python\project\QuanLyNhaHang\assets\restaurant.ico')
@@ -275,7 +275,3 @@ class EmployeeUI:
         scrollbary.grid(column=1, row=1, sticky='nwse', rowspan=2)
 
         root.mainloop()
-
-if __name__ == '__main__':
-    empApp = EmployeeUI()
-    empApp.create_main_window()

@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
-class CommonDb(ABC):
+class abcCommonDb(ABC):
     def __init__(self) -> None:
         super().__init__()
 
     @abstractmethod
-    def get(self, tableName, **condition):
-        return;
+    def get(self, **condition):
+        pass
 
     @abstractmethod
     def insert(self, insert_model):
