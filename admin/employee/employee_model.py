@@ -1,20 +1,22 @@
-from database.abc_common_db import CommonDb
+from database.abc_common_db import abcCommonDb
 
-class EmployeeModel(CommonDb):
-    def __init__(self, **kwargs: dict()):
-        self.__emp_id = kwargs['emp_id']
-        self.__first_name = kwargs['first_name']
-        self.__last_name = kwargs['last_name']
-        self.__birthday = kwargs['birthday']
+
+class EmployeeModel(abcCommonDb):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.__emp_id = kwargs['userCode']
+        self.__first_name = kwargs['fistName']
+        self.__last_name = kwargs['lastName']
+        self.__birthdate = kwargs['birthDate']
+        self.__identity = kwargs['identity']
         self.__gender = kwargs['gender']
-        self.__phone_number = kwargs['phone_number']
+        self.__income_Date = kwargs['incomeDate']
+        self.__phone_number = kwargs['phoneNumber']
         self.__email = kwargs['email']
-        self.__basic_salary = kwargs['basic_salary']
         self.__address = kwargs['address']
-        self.__material_status = kwargs['material_status']
-        self.__avatar_url = kwargs['avatar_url']
-        self.__created_date = kwargs['created_date']
-        self.__updated_date = kwargs['updated_date']
+        self.__username = kwargs['userName']
+        self.__status = kwargs['status']
+        self.__type = kwargs['type']
 
     @property
     def emp_id(self):

@@ -48,7 +48,7 @@ class UserMapping:
         self.__updatedDate = None
 
 
-class UserModel(abcCommonDb):
+class LoginModel(abcCommonDb):
     USER_TBL_NAME = 'User'
 
     def __init__(self):
@@ -74,4 +74,4 @@ class UserModel(abcCommonDb):
         sql = f"SELECT * FROM user where UserName = '{user_name}'"
         self.__connection.cursor.execute(sql)
         record = self.__connection.cursor.fetchone()
-        return record[12]
+        return record

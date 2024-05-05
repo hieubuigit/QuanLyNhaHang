@@ -4,11 +4,13 @@ import tkinter as tk
 import tkinter.messagebox as tkMessageBox
 import os
 from PIL import Image, ImageTk
-from admin.user.user_controller import UserController
 
-class UserView:
+from admin.login.login_controller import LoginController
+
+
+class LoginView:
     def __init__(self, container):
-        self.__controller = UserController()
+        self.__controller = LoginController()
         # self.__user = UserMapping()
         self.init_view(container)
 
@@ -17,7 +19,6 @@ class UserView:
         user_name = tk.StringVar()
         password = tk.StringVar()
 
-        login_style = ttk.Style()
         login_form = ttk.Frame(container, width=700)
 
         heading = ttk.Label(login_form, text="Đăng nhập", font=('', 20, 'bold'))
@@ -61,14 +62,4 @@ class UserView:
             self.__controller.login(username, password)
 
 
-if __name__ == '__main__':
-    windll.shcore.SetProcessDpiAwareness(1)  # Improve quality on UI on windows
-    root = tk.Tk()
-    root.resizable(True, True)
-    root.state('zoomed')  # full screen
-    root.iconbitmap('../../assets/restaurant.ico')
-    root.title("Restaurant Information")
 
-    userV = UserView(root)
-
-    root.mainloop()
