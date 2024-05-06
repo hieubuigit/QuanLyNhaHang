@@ -7,6 +7,7 @@ class TableController(tk.Frame):
         super().__init__()
         view = TableView(window)
 
+
 # if __name__ == '__main__':
 #     root = tk.Tk()
 #     root.resizable(True, True)
