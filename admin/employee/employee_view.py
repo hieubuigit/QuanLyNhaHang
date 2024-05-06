@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import END, ttk
-from ctypes import windll
 from tkinter.messagebox import showinfo
 from tkcalendar import Calendar, DateEntry
 import random
@@ -12,7 +11,7 @@ from share.common_config import Gender, Action, UserActive
 from share.utils import Utils
 
 
-class EmployeeView:
+class EmployeeView(tk.Frame):
 
     def __init__(self, container: tk.Tk):
         self.controller = EmployeeController()
@@ -258,7 +257,7 @@ class EmployeeView:
 
 
 if __name__ == '__main__':
-    windll.shcore.SetProcessDpiAwareness(1)
+    # windll.shcore.SetProcessDpiAwareness(1)
     root = tk.Tk()
     root.resizable(True, True)
     root.state('zoomed')  # full screen

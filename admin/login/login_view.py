@@ -1,4 +1,3 @@
-from ctypes import windll
 from tkinter import ttk
 import tkinter as tk
 import tkinter.messagebox as tkMessageBox
