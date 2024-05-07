@@ -1,11 +1,13 @@
 import mysql.connector
 from mysql.connector import errorcode
 
+from database.abc_common_db import abcCommonDb
 
-class Connection:
+
+class Connection(abcCommonDb):
     CONFIG = {
         'user': "root",
-        'database': "quanlynhahang",
+        'database': "QuanLyNhaHang",
         'password': "123456789",
         'host': "localhost",
     }
@@ -22,7 +24,7 @@ class Connection:
     def connect(self):
         try:
             self.__connection = mysql.connector.connect(**Connection.CONFIG)
-            self.__cursor = self.__connection.cursor()
+            self.__cursor = self.__connection.cursor(dictionary=True)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
@@ -34,3 +36,16 @@ class Connection:
     def close(self):
         self.__connection.close()
         self.__cursor.close()
+
+    def get(self, query):
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def insert(self, insert_model):
+        pass
+
+    def update(self, id, update_model):
+        pass
+
+    def delete(self, id):
+        pass

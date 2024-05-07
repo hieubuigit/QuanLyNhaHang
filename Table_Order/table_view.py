@@ -8,15 +8,14 @@ from PIL import Image, ImageTk
 
 class TableView:
     path_assets = "{path_assets}".format(path_assets=os.getcwd().replace("Table_Order", "assets"))
-    def __init__(self, window):
+    def __init__(self, window, data):
         super().__init__()
-        self.__ds_table = []
+        self.__tables = []
+        self.__tables = data
         self.table_num_value = tk.StringVar()
         self.seat_num_value = tk.StringVar()
         self.status_value = tk.StringVar()
 
-        for i in range(0, 20):
-            self.__ds_table.append(i)
         screen_width = window.winfo_width()
         screen_height = window.winfo_height()
 
@@ -60,17 +59,17 @@ class TableView:
         style.theme_use('default')
         style.configure('Custom.TButton', background='#DFD6D6')
         num_columns = 6
-        image_size = 180
         column_width = screen_width // 8
         row_height = screen_height // 8
-
-        num_rows = math.ceil(len(self.__ds_table) / 6)
-        index = 0
+        if len(self.__tables) < 10:
+            num_columns = 4
+        image_size = 180
+        num_rows = math.ceil(len(self.__tables) / num_columns)
         for i in range(num_rows):
             for j in range(num_columns):
                 index = i * num_columns + j
-                if index < len(self.__ds_table):
-                    num_table = self.__ds_table[index]
+                if index < len(self.__tables):
+                    num_table = self.__tables[index].table_num
                     self.grid_content.grid_columnconfigure(j, weight=1)
                     img_table = ImageTk.PhotoImage(Image.open(
                         "{path_assets}{img}".format(path_assets=TableView.path_assets, img="/ic_table_visible.png")).resize(
