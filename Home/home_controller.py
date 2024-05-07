@@ -1,5 +1,6 @@
 
 import tkinter as tk
+from enum import Enum
 from tkinter import ttk
 from Home.home_View import HomeView
 
@@ -8,6 +9,7 @@ class HomeController:
     def __init__(self, root):
         super().__init__()
         view = HomeView(root)
+
 
 
 if __name__ == '__main__':
