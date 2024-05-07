@@ -7,7 +7,6 @@ from PIL import Image, ImageTk
 
 
 class TableView:
-    path_assets = "{path_assets}".format(path_assets=os.getcwd().replace("Table_Order", "assets"))
     def __init__(self, window, data):
         super().__init__()
         self.__tables = []
@@ -20,7 +19,7 @@ class TableView:
         screen_height = window.winfo_height()
 
         # Tạo một lưới
-        self.grid_frame = tk.Frame(window, bg="yellow")
+        self.grid_frame = tk.Frame(window)
         self.grid_frame.pack(fill="both", expand=True)
 
         # Tạo thanh cuộn ngang
@@ -34,14 +33,14 @@ class TableView:
         # Tạo một canvas để chứa lưới
         self.canvas = tk.Canvas(self.grid_frame, xscrollcommand=self.horizontal_scrollbar.set,
                                 yscrollcommand=self.vertical_scrollbar.set)
-        self.canvas.pack(side="left", fill="both", expand=True)
+        self.canvas.pack(side="left", fill=tk.BOTH, expand=True)
 
         # Kết nối thanh cuộn với canvas
         self.horizontal_scrollbar.config(command=self.canvas.xview)
         self.vertical_scrollbar.config(command=self.canvas.yview)
 
         # Tạo một frame con để chứa nội dung của lưới
-        self.grid_content = tk.Frame(self.canvas, bg="green")
+        self.grid_content = ttk.Frame(self.canvas)
         self.canvas.create_window((0, 0), window=self.grid_content, anchor="nw")
         # self.grid_content.pack(fill=tk.BOTH, expand=1)
 
@@ -71,8 +70,7 @@ class TableView:
                 if index < len(self.__tables):
                     num_table = self.__tables[index].table_num
                     self.grid_content.grid_columnconfigure(j, weight=1)
-                    img_table = ImageTk.PhotoImage(Image.open(
-                        "{path_assets}{img}".format(path_assets=TableView.path_assets, img="/ic_table_visible.png")).resize(
+                    img_table = ImageTk.PhotoImage(Image.open("../assets/ic_table_visible.png").resize(
                         (image_size, image_size)))
 
                     btn = ttk.Button(self.grid_content, text=f"{num_table}", image=img_table, compound='center',
