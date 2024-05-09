@@ -3,6 +3,9 @@ import tkinter as tk
 import peewee
 from Table_Order.table_model import *
 from Table_Order.table_view import TableView
+from database.connection import Connection
+
+
 class TableController:
     def __init__(self, window):
         self.__data_table = []
@@ -11,31 +14,31 @@ class TableController:
 
     def __get_data(self):
         try:
-            dbhandle.connect()
+            Connection.db_handle.connect()
             results = Table.select()
             self.__data_table.extend(results)
-            dbhandle.close()
+            Connection.db_handle.close()
         except peewee.InternalError as px:
             print(str(px))
 
     def add_table_to_db(self, table_num, seat_num, status):
         try:
-            dbhandle.connect()
+            Connection.db_handle.connect()
             row_table = Table(tableNum=table_num, seatNum=seat_num, status=status)
             row_table.save()
-            dbhandle.close()
+            Connection.db_handle.close()
         except peewee.InternalError as px:
             print(str(px))
 
     def update_table_to_db(self, table_num, seat_num, status):
         try:
-            dbhandle.connect()
+            Connection.db_handle.connect()
             table = Table.get(Table.id == id)
             table.tableNum = table_num
             table.seatNum = seat_num
             table.status = status
             table.save()
-            dbhandle.close()
+            Connection.db_handle.close()
         except peewee.InternalError as px:
             print(str(px))
 

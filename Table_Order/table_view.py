@@ -114,7 +114,7 @@ class TableView:
         lb_table_status.place(x=10, y=100)
         self.status_combox = ttk.Combobox(table_popup_frame, values=("Trống", "Đã đặt"))
         self.status_combox.place(x=80, y=100)
-        self.lb_validate_table_info = ttk.Label(table_popup_frame, text="")
+        self.lb_validate_table_info = ttk.Label(table_popup_frame, text="", foreground="red")
         self.lb_validate_table_info.place(x=60, y=140)
         style.configure("Save.TButton", bg="Red")
         btn_save = ttk.Button(table_popup_frame, text="Lưu", style="Save.TButton", command=lambda :self.click_button(action_type))
