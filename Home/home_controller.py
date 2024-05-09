@@ -1,7 +1,8 @@
 
 import tkinter as tk
-from enum import Enum
 from tkinter import ttk
+
+
 from Home.home_View import HomeView
 
 
@@ -17,6 +18,10 @@ if __name__ == '__main__':
     root.resizable(True, True)
     root.state('zoomed')  # full screen
     root.title("Restaurant Information")
-
+    style = ttk.Style()
+    style.theme_use('default')
     home = HomeController(root)
     root.mainloop()
+
+
+# style.theme_use('default') #('blue', 'alt', 'scidsand', 'classic', 'scidblue', 'scidmint', 'scidgreen', 'default', 'scidpink', 'aqua', 'scidgrey', 'scidpurple', 'clam')

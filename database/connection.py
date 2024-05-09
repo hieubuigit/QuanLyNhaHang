@@ -32,20 +32,3 @@ class Connection(abcCommonDb):
                 print("Database does not exist")
             else:
                 print(err)
-
-    def close(self):
-        self.__connection.close()
-        self.__cursor.close()
-
-    def get(self, query):
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
-
-    def insert(self, insert_model):
-        pass
-
-    def update(self, id, update_model):
-        pass
-
-    def delete(self, id):
-        pass

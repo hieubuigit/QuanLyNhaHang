@@ -13,11 +13,10 @@ class TabType(Enum):
     REPORT = "REPORT"
     LOGOUT = "LOGOUT"
     WARE_HOUSE = "WARE_HOUSE"
-class HomeView(tk.Frame):
+class HomeView:
     button_type_clicked = None
     size_icon_tab = (28, 28)
     def __init__(self, window):
-        super().__init__()
         # tạo frame thanh tab bar
         self.__root = window
         style = ttk.Style()
@@ -26,16 +25,16 @@ class HomeView(tk.Frame):
         style.configure('Custom.CLiked.TButton', background='#003BC6', foreground='white', font=('Arial', 24))
         self.__generate_ui_header(window)
         # Tạo một frame chính để chuyển đổi nhiều frame
-        self.__main_fr = tk.Frame(window, bg="pink")
+        self.__main_fr = ttk.Frame(window)
         self.__main_fr.pack(fill="both", expand=1)
 
         # Tab 1: Hiển thị pgae nhân viên
         self.employee_page(self.__main_fr)
 
     def __generate_ui_header(self, window):
-        header_view = tk.Frame(window, bg="red")
+        header_view = ttk.Frame(window)
         header_view.pack(fill="both", expand=0)
-        self.tab_bar_view = tk.Frame(header_view, bg="yellow")
+        self.tab_bar_view = ttk.Frame(header_view)
         self.tab_bar_view.pack(side="left")
         avt_default = ImageTk.PhotoImage(Image.open("../assets/avatar_default_man.png").resize(
             (30, 30)))
@@ -87,7 +86,9 @@ class HomeView(tk.Frame):
         empl_page_fr = EmployeeView(main_fr)
 
     def table_page(self, main_fr):
-        tablel_page_fr = TableController(main_fr)
+        self.__root.style = ttk.Style()
+        self.__root.style.theme_use("default")
+        page = TableController(main_fr)
 
     def bill_page(self, main_fr):
         bill_fr = tk.Frame(main_fr, bg="green")
@@ -123,6 +124,7 @@ class HomeView(tk.Frame):
         for fr in self.__main_fr.winfo_children():
             fr.destroy()
             self.__root.update()
+
         if button_type == TabType.EMPLOYEE:
             ic_empl_click = ImageTk.PhotoImage(Image.open("../assets/ic_employees_click.png").resize(HomeView.size_icon_tab))
             self.empl_btn.config(style='Custom.CLiked.TButton', image=ic_empl_click)
@@ -154,9 +156,9 @@ class HomeView(tk.Frame):
             self.logout_btn.image = ic_logout_click
 
     def __set_ui_default_emp_tab(self):
-        ic_empl_default = ImageTk.PhotoImage(Image.open("../assets/ic_employees_default.png").resize(HomeView.size_icon_tab))
-        self.empl_btn.config(style='Custom.Normal.TButton', image=ic_empl_default)
-        self.empl_btn.image = ic_empl_default
+        ic_emp_default = ImageTk.PhotoImage(Image.open("../assets/ic_employees_default.png").resize(HomeView.size_icon_tab))
+        self.empl_btn.config(style='Custom.Normal.TButton', image=ic_emp_default)
+        self.empl_btn.image = ic_emp_default
 
     def __set_ui_default_table_tab(self):
         ic_table_default = ImageTk.PhotoImage(Image.open("../assets/ic_table.png").resize(HomeView.size_icon_tab))
@@ -173,6 +175,7 @@ class HomeView(tk.Frame):
             Image.open("../assets/ic_house_default.png").resize(HomeView.size_icon_tab))
         self.ware_house_btn.config(style='Custom.Normal.TButton', image=ic_ware_house_default)
         self.ware_house_btn.image = ic_ware_house_default
+
     def __set_ui_default_report_tab(self):
         ic_report_default = ImageTk.PhotoImage(
             Image.open("../assets/ic_chart_default.png").resize(HomeView.size_icon_tab))

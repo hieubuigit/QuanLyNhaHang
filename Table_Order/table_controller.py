@@ -1,29 +1,53 @@
 import tkinter as tk
 
-from Table_Order.table_model import TableModel
+import peewee
+from Table_Order.table_model import *
 from Table_Order.table_view import TableView
-from database.connection import Connection
-
-
-class TableController(tk.Frame):
+class TableController:
     def __init__(self, window):
-        super().__init__()
         self.__data_table = []
-        self.__fetch_data()
-        view = TableView(window, self.__data_table)
-    def __fetch_data(self):
-        connect = Connection()
-        query = "SELECT * FROM QuanLyNhaHang.`Table`"
-        results = connect.get(query)
-        for row in results:
-            self.__data_table.append(TableModel(id=row.get("Id"), table_num=row.get("TableNum"), seat_num=row.get("SeatNum"), status=row.get("Status")))
-        connect.close()
+        self.__get_data()
+        self.view = TableView(window, self, self.__data_table)
+
+    def __get_data(self):
+        try:
+            dbhandle.connect()
+            results = Table.select()
+            self.__data_table.extend(results)
+            dbhandle.close()
+        except peewee.InternalError as px:
+            print(str(px))
+
+    def add_table_to_db(self, table_num, seat_num, status):
+        try:
+            dbhandle.connect()
+            row_table = Table(tableNum=table_num, seatNum=seat_num, status=status)
+            row_table.save()
+            dbhandle.close()
+        except peewee.InternalError as px:
+            print(str(px))
+
+    def update_table_to_db(self, table_num, seat_num, status):
+        try:
+            dbhandle.connect()
+            table = Table.get(Table.id == id)
+            table.tableNum = table_num
+            table.seatNum = seat_num
+            table.status = status
+            table.save()
+            dbhandle.close()
+        except peewee.InternalError as px:
+            print(str(px))
+
+    def save_table(self):
+        self.add_table_to_db(self.view.table_num_value, self.view.seat_num_value, self.view.status_value)
 
 
-if __name__ == '__main__':
-    root = tk.Tk()
-    root.resizable(True, True)
-    root.state('zoomed')  # full screen
-    root.title("Restaurant Information")
-    home = TableController(root)
-    root.mainloop()
+# if __name__ == '__main__':
+#     root = tk.Tk()
+#     root.resizable(True, True)
+#     root.state('zoomed')  # full screen
+#     root.title("Restaurant Information")
+#     root.config(background="blue")
+#     home = TableController(root)
+#     root.mainloop()

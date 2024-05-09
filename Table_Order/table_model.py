@@ -3,26 +3,23 @@ from peewee import *
 from datetime import date, datetime
 from database.abc_common_db import abcCommonDb
 from database.connection import Connection
-class TableModellSQL(Model):
-    id = PrimaryKeyField()
+
+dbhandle = MySQLDatabase(
+    database="QuanLyNhaHang", user="root",
+    password="123456789",
+    host='localhost'
+)
+class BaseModel(Model):
+    class Meta:
+        database = dbhandle
+class Table(BaseModel):
+    id = AutoField(primary_key=True, null=True)
     tableNum = IntegerField()
     seatNum = IntegerField()
     status = IntegerField()
-    createdDate = DateTimeField()
+    createdDate = DateTimeField(datetime.now())
     updatedDate = DateTimeField()
-class TableModel:
-    def __init__(self, id, table_num, seat_num, status):
-        self.__id = id
-        self.__table_num = table_num
-        self.__seat_num = seat_num
-        self.__status = status
-        self.__createdDate = datetime.now()
-        self.__updatedDate = None
+    class Meta:
+        db_name = "Table"
 
-    @property
-    def id(self):
-        return self.__id
 
-    @property
-    def table_num(self):
-        return self.__table_num

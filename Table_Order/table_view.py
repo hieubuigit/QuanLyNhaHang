@@ -1,33 +1,35 @@
 import math
-import os.path
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
+from ttkthemes.themed_style import ThemedStyle
 
+from share.common_config import Action
+from ttkthemes import ThemedTk
 
 
 class TableView:
-    def __init__(self, window, data):
-        super().__init__()
+    def __init__(self, window, controller,  data):
         self.__tables = []
         self.__tables = data
+        self.__controller = controller
         self.table_num_value = tk.StringVar()
         self.seat_num_value = tk.StringVar()
         self.status_value = tk.StringVar()
 
         screen_width = window.winfo_width()
         screen_height = window.winfo_height()
-
-        # Tạo một lưới
-        self.grid_frame = tk.Frame(window)
+        style = ttk.Style()
+        style.theme_use('default')
+        self.grid_frame = ttk.Frame(window)
         self.grid_frame.pack(fill="both", expand=True)
 
         # Tạo thanh cuộn ngang
-        self.horizontal_scrollbar = tk.Scrollbar(self.grid_frame, orient="horizontal")
+        self.horizontal_scrollbar = ttk.Scrollbar(self.grid_frame, orient="horizontal")
         self.horizontal_scrollbar.pack(side="bottom", fill="x")
 
         # Tạo thanh cuộn dọc
-        self.vertical_scrollbar = tk.Scrollbar(self.grid_frame, orient="vertical")
+        self.vertical_scrollbar = ttk.Scrollbar(self.grid_frame, orient="vertical")
         self.vertical_scrollbar.pack(side="right", fill="y")
 
         # Tạo một canvas để chứa lưới
@@ -39,13 +41,11 @@ class TableView:
         self.horizontal_scrollbar.config(command=self.canvas.xview)
         self.vertical_scrollbar.config(command=self.canvas.yview)
 
-        # Tạo một frame con để chứa nội dung của lưới
+        # Tạo một frame con để chứa bàn
         self.grid_content = ttk.Frame(self.canvas)
         self.canvas.create_window((0, 0), window=self.grid_content, anchor="nw")
-        # self.grid_content.pack(fill=tk.BOTH, expand=1)
 
-        # Thêm nội dung vào lưới
-
+        # Thêm ds bàn vào grid content
         self.__add_content(window, screen_width, screen_height)
 
         # Đặt sự kiện để cập nhật kích thước của canvas
@@ -68,7 +68,7 @@ class TableView:
             for j in range(num_columns):
                 index = i * num_columns + j
                 if index < len(self.__tables):
-                    num_table = self.__tables[index].table_num
+                    num_table = self.__tables[index].tableNum
                     self.grid_content.grid_columnconfigure(j, weight=1)
                     img_table = ImageTk.PhotoImage(Image.open("../assets/ic_table_visible.png").resize(
                         (image_size, image_size)))
@@ -83,7 +83,8 @@ class TableView:
         pass
 
     def selected_table(self, window):
-        self.create_ui_toplevel(window, "ADD")
+        print("selected table")
+        self.create_ui_toplevel(window, Action.ADD)
 
     def on_frame_configure(self, event):
         # Cập nhật kích thước của canvas khi nội dung thay đổi
@@ -94,40 +95,40 @@ class TableView:
         style = ttk.Style()
         style.theme_use('default')
 
-        toplevel = tk.Toplevel(window)
-        toplevel.resizable(True, False)
-        toplevel.geometry("300x300")
-
+        self.toplevel = tk.Toplevel(window)
+        self.toplevel.resizable(True, False)
+        self.toplevel.geometry("290x250")
         validation = window.register(self.validate_input)
-        table_popup_frame = tk.Frame(toplevel, pady=20)
-        lb_table_num = tk.Label(table_popup_frame, text="Số bàn")
-        lb_table_num.grid(row=0, column=0, sticky="nw")
-        self.entry_table_num = tk.Entry(table_popup_frame, validate="key", validatecommand=(validation, '%P'))
-        self.entry_table_num.grid(row=1, column=0)
+        table_popup_frame = ttk.Frame(self.toplevel)
+        lb_table_num = ttk.Label(table_popup_frame, text="Số bàn")
+        lb_table_num.place(x=10, y=20)
+        self.entry_table_num = ttk.Entry(table_popup_frame, validate="key", validatecommand=(validation, '%P'))
+        self.entry_table_num.place(x=80, y=20)
 
-        lb_seat_num = tk.Label(table_popup_frame, text="Số ghế")
-        lb_seat_num.grid(row=2, column=0, sticky="nw")
-        self.entry_seat_num = tk.Entry(table_popup_frame, validate="key", validatecommand=(validation, '%P'))
-        self.entry_seat_num.grid(row=3, column=0)
+        lb_seat_num = ttk.Label(table_popup_frame, text="Số ghế")
+        lb_seat_num.place(x=10, y=60)
+        self.entry_seat_num = ttk.Entry(table_popup_frame, validate="key", validatecommand=(validation, '%P'))
+        self.entry_seat_num.place(x=80, y=60)
 
-        lb_table_status = tk.Label(table_popup_frame, text="Trạng thái")
-        lb_table_status.grid(row=4, column=0, sticky="nw")
+        lb_table_status = ttk.Label(table_popup_frame, text="Trạng thái")
+        lb_table_status.place(x=10, y=100)
         self.status_combox = ttk.Combobox(table_popup_frame, values=("Trống", "Đã đặt"))
-        self.status_combox.grid(row=5, column=0)
-
-        btn_save = ttk.Button(table_popup_frame, text="Lưu", command=self.click_button)
-        btn_save.grid(row=6, column=0, pady=15)
-        if action_type == "ADD":
-            toplevel.title("Thêm bàn mới")
+        self.status_combox.place(x=80, y=100)
+        self.lb_validate_table_info = ttk.Label(table_popup_frame, text="")
+        self.lb_validate_table_info.place(x=60, y=140)
+        style.configure("Save.TButton", bg="Red")
+        btn_save = ttk.Button(table_popup_frame, text="Lưu", style="Save.TButton", command=lambda :self.click_button(action_type))
+        btn_save.pack(fill=tk.Y, expand=0, side="bottom", pady=40)
+        if action_type == Action.ADD:
+            self.toplevel.title("Thêm bàn mới")
         else:
-            toplevel.title("Cập nhật thông tin bàn")
+            self.toplevel.title("Cập nhật thông tin bàn")
             btn_save.config(text="Cập nhật")
 
-        table_popup_frame.pack()
+        table_popup_frame.pack(fill=tk.BOTH, expand=1)
 
     # Form cập nhật, lấy dữ liệu của bàn theo số bàn
     def load_data_table_popup(self):
-        self.table_num_value.set("2")
         pass
     def validate_input(self, new_value):
         # Kiểm tra xem giá trị mới có phải là số không
@@ -137,23 +138,21 @@ class TableView:
         except ValueError:
             return False
 
-    def click_button(self):
+    def click_button(self, action_type):
         table_num_value = self.entry_table_num.get()
         seat_num_value = self.entry_seat_num.get()
         status_value = self.status_combox.get()
-        # Thực hiện thêm vào database
-        # Thực hiện cập nhật lại database
+        if action_type == Action.ADD:
+            if table_num_value == '' and seat_num_value == '':
+                self.lb_validate_table_info.configure(text="Vui lòng điền đầy đủ thông tin")
+                return
+            else:
+                # Thực hiện thêm vào database
+                self.__controller.add_table_to_db(table_num_value, seat_num_value, status_value)
+                self.toplevel.destroy()
+        else:
+            # Thực hiện cập nhật lại database
+            self.__controller.update_table_to_db(table_num_value, seat_num_value, status_value)
         print(table_num_value, seat_num_value, status_value)
 
-
-if __name__ == '__main__':
-    root = tk.Tk()
-    root.resizable(True, True)
-    root.state('zoomed')  # full scree
-    root.title("Restaurant Table")
-
-    home = TableView(root)
-    root.grid_rowconfigure(0, weight=1)
-    root.grid_columnconfigure(0, weight=1)
-    root.mainloop()
 
