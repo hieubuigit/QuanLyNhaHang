@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import errorcode
+from peewee import MySQLDatabase
 
 from database.abc_common_db import abcCommonDb
 
@@ -11,7 +12,11 @@ class Connection(abcCommonDb):
         'password': "123456789",
         'host': "localhost",
     }
-
+    db_handle = MySQLDatabase(
+        database="QuanLyNhaHang", user="root",
+        password="123456789",
+        host='localhost'
+    )
     def __init__(self):
         self.__connection = None
         self.__cursor = None
