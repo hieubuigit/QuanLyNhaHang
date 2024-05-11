@@ -5,7 +5,7 @@ class abcCommonDb(ABC):
         super().__init__()
 
     @abstractmethod
-    def get(self, **condition):
+    def get(self, query):
         pass
 
     @abstractmethod

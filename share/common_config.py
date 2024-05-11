@@ -23,3 +23,7 @@ class UserType(Enum):
     ADMIN = 0
     NORMAL = 1
 
+class Action(Enum):
+    ADD = 0
+    UPDATE = 1
+

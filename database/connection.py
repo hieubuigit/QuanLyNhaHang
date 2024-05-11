@@ -1,15 +1,22 @@
 import mysql.connector
 from mysql.connector import errorcode
+from peewee import MySQLDatabase
+
+from database.abc_common_db import abcCommonDb
 
 
-class Connection:
+class Connection(abcCommonDb):
     CONFIG = {
         'user': "root",
-        'database': "quanlynhahang",
+        'database': "QuanLyNhaHang",
         'password': "123456789",
         'host': "localhost",
     }
-
+    db_handle = MySQLDatabase(
+        database="QuanLyNhaHang", user="root",
+        password="123456789",
+        host='localhost'
+    )
     def __init__(self):
         self.__connection = None
         self.__cursor = None
@@ -22,7 +29,7 @@ class Connection:
     def connect(self):
         try:
             self.__connection = mysql.connector.connect(**Connection.CONFIG)
-            self.__cursor = self.__connection.cursor()
+            self.__cursor = self.__connection.cursor(dictionary=True)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
@@ -30,7 +37,3 @@ class Connection:
                 print("Database does not exist")
             else:
                 print(err)
-
-    def close(self):
-        self.__connection.close()
-        self.__cursor.close()
