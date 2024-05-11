@@ -1,27 +1,23 @@
 import tkinter as tk
 from tkinter import END, ttk
 from ctypes import windll
-from tkinter.messagebox import showinfo
-from tkcalendar import Calendar, DateEntry
-import random
-from PIL import ImageTk, Image
-
 from employee_controller import EmployeeController
 from employee_model import EmployeeModel
 from share.common_config import Gender, Action, UserActive
 from share.utils import Utils
 
-
 class EmployeeView:
 
     def __init__(self, container: tk.Tk):
         self.controller = EmployeeController()
-        self.employee_fields = {}
         self.__tree = None
-        # self.__emp_model = EmployeeModel()
+        self.__add_or_update_form = dict()
+        self.__employee_model = EmployeeModel()
         self.init_view(container)
 
     def init_action_form(self, container: tk.Tk):
+        # Create form include Them, Xoa, Cap Nhat and Tim Kiem by full name, employee id, user name
+
         action_frame = ttk.Frame(container)
         # Add button
         add_button = tk.Button(action_frame,
@@ -64,8 +60,12 @@ class EmployeeView:
         return action_frame
 
     def init_add_or_update_popup(self, container: tk.Tk, action: Action):
+        # Create add new or update employee information popup
 
-        # Create child windows
+        # Form fields:
+        # empId = tk.StringVar()
+        # firstName = tk.StringVar()
+
         top = tk.Toplevel(container)
 
         top.geometry("900x600")
@@ -73,80 +73,125 @@ class EmployeeView:
         top.resizable(True, False)
 
         emp_frame = tk.Frame(top, width=700)
-        column1 = tk.Frame(emp_frame, highlightthickness=1, highlightbackground="#9c9")
-        column2 = tk.Frame(emp_frame, highlightthickness=1, highlightbackground="#9c9")
-        column3 = tk.Frame(emp_frame, highlightthickness=1, highlightbackground="#9c9")
+        column1 = tk.Frame(emp_frame)
+        column2 = tk.Frame(emp_frame)
+        column3 = tk.Frame(emp_frame)
 
-        label_pack_style = {'side':tk.TOP, 'expand':True, 'padx':10, 'pady':5, 'anchor':tk.W, 'fill':tk.X}
-        entry_pack_style = {'side':tk.TOP, 'expand':True, 'anchor':tk.W, 'padx':10, 'pady':5, 'ipadx': 3, 'ipady': 3, 'fill':tk.X}
-        sub_frame_style = {'side':tk.TOP, 'expand':True, 'anchor':tk.W, 'pady':10, 'fill':tk.X}
+        # Column 1;
+        emp_info_lbl = ttk.Label(column1, text="Thông tin nhân viên: ", font=('TkDefaultFont', 11, 'bold'))
+        emp_info_lbl.pack(Utils.heading_group_pack)
 
-        ## Column 1
-        emp_info_lbl = ttk.Label(column1, text="Thông tin nhân viên: ",)
-        emp_info_lbl.pack(label_pack_style)
-
-        ### Employee Id
+        # Employee Id
         emp_id_frm = tk.Frame(column1)
         emp_id_lbl = ttk.Label(emp_id_frm, text="Mã nhân viên: ")
         emp_id_lbl.pack(Utils.label_pack_style)
-        emp_id_ent = ttk.Entry(master=emp_id_frm)
+        self.__add_or_update_form['employee_id'] = ttk.Entry(master=emp_id_frm)
         if action == Action.UPDATE:
-            emp_id_ent.config(state=tk.DISABLED)
-        emp_id_ent.pack(Utils.entry_pack_style)
+            self.__add_or_update_form['employee_id'].config(state=tk.DISABLED)
+        self.__add_or_update_form['employee_id'].pack(Utils.entry_pack_style)
         emp_id_frm.pack(Utils.sub_frame_style)
 
-        first_name_ent = Utils.input_component(column1, {'lbl': "Họ: "})
-        first_name_ent = Utils.input_component(column1, {'lbl': "Tên: "})
-        birthday_dpk = Utils.date_picker_component(column1, {'lbl': "Ngày sinh: "})
-        identity_ent = Utils.input_component(column1, {'lbl': "CCCD/CMND: "})
-
-        ### Gender
-        gender_frm = tk.Frame(column1)
-        gender_lbl = ttk.Label(gender_frm, text="Giới tính: ")
-        gender_lbl.pack(label_pack_style)
-        male_rad = ttk.Radiobutton(gender_frm, text='Nam', value=Gender.FEMALE)
-        male_rad.pack(side=tk.LEFT, anchor="w")
-        female_rad = ttk.Radiobutton(gender_frm, text='Nữ', value=Gender.MALE)
-        female_rad.pack(side=tk.LEFT, anchor="w")
-        other_rad = ttk.Radiobutton(gender_frm, text='Other', value=Gender.OTHER)
-        other_rad.pack(side=tk.LEFT, anchor='w')
-        gender_frm.pack(entry_pack_style)
+        self.__add_or_update_form['first_name_ent'] = Utils.input_component(column1, {'lbl': "Họ: "})
+        self.__add_or_update_form['last_name_ent'] = Utils.input_component(column1, {'lbl': "Tên: "})
+        self.__add_or_update_form['birthday_dpk'] = Utils.date_picker_component(column1, {'lbl': "Ngày sinh: "})
+        self.__add_or_update_form['identity_ent'] = Utils.input_component(column1, {'lbl': "CCCD/CMND: "})
 
         # Column 2:
-        ttk.Label(column2, text="").pack(label_pack_style)
+        ttk.Label(column2, text="").pack(Utils.label_pack_style)
 
-        income_date_dpk = Utils.date_picker_component(column2, {'lbl': "Ngày vào làm: "})
-        phone_number_lbl = Utils.input_component(column2, {'lbl': "Số điện thoại: "})
-        email_ent = Utils.input_component(column2, {'lbl': "Email: "})
+        # Gender
+        self.__add_or_update_form['gender'] = tk.StringVar()
+        gender_frm = tk.Frame(column2)
+        gender_lbl = ttk.Label(gender_frm, text="Giới tính: ")
+        gender_lbl.pack(Utils.label_pack_style)
+        male_rad = ttk.Radiobutton(gender_frm, text='Nam', value=Gender.MALE, variable=self.__add_or_update_form['gender'])
+        male_rad.pack(side=tk.LEFT, anchor="center", fill=tk.BOTH, expand=True)
+        female_rad = ttk.Radiobutton(gender_frm, text='Nữ', value=Gender.FEMALE, variable=self.__add_or_update_form['gender'])
+        female_rad.pack(side=tk.LEFT, anchor="center", fill=tk.BOTH, expand=True)
+        other_rad = ttk.Radiobutton(gender_frm, text='Khác', value=Gender.OTHER, variable=self.__add_or_update_form['gender'])
+        other_rad.pack(side=tk.LEFT, anchor='center', fill=tk.BOTH, expand=True)
+        gender_frm.pack(Utils.radio_group_style)
 
-        address_ent = Utils.date_picker_component(column2, {'lbl': "Địa chỉ: "})
+        self.__add_or_update_form['income_date_dpk'] = Utils.date_picker_component(column2, {'lbl': "Ngày vào làm: "})
+        self.__add_or_update_form['phone_number_ent'] = Utils.input_component(column2, {'lbl': "Số điện thoại: "})
+        self.__add_or_update_form['email_ent'] = Utils.input_component(column2, {'lbl': "Email: "})
+        self.__add_or_update_form['address_ent'] = Utils.input_component(column2, {'lbl': "Địa chỉ: "})
 
-        # Column 2
-        account_info_lbl = ttk.Label(column3, text="Thông tin tài khoản: ")
-        account_info_lbl.pack(label_pack_style)
+        # Column 3:
+        account_info_lbl = ttk.Label(column3, text="Thông tin tài khoản: ", font=('TkDefaultFont', 11, 'bold'))
+        account_info_lbl.pack(Utils.heading_group_pack)
 
-        username_ent = Utils.input_component(column3, {'lbl': "Tên tài khoản: "})
-        password_ent = Utils.input_component(column3, {'lbl': "Mật khẩu: "})
+        self.__add_or_update_form['username_ent'] = Utils.input_component(column3, {'lbl': "Tên tài khoản: "})
+        self.__add_or_update_form['password_ent'] = Utils.input_component(column3, {'lbl': "Mật khẩu: "})
 
-        status_frm = tk.Frame(column3, pady=50)
+        # Account status
+        self.__add_or_update_form['status'] = tk.StringVar()
+        status_frm = tk.Frame(column3)
         status_lbl = ttk.Label(status_frm, text="Trạng thái tài khoản: ")
-        status_lbl.pack(label_pack_style)
-        active_rad = ttk.Radiobutton(status_frm, text='Hoạt động', value=UserActive.ACTIVE)
+        status_lbl.pack(Utils.label_pack_style)
+        active_rad = ttk.Radiobutton(status_frm, text='Hoạt động', value=UserActive.ACTIVE, variable=self.__add_or_update_form['status'])
         active_rad.pack(side=tk.TOP, anchor="w")
-        inactive_rad = ttk.Radiobutton(status_frm, text='Không hoạt động', value=UserActive.INACTIVE)
+        inactive_rad = ttk.Radiobutton(status_frm, text='Không hoạt động', value=UserActive.INACTIVE, variable=self.__add_or_update_form['status'])
         inactive_rad.pack(side=tk.TOP, anchor='w')
-        status_frm.pack(entry_pack_style, anchor='w')
+        status_frm.pack(Utils.entry_pack_style, anchor='w')
 
+        # Account Type
         type_lbl = ttk.Label(column3, text="Loại tài khoản: ")
-        type_lbl.pack(label_pack_style)
-        type_cbo = ttk.Combobox(column3)
-        type_cbo['value'] = ("Admin", "Bình thường")
-        type_lbl.pack(side=tk.TOP, anchor=tk.W, padx=10, pady=5)
+        type_lbl.pack(Utils.label_pack_style)
+        self.__add_or_update_form['type_cbo'] = ttk.Combobox(column3)
+        self.__add_or_update_form['type_cbo']['value'] = ("Admin", "Bình thường")
+        self.__add_or_update_form['type_cbo'].pack(Utils.entry_pack_style)
 
         column1.pack(side=tk.LEFT, fill='x', expand=True, anchor='n')
         column2.pack(side=tk.LEFT, fill='x', expand=True, anchor='n')
         column3.pack(side=tk.LEFT, fill='x', expand=True, anchor='n')
         emp_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, anchor='w')
+
+        # Add or Update botton
+        save_or_update_txt = ""
+        if action == Action.UPDATE:
+            save_or_update_txt = "Cập nhật"
+        else:
+            save_or_update_txt = "Thêm"
+        button_grp = tk.Frame(top)
+        save_or_update_btn = tk.Button(button_grp,
+                                       text=save_or_update_txt,
+                                       width=10,
+                                       bg='blue',
+                                       fg="white",
+                                       command=self.save_data)
+        save_or_update_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="center", fill="x", expand=True)
+
+        # Clear button
+        clear_btn = tk.Button(button_grp,
+                              text="Làm sạch",
+                              width=10,
+                              bg='grey',
+                              fg="white")
+        clear_btn.bind("<Button>", self.clear_data())
+        clear_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="center", fill="x", expand=True)
+        button_grp.pack(side=tk.TOP, padx=10, pady=10, anchor="center", fill=tk.BOTH, expand=True)
+
+    def clear_data(self):
+        pass
+
+    def save_data(self):
+        employeeId = self.__add_or_update_form['employee_id'].get()
+        firstName = self.__add_or_update_form['first_name_ent'].get()
+        lastName = self.__add_or_update_form['last_name_ent'].get()
+        birthday = self.__add_or_update_form['birthday_dpk'].get()
+        identity = self.__add_or_update_form['identity_ent'].get()
+        gender = self.__add_or_update_form['gender'].get()
+        incomeDate = self.__add_or_update_form['income_date_dpk'].get()
+        phone_number = self.__add_or_update_form['phone_number_ent'].get()
+        email = self.__add_or_update_form['email_ent'].get()
+        address = self.__add_or_update_form['address_ent'].get()
+        username = self.__add_or_update_form['username_ent'].get()
+        password = self.__add_or_update_form['password_ent'].get()
+        status = self.__add_or_update_form['status'].get()
+        type = self.__add_or_update_form['type_cbo'].get()
+        print(employeeId, firstName, lastName, birthday, identity, gender, incomeDate, phone_number, email, address, username, password, status, type)
+
 
     def set_data_entry(self, field, data):
         pass
@@ -249,12 +294,12 @@ class EmployeeView:
         grid_data.grid(column=0, row=1, sticky='nwse')
 
         # Add scroll for grid
-        scrollbarx = tk.Scrollbar(container, orient='horizontal', command=grid_data.xview, width=20)
-        scrollbary = tk.Scrollbar(container, orient='vertical', command=grid_data.yview, width=20)
-        grid_data.configure(xscroll=scrollbarx.set)
-        grid_data.configure(yscroll=scrollbary.set)
-        scrollbarx.grid(column=0, row=2, sticky='nwse', columnspan=2)
-        scrollbary.grid(column=1, row=1, sticky='nwse', rowspan=2)
+        # scrollbarx = tk.Scrollbar(container, orient='horizontal', command=grid_data.xview, width=20)
+        # scrollbary = tk.Scrollbar(container, orient='vertical', command=grid_data.yview, width=20)
+        # grid_data.configure(xscroll=scrollbarx.set)
+        # grid_data.configure(yscroll=scrollbary.set)
+        # scrollbarx.grid(column=0, row=2, sticky='nwse', columnspan=2)
+        # scrollbary.grid(column=1, row=1, sticky='nwse', rowspan=2)
 
 
 if __name__ == '__main__':
