@@ -9,9 +9,11 @@ class Utils:
     def __init__(self):
         pass
 
+    heading_group_pack = {'side':tk.TOP, 'expand':True, 'padx':5, 'pady':3, 'anchor':tk.W, 'fill':tk.X}
     label_pack_style = {'side':tk.TOP, 'expand':True, 'padx':5, 'pady':3, 'anchor':tk.W, 'fill':tk.X}
     entry_pack_style = {'side':tk.TOP, 'expand':True, 'anchor':tk.W, 'padx':5, 'pady':3, 'ipadx': 3, 'ipady': 3, 'fill':tk.X}
     sub_frame_style = {'side':tk.TOP, 'expand':True, 'anchor':tk.W, 'pady':5, 'fill':tk.X}
+    radio_group_style = {'side':tk.TOP, 'expand':True, 'anchor':tk.W, 'padx':(0, 100), 'pady':3, 'ipadx': 3, 'ipady': 3, 'fill':tk.BOTH}
 
     @staticmethod
     def input_component(parent, kw: dict):
@@ -32,5 +34,4 @@ class Utils:
         date_picker.pack(Utils.entry_pack_style)
         frame_item.pack(Utils.sub_frame_style)
         return date_picker
-
 
