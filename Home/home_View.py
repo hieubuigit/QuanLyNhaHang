@@ -3,6 +3,8 @@ import tkinter as tk
 from enum import Enum
 from tkinter import ttk
 from PIL import Image, ImageTk
+
+from Bill.bill_controller import BillController
 from Table_Order.table_controller import TableController
 from employee_view import EmployeeView
 
@@ -91,8 +93,7 @@ class HomeView:
         page = TableController(main_fr)
 
     def bill_page(self, main_fr):
-        bill_fr = tk.Frame(main_fr, bg="green")
-        bill_fr.pack(fill=tk.BOTH, expand=1)
+        page = BillController(main_fr)
 
     def warehouse_page(self, main_fr):
         warehouse_fr = tk.Frame(main_fr, bg="blue")

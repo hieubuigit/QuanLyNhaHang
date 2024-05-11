@@ -9,9 +9,9 @@ from ttkthemes import ThemedTk
 
 
 class TableView:
-    def __init__(self, window, controller,  data):
+    def __init__(self, window, controller, tables):
         self.__tables = []
-        self.__tables = data
+        self.__tables = tables
         self.__controller = controller
         self.table_num_value = tk.StringVar()
         self.seat_num_value = tk.StringVar()

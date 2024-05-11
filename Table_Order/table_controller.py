@@ -1,5 +1,4 @@
 import tkinter as tk
-
 import peewee
 from Table_Order.table_model import *
 from Table_Order.table_view import TableView
@@ -17,9 +16,11 @@ class TableController:
             Connection.db_handle.connect()
             results = Table.select()
             self.__data_table.extend(results)
-            Connection.db_handle.close()
         except peewee.InternalError as px:
             print(str(px))
+
+        finally:
+            Connection.db_handle.close()
 
     def add_table_to_db(self, table_num, seat_num, status):
         try:
