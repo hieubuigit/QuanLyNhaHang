@@ -14,6 +14,9 @@ class Utils:
     entry_pack_style = {'side':tk.TOP, 'expand':True, 'anchor':tk.W, 'padx':5, 'pady':3, 'ipadx': 3, 'ipady': 3, 'fill':tk.X}
     sub_frame_style = {'side':tk.TOP, 'expand':True, 'anchor':tk.W, 'pady':5, 'fill':tk.X}
     radio_group_style = {'side':tk.TOP, 'expand':True, 'anchor':tk.W, 'padx':(0, 100), 'pady':3, 'ipadx': 3, 'ipady': 3, 'fill':tk.BOTH}
+    pack_style_1 = {'side': tk.LEFT, 'expand': True, 'fill': tk.BOTH}
+
+    pack_control_item = {"side":'left', 'fill': tk.NONE, 'expand': tk.YES, 'pady':'20', 'anchor': "w"}
 
     @staticmethod
     def input_component(parent, kw: dict):
