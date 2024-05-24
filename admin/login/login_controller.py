@@ -2,7 +2,6 @@ import tkinter.messagebox as msgBox
 import bcrypt
 
 from admin.login.login_model import LoginModel
-from share.utils import *
 
 
 class LoginController:

@@ -1,8 +1,6 @@
 from peewee import *
 from datetime import date, datetime
-from database.abc_common_db import abcCommonDb
 from database.connection import Connection
-
 
 class User(Model):
     id = PrimaryKeyField()
@@ -48,12 +46,11 @@ class UserMapping:
         self.__updatedDate = None
 
 
-class LoginModel(abcCommonDb):
+class LoginModel:
     USER_TBL_NAME = 'User'
 
     def __init__(self):
         super().__init__()
-        # self.__controller = UserController()
         self.__connection = Connection()
 
     def get(self, **condition):
