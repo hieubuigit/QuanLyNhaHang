@@ -17,6 +17,7 @@ class BillController:
             results = Billing.select().where(Billing.createdDate.year == by_date.year
                                              and Billing.createdDate.month == by_date.month
                                              and Billing.createdDate.day == by_date.day)
+
             bills.extend(results)
         except peewee.InternalError as px:
             print(str(px))

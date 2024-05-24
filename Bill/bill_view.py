@@ -51,15 +51,15 @@ class BillView:
         self.t.heading("total_money", text="Tổng Tền")
         self.t.tag_configure("normal", background="white")
         self.t.tag_configure("blue", background="lightblue")
-        self.__inser_column_values()
+        self.__insert_column_values()
 
     def change_date_reload_view(self):
         for item in self.t.get_children():
             self.t.delete(item)
         if self.date_value.get() != '':
-            self.__inser_column_values(datetime.strptime(self.date_value.get(), "%d/%m/%Y"))
+            self.__insert_column_values(datetime.strptime(self.date_value.get(), "%d/%m/%Y"))
 
-    def __inser_column_values(self, by_date=datetime.now()):
+    def __insert_column_values(self, by_date=datetime.now()):
         my_tag = "blue"
         bills = self.__controller.get_data(by_date)
         for bill in bills:
@@ -71,12 +71,4 @@ class BillView:
                           values=(bill.id, bill.userId, bill.createdDate, bill.customerName, bill.customerPhoneNumber,
                                   bill.tableId, bill.totalMoney),
                           tags=my_tag)
-
-# if __name__ == '__main__':
-#     root = tk.Tk()
-#     root.resizable(True, True)
-#     root.state('zoomed')  # full screen
-#     root.title("Restaurant BILL")
-#     home = BillView(root)
-#     root.mainloop()
 
