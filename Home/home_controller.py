@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+import customtkinter
 
 from Home.home_View import HomeView
 
@@ -14,10 +15,12 @@ class HomeController:
 
 
 if __name__ == '__main__':
+    customtkinter.set_appearance_mode("light")
     root = tk.Tk()
     root.resizable(True, True)
     root.state('zoomed')  # full screen
     root.title("Restaurant Information")
+
     style = ttk.Style()
     style.theme_use('default')
     home = HomeController(root)
