@@ -1,6 +1,6 @@
 from tkcalendar import DateEntry
 
-user_profile = {}
+user_profile = {} # User
 import tkinter as tk
 from tkinter import END, ttk
 
