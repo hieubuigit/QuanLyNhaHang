@@ -1,27 +1,28 @@
 from peewee import *
 from datetime import date, datetime
-from database.connection import Connection
+from entities import models
+from entities.models import *
 
-class User(Model):
-    id = PrimaryKeyField()
-    userCode = CharField()
-    firstName = CharField()
-    lastName = CharField()
-    birthDate = DateField()
-    identity = CharField()
-    gender = IntegerField()
-    incomeDate = DateField()
-    phoneNumber = CharField()
-    email = CharField()
-    address = CharField()
-    # Fields for login account
-    userName = CharField()
-    password = CharField()
-    status = IntegerField()
-    type = IntegerField()
-    createdDate = DateTimeField()
-    updatedDate = DateTimeField()
 
+# class User(Model):
+#     id = PrimaryKeyField()
+#     userCode = CharField()
+#     firstName = CharField()
+#     lastName = CharField()
+#     birthDate = DateField()
+#     identity = CharField()
+#     gender = IntegerField()
+#     incomeDate = DateField()
+#     phoneNumber = CharField()
+#     email = CharField()
+#     address = CharField()
+#     # Fields for login account
+#     userName = CharField()
+#     password = CharField()
+#     status = IntegerField()
+#     type = IntegerField()
+#     createdDate = DateTimeField()
+#     updatedDate = DateTimeField()
 
 class UserMapping:
     def __init__(self, **data):
@@ -46,29 +47,11 @@ class UserMapping:
         self.__updatedDate = None
 
 
-class LoginModel:
-    USER_TBL_NAME = 'User'
+class LoginModel(Model):
 
-    def __init__(self):
-        super().__init__()
-        self.__connection = Connection()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    def get(self, **condition):
-        sql = "GetAllUser"
-        params = {**condition}
-        pass
-
-    def insert(self, insert_model):
-        pass
-
-    def update(self, id, update_model):
-        pass
-
-    def delete(self, id):
-        pass
-
-    def get_password_hash(self, user_name):
-        sql = f"SELECT * FROM user where UserName = '{user_name}'"
-        self.__connection.cursor.execute(sql)
-        record = self.__connection.cursor.fetchone()
-        return record
+    def get_user_by_user_name(self, user_name):
+        query: User = User.get(User.user_name == user_name)
+        return query
