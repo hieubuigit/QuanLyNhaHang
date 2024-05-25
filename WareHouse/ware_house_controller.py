@@ -3,6 +3,7 @@ from tkinter import messagebox
 
 import peewee
 
+from WareHouse.discount_controller import DiscountController
 from WareHouse.product_model import Product
 from WareHouse.ware_house_view import WareHouseView
 from database.connection import Connection
@@ -101,3 +102,16 @@ class WareHouseController:
     def update_and_reload(self, id, name, price, unit, quantity, capacity, alcohol, product_type, image):
         self.__update_product_to_db(id, name, price, unit, quantity, capacity, alcohol, product_type, image)
         self.get_data()
+
+    def nav_discount_page(self, root):
+        self._discount_page = DiscountController(root)
+
+    def add_discount(self):
+        self._discount_page.add_new_and_reload()
+
+    def delete_row_discount(self):
+        self._discount_page.delete_and_reload()
+
+    def update_row_discount(self):
+        self._discount_page.update_and_reload()
+
