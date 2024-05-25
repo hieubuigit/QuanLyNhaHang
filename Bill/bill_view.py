@@ -1,7 +1,10 @@
 from datetime import datetime
 import tkinter as tk
 from tkinter import ttk
+
+import customtkinter
 import ttkbootstrap as bt
+from customtkinter import *
 
 class BillView:
     def __init__(self, window, controller):
@@ -9,29 +12,28 @@ class BillView:
         self.__generate_ui_content(window)
 
     def __generate_ui_content(self, window):
+        customtkinter.set_appearance_mode("light")
         style = ttk.Style()
         style.theme_use('default')
-
-        main_fr = ttk.Frame(window)
+        main_fr = CTkFrame(window)
         main_fr.pack(fill=tk.BOTH, expand=1)
 
-        date_fr = ttk.Frame(main_fr)
+        date_fr = CTkFrame(main_fr, fg_color="transparent")
         date_fr.pack(fill=tk.BOTH, expand=0, pady=10, padx=20)
 
-        lb_date = ttk.Label(date_fr, text="Ngày tạo")
-        lb_date.grid(row=0, column=0)
+        lb_date = CTkLabel(date_fr, text="Ngày tạo")
+        lb_date.grid(row=0, column=0, ipadx=5)
         self.date_value = tk.StringVar()
         self.date_value.set(f"{datetime.now():%d/%m/%Y}")
         self.date_entry = bt.DateEntry(date_fr, dateformat="%d/%m/%Y", bootstyle="primary")
         self.date_entry.entry.configure(textvariable=self.date_value)
         self.date_value.trace('w', lambda name, index, mode, date_value=self.date_value: self.change_date_reload_view())
         self.date_entry.grid(row=0, column=1)
+
+
         self.t = ttk.Treeview(main_fr)
         self.t.pack(fill=tk.BOTH, expand=1, padx=20, pady=10)
-
-        style.configure("Treeview.Heading", background="#000099",
-                              foreground="white")
-
+        style.configure("Treeview.Heading", background="#007BFF", forceground="white", font=("TkDefaultFont", 18))
         self.t["columns"] = ("id", "user_create", "create_date", "customer_name", "customer_phone", "table_num", "total_money")
         self.t["show"] = "headings"
         self.t.column("id", anchor="center", width=80)
