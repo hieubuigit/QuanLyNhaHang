@@ -4,7 +4,7 @@ from entities import models
 from entities.models import *
 
 
-# class User(Model):
+# class User:
 #     id = PrimaryKeyField()
 #     userCode = CharField()
 #     firstName = CharField()

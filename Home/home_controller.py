@@ -1,9 +1,6 @@
-
 import tkinter as tk
 from tkinter import ttk
-
 import customtkinter
-
 from Home.home_View import HomeView
 
 
@@ -11,7 +8,6 @@ class HomeController:
     def __init__(self, root):
         super().__init__()
         view = HomeView(root)
-
 
 
 if __name__ == '__main__':
@@ -25,6 +21,5 @@ if __name__ == '__main__':
     style.theme_use('default')
     home = HomeController(root)
     root.mainloop()
-
 
 # style.theme_use('default') #('blue', 'alt', 'scidsand', 'classic', 'scidblue', 'scidmint', 'scidgreen', 'default', 'scidpink', 'aqua', 'scidgrey', 'scidpurple', 'clam')

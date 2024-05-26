@@ -27,4 +27,20 @@ class UserType(Enum):
 class Action(Enum):
     ADD = 0
     UPDATE = 1
+    DELETE = 2
 
+class Tab(Enum):
+    EMPLOYEE = 0
+    TABLE = 1
+    INVOICE = 2
+    WARE_HOUSE = 3
+    REPORT = 4
+    LOG_OUT = 5
+
+class TabType(Enum):
+    EMPLOYEE = "EMPLOYEE"
+    TABLE = "TABLE"
+    BILL = "BILL"
+    REPORT = "REPORT"
+    LOGOUT = "LOGOUT"
+    WARE_HOUSE = "WARE_HOUSE"

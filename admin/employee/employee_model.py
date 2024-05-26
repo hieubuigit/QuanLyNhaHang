@@ -1,112 +1,58 @@
-from typing import Any
+import bcrypt
+from peewee import *
+from entities.models import User
+from share.utils import Utils
+import datetime
 
-from database.abc_common_db import abcCommonDb
 
+class EmployeeModel(Model):
+    prefix_emp_code = "NV"
 
-class EmployeeModel():
-    def __init__(self):
-        self.__emp_id: Any = None
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    @property
-    def emp_id(self):
-        return self.__emp_id
+    def create_employee_code(self):
+        # Auto create employee id when create add new employee
+        latest_user = (User.select().order_by(User.id.desc()).first())
+        if latest_user.id:
+            emp_id = f"{EmployeeModel.prefix_emp_code}{latest_user.id}"
+            return emp_id
+        return f"{EmployeeModel.prefix_emp_code}{1}"
 
-    @emp_id.setter
-    def emp_id(self, emp_id):
-        self.__emp_id = emp_id
+    def add_new(self, **data):
+        byte_password = bytes(data['password'], "utf-8")
+        password = bcrypt.hashpw(byte_password, bcrypt.gensalt(rounds=10))
+        data['password'] = password
+        data['birth_date'] = Utils.format_date(data['birth_date'])
+        data['income_date'] = Utils.format_date(data['income_date'])
+        data['created_date'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        user = User(**data)
+        result = user.save()
+        return result
 
-    @property
-    def last_name(self):
-        return self.__last_name
+    def get_emp_by_id(self, id):
+        user: User = User.select().where(User.id == id).first()
+        return user
 
-    @last_name.setter
-    def last_name(self, last_name):
-        self.__last_name = last_name
-
-    @property
-    def first_name(self):
-        return self.__first_name
-
-    @first_name.setter
-    def first_name(self, first_name):
-        self.__first_name = first_name
-
-    @property
-    def birthday(self):
-        return self.__birthday
-
-    @birthday.setter
-    def birthday(self, birthday):
-        self.__birthday = birthday
-
-    @property
-    def gender(self):
-        return self.__gender
-
-    @gender.setter
-    def gender(self, gender):
-        self.__gender = gender
-
-    @property
-    def phone_number(self):
-        return self.__phone_number
-
-    @phone_number.setter
-    def phone_number(self, phone_number):
-        self.__phone_number = phone_number
-
-    @property
-    def email(self):
-        return self.__email
-
-    @email.setter
-    def email(self, email):
-        self.__email = email
-
-    @property
-    def basic_salary(self):
-        return self.__basic_salary
-
-    @basic_salary.setter
-    def basic_salary(self, basic_salary):
-        self.__basic_salary = basic_salary
-
-    @property
-    def address(self):
-        return self.__address
-
-    @address.setter
-    def address(self, address):
-        self.__address = address
-
-    @property
-    def material_status(self):
-        return self.__material_status
-
-    @material_status.setter
-    def material_status(self, material_status):
-        self.__material_status = material_status
-
-    @property
-    def avatar_url(self):
-        return self.__avatar_url
-
-    @avatar_url.setter
-    def avatar_url(self, avatar_url):
-        self.__avatar_url = avatar_url
-
-    @property
-    def created_date(self):
-        return self.__created_date
-
-    @created_date.setter
-    def created_date(self, created_date):
-        self.__created_date = created_date
-
-    @property
-    def updated_date(self):
-        return self.__updated_date
-
-    @updated_date.setter
-    def updated_date(self, updated_date):
-        self.__updated_date = updated_date
+    def get_employee_list(self, **search_condition):
+        data: list[User] = User.select().order_by(User.first_name.desc())
+        emp_list = list()
+        if data:
+            for idx, user in enumerate(data):
+                emp = list()
+                emp.append(idx + 1)
+                emp.append(user.user_code)
+                emp.append(f"{user.first_name} {user.last_name}")
+                emp.append(user.birth_date)
+                emp.append(user.identity)
+                emp.append(Utils.get_gender(user.gender))
+                emp.append(user.income_date)
+                emp.append(user.phone_number)
+                emp.append(user.email)
+                emp.append(user.address)
+                emp.append(user.user_name)
+                emp.append(user.status)
+                emp.append(user.type)
+                emp.append(user.id)
+                emp_list.append(emp)
+        return emp_list

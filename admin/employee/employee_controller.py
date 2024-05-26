@@ -1,16 +1,36 @@
+from employee_model import EmployeeModel
+from entities.models import User
+
+
 class EmployeeController:
     def __init__(self):
-        pass
+        self.__emp_model = EmployeeModel()
 
-    def save(self, model):
-        print("Save employee")
+    def get_list(self, **search_condition):
+        try:
+            data = self.__emp_model.get_employee_list(**search_condition)
+            return data
+        except Exception as es:
+            print(es)
 
-    def update(self, id, model):
-        print(id)
-        print(model)
+    def save(self, **data):
+        try:
+            saveResult = self.__emp_model.add_new(**data)
+            return saveResult
+        except Exception as es:
+            print(es)
 
     def delete(self, id):
-        print(id)
+        pass
 
-    def search(self, request_model):
-        print(request_model)
+    def get_new_emp_id(self):
+        try:
+            return self.__emp_model.create_employee_code()
+        except Exception as e:
+            print(e)
+
+    def get_emp_by_id(self, id):
+        try:
+            return self.__emp_model.get_emp_by_id(id)
+        except Exception as e:
+            print(e)
