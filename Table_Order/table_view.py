@@ -88,6 +88,7 @@ class TableView:
                     btn.pack(fill=tk.BOTH, expand=1)
 
 
+
     def update_data_table(self):
         pass
 

@@ -81,7 +81,6 @@ class LoginView:
                 return
             self.__login_page.pack_forget()
             homepage = HomeView(self.__parent)
-            # tab_controls = TabControls(self.__parent)
 
 
 if __name__ == '__main__':

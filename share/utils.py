@@ -1,9 +1,10 @@
 import customtkinter as ctk
-from tkcalendar import DateEntry
+# from tkcalendar import DateEntry
 from entities.models import User
 import tkinter as tk
 import datetime
 from share.common_config import UserType, Gender
+from ttkbootstrap import DateEntry
 
 
 class Utils:
@@ -12,7 +13,7 @@ class Utils:
     user_profile = User()
 
     user_type = ("Admin", "Bình thường")
-    gender = ("Nam", "Nữ")
+    gender = ("Nam", "Nữ", "Khác")
 
     def __init__(self):
         pass
@@ -38,7 +39,10 @@ class Utils:
         frame_item = ctk.CTkFrame(master=parent)
         my_label = ctk.CTkLabel(frame_item, text=kw["lbl"], justify=ctk.LEFT)
         my_label.pack(**Utils.label_pack_style)
-        my_entry = ctk.CTkEntry(master=frame_item)
+        if "type" in kw and kw["type"] == "password":
+            my_entry = ctk.CTkEntry(master=frame_item, show="*")
+        else:
+            my_entry = ctk.CTkEntry(master=frame_item)
         my_entry.pack(**Utils.entry_pack_style)
         frame_item.pack(**Utils.sub_frame_style)
         return my_entry
@@ -46,9 +50,9 @@ class Utils:
     @staticmethod
     def date_picker_component(parent, kw: dict):
         frame_item = ctk.CTkFrame(master=parent)
-        label = ctk.CTkLabel(frame_item, text=kw['lbl'])
+        label = ctk.CTkLabel(master=frame_item, text=kw['lbl'])
         label.pack(**Utils.label_pack_style)
-        date_picker = DateEntry(master=frame_item, dateformat='%d/%m/%Y', date_pattern='dd/mm/yyyy')
+        date_picker = DateEntry(master=frame_item, dateformat="%d/%m/%Y")
         date_picker.pack(**Utils.entry_pack_style)
         frame_item.pack(**Utils.sub_frame_style)
         return date_picker
@@ -68,9 +72,9 @@ class Utils:
 
     @staticmethod
     def get_account_type_str(user_type_enum):
-        if user_type_enum == UserType.ADMIN:
+        if user_type_enum == UserType.ADMIN.value:
             return Utils.user_type[0]
-        elif user_type_enum == UserType.NORMAL:
+        elif user_type_enum == UserType.NORMAL.value:
             return Utils.user_type[1]
 
     @staticmethod
@@ -79,4 +83,6 @@ class Utils:
             return Utils.gender[0]
         elif gender_enum == Gender.FEMALE.value:
             return Utils.gender[1]
+        elif gender_enum == Gender.OTHER.value:
+            return Utils.gender[2]
         return None

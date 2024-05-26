@@ -8,7 +8,7 @@
   "CTkFrame": {
     "corner_radius": 6,
     "border_width": 0,
-    "fg_color": ["gray86", "gray17"],
+    "fg_color": ["white", "white"],
     "top_fg_color": ["gray81", "gray20"],
     "border_color": ["gray65", "gray28"]
   },
@@ -23,7 +23,7 @@
   },
   "CTkLabel": {
     "corner_radius": 0,
-    "fg_color": "transparent",
+    "fg_color": "white",
     "text_color": ["gray10", "#DCE4EE"]
   },
   "CTkEntry": {

@@ -4,11 +4,11 @@ from Bill.bill_controller import BillController
 from Report.report_view import ReportView
 from Table_Order.table_controller import TableController
 from WareHouse.ware_house_controller import WareHouseController
-from WareHouse.ware_house_view import WareHouseView
 from admin.logout.logout_controller import LogoutController
 from employee_view import EmployeeView
 from customtkinter import *
 from share.common_config import TabType
+import os
 
 
 class HomeView():
@@ -36,7 +36,7 @@ class HomeView():
         header_view.pack(fill="both", expand=0)
         self.tab_bar_view = ttk.Frame(header_view)
         self.tab_bar_view.pack(side="left")
-        avt_default = CTkImage(Image.open("../assets/avatar_default_man.png").resize((35, 35)))
+        avt_default = self.get_image_file("../assets/avatar_default_man.png")
 
         profile_btn = CTkButton(header_view, text="Admin director", image=avt_default, corner_radius=0,
                                 bg_color="white", fg_color="black")
@@ -124,7 +124,8 @@ class HomeView():
             self.tab_bar_view.grid_columnconfigure(i, weight=1)
 
     def employee_page(self, main_fr):
-        # add employee frame
+        # add employee fram
+        self.__root.style = ttk.Style()
         empl_page_fr = EmployeeView(main_fr)
 
     def table_page(self, main_fr):
@@ -210,3 +211,17 @@ class HomeView():
     def __set_ui_default_logout_tab(self):
         ic_logout_default = CTkImage(Image.open("../assets/logout.png"), size=HomeView.size_icon_tab)
         self.logout_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_logout_default)
+    
+
+    def get_image_file(self, path_file:str):
+        try:
+            if path_file == "": return
+            path = ""
+            if os.path.exists(path_file):
+                path = path_file
+            else:
+                path = f"../{path_file}"
+            if os.path.exists(path):
+                return CTkImage(Image.open(path).resize(HomeView.size_icon_tab))
+        except Exception as ex:
+            print(ex)

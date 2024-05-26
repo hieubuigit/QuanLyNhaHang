@@ -186,6 +186,7 @@ class WareHouseView:
         image_lb.grid(row=6, column=0, sticky=(tk.N, tk.W, tk.S), pady=entry_padding, padx=entry_padding)
         img_table = CTkImage(Image.open("../assets/add.png"), size=(50, 50))
 
+
         self.add_img_btn = CTkButton(option_fr, text="", image=img_table, width=100, height=100, corner_radius=5,
                                     border_color="green", border_width=1, command=lambda: self.show_file_dialog(),
                                     anchor="c", fg_color="white", hover_color="white")
