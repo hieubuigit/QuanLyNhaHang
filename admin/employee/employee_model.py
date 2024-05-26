@@ -56,3 +56,14 @@ class EmployeeModel(Model):
                 emp.append(user.id)
                 emp_list.append(emp)
         return emp_list
+
+    def update_by_id(self, id, new_data):
+        new_data['birth_date'] = Utils.format_date(new_data['birth_date'])
+        new_data['income_date'] = Utils.format_date(new_data['income_date'])
+        new_data['updated_date'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        query = User.update(**new_data).where(User.id == id)
+        return query.execute()
+
+    def delete_by_id(self, id):
+        query = User.delete().where(User.id == id)
+        return query.execute()

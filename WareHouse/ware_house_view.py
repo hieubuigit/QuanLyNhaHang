@@ -178,7 +178,7 @@ class WareHouseView:
 
         image_lb = CTkLabel(option_fr, text="Hình ảnh")
         image_lb.grid(row=6, column=0, sticky=(tk.N, tk.W, tk.S), pady=entry_padding, padx=entry_padding)
-        img_table = ImageTk.PhotoImage(Image.open("../assets/ic_table_visible.png").resize((100, 100)))
+        img_table = ImageTk.PhotoImage(Image.open("../../assets/ic_table_visible.png").resize((100, 100)))
 
         self.add_img_btn = CTkButton(option_fr, text="", image=img_table, width=100, height=100, corner_radius=5,
                                    border_color="green", border_width=1, command=lambda: self.show_file_dialog(),

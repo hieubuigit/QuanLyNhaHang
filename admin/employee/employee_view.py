@@ -46,42 +46,46 @@ class EmployeeView:
 
         # Add button
         add_button = ctk.CTkButton(action_frame,
-                                text="Thêm",
-                                width=100,
-                                fg_color="blue",
-                                command=lambda: self.init_add_or_update_popup(container, Action.ADD))
+                                   text="Thêm",
+                                   width=100,
+                                   fg_color="blue",
+                                   command=lambda: self.init_add_or_update_popup(container, Action.ADD))
         add_button.pack(side=tk.LEFT, padx=10, pady=10, anchor="w")
 
         # Update button
         update_btn = ctk.CTkButton(action_frame,
-                               text="Cập nhật",
-                               width=100,
-                               fg_color="green",
-                                command=lambda: self.init_add_or_update_popup(container, Action.UPDATE))
+                                   text="Cập nhật",
+                                   width=100,
+                                   fg_color="green",
+                                   command=lambda: self.init_add_or_update_popup(container, Action.UPDATE))
         update_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="w")
 
         # Delete button
         delete_btn = ctk.CTkButton(action_frame,
-                               text="Xoá",
-                               width=100,
-                               fg_color="red",
-                                command = lambda: self.delete_item())
+                                   text="Xoá",
+                                   width=100,
+                                   fg_color="red",
+                                   command=lambda: self.delete_item())
         delete_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="w")
 
         # Search controls
         search_frame = ctk.CTkFrame(action_frame)
         search_ent = ctk.CTkEntry(master=search_frame, width=500)
-        search_ent.pack(side=tk.LEFT, fill='none', anchor='e', expand=True ,padx=5, pady=5)
+        search_ent.pack(side=tk.LEFT, fill='none', anchor='e', expand=True, padx=5, pady=5)
         search_btn = ctk.CTkButton(search_frame,
-                               text="Tìm",
-                               width=100,
-                               fg_color="purple",
-                                command=lambda: self.search(search_ent.get()))
+                                   text="Tìm",
+                                   width=100,
+                                   fg_color="purple",
+                                   command=lambda: self.search(search_ent.get()))
         search_btn.pack(side=tk.LEFT, fill='x', anchor=tk.W, expand=False)
         search_frame.pack(side=tk.LEFT, expand=True, anchor='center', fill=tk.X, ipadx=5, ipady=5, padx=5, pady=5)
         return action_frame
 
     def init_add_or_update_popup(self, parent: ctk.CTkFrame, action: Action):
+
+        if action == Action.UPDATE and self.__id_selected < 1:
+            return
+
         # Create add new or update employee information popup
         top = ctk.CTkToplevel(parent)
 
@@ -90,9 +94,9 @@ class EmployeeView:
         top.resizable(True, False)
 
         emp_frame = ctk.CTkFrame(top, width=700)
-        column1 = ctk.CTkFrame(emp_frame)
-        column2 = ctk.CTkFrame(emp_frame)
-        column3 = ctk.CTkFrame(emp_frame)
+        column1 = ctk.CTkFrame(emp_frame, fg_color=Utils.WHITE)
+        column2 = ctk.CTkFrame(emp_frame, fg_color=Utils.WHITE)
+        column3 = ctk.CTkFrame(emp_frame, fg_color=Utils.WHITE)
 
         # Column 1;
         emp_info_lbl = ctk.CTkLabel(column1, text="Thông tin nhân viên: ", font=('TkDefaultFont', 11, 'bold'))
@@ -107,9 +111,11 @@ class EmployeeView:
         if action == Action.ADD:
             new_emp_id = self.__controller.get_new_emp_id()
             emp_id_var.set(new_emp_id)
-            self.__add_or_update_form['employee_id'] = ctk.CTkEntry(master=emp_id_frm, state=tk.DISABLED, textvariable=emp_id_var)
+            self.__add_or_update_form['employee_id'] = ctk.CTkEntry(master=emp_id_frm, state=tk.DISABLED,
+                                                                    textvariable=emp_id_var)
         if action == Action.UPDATE:
-            self.__add_or_update_form['employee_id'] = ctk.CTkEntry(master=emp_id_frm, state=tk.DISABLED, textvariable=emp_id_var)
+            self.__add_or_update_form['employee_id'] = ctk.CTkEntry(master=emp_id_frm, state=tk.DISABLED,
+                                                                    textvariable=emp_id_var)
 
         self.__add_or_update_form['employee_id'].pack(**Utils.entry_pack_style)
         emp_id_frm.pack(**Utils.sub_frame_style)
@@ -128,13 +134,13 @@ class EmployeeView:
         gender_lbl = ctk.CTkLabel(gender_frm, text="Giới tính: ")
         gender_lbl.pack(**Utils.label_pack_style)
         self.__add_or_update_form['male_rad'] = ctk.CTkRadioButton(gender_frm, text='Nam', value=Gender.MALE.value,
-                                   variable=self.__add_or_update_form['gender'])
+                                                                   variable=self.__add_or_update_form['gender'])
         self.__add_or_update_form['male_rad'].pack(side=tk.LEFT, anchor="center", fill=tk.BOTH, expand=True)
         self.__add_or_update_form['female_rad'] = ctk.CTkRadioButton(gender_frm, text='Nữ', value=Gender.FEMALE.value,
-                                     variable=self.__add_or_update_form['gender'])
+                                                                     variable=self.__add_or_update_form['gender'])
         self.__add_or_update_form['female_rad'].pack(side=tk.LEFT, anchor="center", fill=tk.BOTH, expand=True)
         self.__add_or_update_form['other_rad'] = ctk.CTkRadioButton(gender_frm, text='Khác', value=Gender.OTHER.value,
-                                    variable=self.__add_or_update_form['gender'])
+                                                                    variable=self.__add_or_update_form['gender'])
         self.__add_or_update_form['other_rad'].pack(side=tk.LEFT, anchor='center', fill=tk.BOTH, expand=True)
         gender_frm.pack(**Utils.radio_group_style)
 
@@ -148,7 +154,8 @@ class EmployeeView:
         account_info_lbl.pack(**Utils.heading_group_pack)
 
         self.__add_or_update_form['username_ent'] = Utils.input_component(column3, {'lbl': "Tên tài khoản: "})
-        self.__add_or_update_form['password_ent'] = Utils.input_component(column3, {'lbl': "Mật khẩu: "})
+        self.__add_or_update_form['password_ent'] = Utils.input_component(column3,
+                                                                          {'lbl': "Mật khẩu: ", "type": "password"})
 
         # Account status
         self.__add_or_update_form['status'] = tk.StringVar()
@@ -156,11 +163,13 @@ class EmployeeView:
 
         status_lbl = ctk.CTkLabel(status_frm, text="Trạng thái tài khoản: ")
         status_lbl.pack(**Utils.label_pack_style)
-        self.__add_or_update_form['active_rad'] = ctk.CTkRadioButton(status_frm, text='Hoạt động', value=UserActive.ACTIVE.value,
-                                     variable=self.__add_or_update_form['status'])
+        self.__add_or_update_form['active_rad'] = ctk.CTkRadioButton(status_frm, text='Hoạt động',
+                                                                     value=UserActive.ACTIVE.value,
+                                                                     variable=self.__add_or_update_form['status'])
         self.__add_or_update_form['active_rad'].pack(side=tk.TOP, anchor="w")
-        self.__add_or_update_form['inactive_rad'] = ctk.CTkRadioButton(status_frm, text='Không hoạt động', value=UserActive.INACTIVE.value,
-                                       variable=self.__add_or_update_form['status'])
+        self.__add_or_update_form['inactive_rad'] = ctk.CTkRadioButton(status_frm, text='Không hoạt động',
+                                                                       value=UserActive.INACTIVE.value,
+                                                                       variable=self.__add_or_update_form['status'])
         self.__add_or_update_form['inactive_rad'].pack(side=tk.TOP, anchor='w')
         status_frm.pack(**Utils.entry_pack_style)
 
@@ -173,7 +182,7 @@ class EmployeeView:
         # Set data for entry on update form
         if action == Action.UPDATE:
             emp_by_id = self.__controller.get_emp_by_id(self.__id_selected)
-            self.set_value_for_entry(emp_by_id)
+            self.set_value_for_widget(emp_by_id)
 
         column1.pack(side=tk.LEFT, fill='x', expand=True, anchor='n')
         column2.pack(side=tk.LEFT, fill='x', expand=True, anchor='n')
@@ -188,70 +197,80 @@ class EmployeeView:
             save_or_update_txt = "Thêm"
         button_grp = ctk.CTkFrame(top)
         save_or_update_btn = ctk.CTkButton(button_grp,
-                                       text=save_or_update_txt,
-                                       width=10,
-                                       fg_color="blue",
-                                       command=self.save_data)
+                                           text=save_or_update_txt,
+                                           width=10,
+                                           fg_color="blue",
+                                           command=lambda: self.save_data(action))
         save_or_update_btn.pack(side=tk.LEFT, padx=10, pady=10, expand=False)
 
         # Clear button
         clear_btn = ctk.CTkButton(button_grp,
-                              text="Làm sạch",
-                              width=10,
-                              fg_color="gray")
+                                  text="Làm sạch",
+                                  width=10,
+                                  fg_color="gray")
         clear_btn.bind("<Button>", self.clear_data())
         clear_btn.pack(side=tk.LEFT, padx=10, pady=10, expand=True)
         button_grp.pack(side=tk.TOP, padx=10, pady=10, anchor="center", fill=tk.BOTH, expand=False)
 
-    def set_value_for_entry(self, data):
+    def set_value_for_widget(self, data):
         if data:
-            self.set_value_for_widget('employee_id', data.user_code)
-            self.set_value_for_widget('first_name_ent', data.first_name)
-            self.set_value_for_widget('last_name_ent', data.last_name)
-            self.set_value_for_widget('birthday_dpk', data.birth_date)
-            self.set_value_for_widget('identity_ent', data.identity)
-            # self.set_value_for_widget('gender', Utils.get_gender(data.gender))
+            self.set_value_for_entry('employee_id', data.user_code, is_disabled=True)
+            self.set_value_for_entry('first_name_ent', data.first_name)
+            self.set_value_for_entry('last_name_ent', data.last_name)
+            self.set_value_for_date_entry('birthday_dpk', data.birth_date)
+            self.set_value_for_entry('identity_ent', data.identity)
+            self.set_value_for_radio_btn(data.gender, 0)
+            self.set_value_for_date_entry('income_date_dpk', data.income_date)
+            self.set_value_for_entry('phone_number_ent', data.phone_number)
+            self.set_value_for_entry('email_ent', data.email)
+            self.set_value_for_entry('address_ent', data.address)
+            self.set_value_for_entry('username_ent', data.user_name)
+            self.set_value_for_entry('password_ent', data.password)
+            self.set_value_for_radio_btn(data.status, 1)
+            self.set_value_for_combobox('type_cbo', Utils.get_account_type_str(data.type))
 
-            # self.__add_or_update_form['gender'].set(Utils.get_gender(data.gender))
+    def set_value_for_combobox(self, widget_name: str, new_value):
+        self.__add_or_update_form[widget_name].set(new_value)
 
-
-            self.set_value_for_widget('income_date_dpk', data.income_date)
-            self.set_value_for_widget('phone_number_ent', data.phone_number)
-            self.set_value_for_widget('email_ent', data.email)
-            self.set_value_for_widget('address_ent', data.address)
-            self.set_value_for_widget('username_ent', data.user_name)
-            self.set_value_for_widget('password_ent', data.password)
-            self.set_value_for_widget('status', data.status)
-            self.set_value_for_widget('type_cbo', Utils.get_account_type_str(data.type))
+    def set_value_for_date_entry(self, widget_name: str, new_value):
+        self.__add_or_update_form[widget_name].set_date(new_value)
 
     def set_value_for_radio_btn(self, value, rad_type):
         # rad_type is gender (0) or status(1)
-        print("gender:", value)
         if rad_type == 0:
-            if value == Gender.MALE:
+            if value == Gender.MALE.value:
                 self.__add_or_update_form['male_rad'].select()
-            elif value == Gender.FEMALE:
+            elif value == Gender.FEMALE.value:
                 self.__add_or_update_form['female_rad'].select()
-            elif value == Gender.OTHER:
+            elif value == Gender.OTHER.value:
                 self.__add_or_update_form['other_rad'].select()
         elif rad_type == 1:
-            if value == UserActive.ACTIVE:
+            if value == UserActive.ACTIVE.value:
                 self.__add_or_update_form['active_rad'].select()
-            elif value == UserActive.INACTIVE:
+            elif value == UserActive.INACTIVE.value:
                 self.__add_or_update_form['inactive_rad'].select()
 
-
-
-
-    def set_value_for_entry(self, widget_name:str, new_value):
+    def set_value_for_entry(self, widget_name: str, new_value, is_disabled=False):
+        if is_disabled:
+            self.__add_or_update_form[widget_name].configure(state='normal')
         self.__add_or_update_form[widget_name].delete(0, ctk.END)
         self.__add_or_update_form[widget_name].insert(0, new_value)
+        if is_disabled:
+            self.__add_or_update_form[widget_name].configure(state='disabled')
 
     def delete_item(self):
-        print("Delete item")
+        result = self.__controller.delete(self.__id_selected)
+        if result == 1:
+            self.__id_selected = -1
+            self.reload_tree_data()
+            tkMsgBox.showinfo("Thông báo", f"Xoá thành công!")
+        else:
+            self.reload_tree_data()
+            tkMsgBox.showinfo("Thông báo", f"Xoá thất bại!")
+        print(self.__id_selected)
 
     def search(self, keyword: str):
-       print("keyword: ", keyword)
+        print("keyword: ", keyword)
 
     def clear_data(self):
         pass
@@ -259,7 +278,7 @@ class EmployeeView:
     def validation_add_or_update_form(self, **form_data):
         pass
 
-    def save_data(self):
+    def save_data(self, action: Action):
         employeeId = self.__add_or_update_form['employee_id'].get()
         firstName = self.__add_or_update_form['first_name_ent'].get()
         lastName = self.__add_or_update_form['last_name_ent'].get()
@@ -289,15 +308,21 @@ class EmployeeView:
                 "status": status,
                 "type": Utils.get_account_type_value(type)}
         self.validation_add_or_update_form(**data)
-        if self.__controller.save(**data) == 1:
-            tkMsgBox.showinfo("Thông báo", "Thêm thành công!")
-        else:
-            tkMsgBox.showinfo("Thông báo", "Thêm thất bại!")
 
-    def set_data_entry(self, field, data):
-        pass
-        # self.employee_fields[field].delete(0, END)
-        # self.employee_fields[field].insert(0, data)
+        result = None
+        result_msg = ""
+        if action == Action.ADD:
+            result_msg = "Thêm"
+            result = self.__controller.save(**data)
+        elif action == Action.UPDATE:
+            result_msg = "Cập nhật"
+            result = self.__controller.update(self.__id_selected, data)
+        if result == 1:
+            self.reload_tree_data()
+            tkMsgBox.showinfo("Thông báo", f"{result_msg} thành công!")
+        else:
+            self.reload_tree_data()
+            tkMsgBox.showinfo("Thông báo", f"{result_msg} thất bại!")
 
     def on_row_selected(self, event):
         for item in self.__tree.selection():
@@ -343,14 +368,22 @@ class EmployeeView:
         self.__tree.tag_configure('odd', background='#E8E8E8')
         self.__tree.tag_configure('even', background='#DFDFDF')
 
-        # Fill data to tree
-        emp_list = self.__controller.get_list()
-        if len(emp_list) > 0:
-            for emp in emp_list:
-                self.__tree.insert('', tk.END, values=emp)
+        self.load_tree_data()
 
         # Bind event when row selected
         self.__tree.bind("<<TreeviewSelect>>", self.on_row_selected)
+
+    def load_tree_data(self):
+        # Fill data to tree
+        emp_list = self.__controller.get_list()
+        if emp_list is not None and len(emp_list) > 0:
+            for emp in emp_list:
+                self.__tree.insert('', tk.END, values=emp)
+
+    def reload_tree_data(self):
+        for record in self.__tree.get_children():
+            self.__tree.delete(record)
+        self.load_tree_data()
 
     def init_view(self, parent: ctk.CTkFrame):
 

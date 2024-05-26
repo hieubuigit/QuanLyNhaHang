@@ -75,7 +75,7 @@ class TableView:
                     print(tables[index])
                     num_table = tables[index].tableNum
                     self.grid_content.grid_columnconfigure(j, weight=1)
-                    img_table = ImageTk.PhotoImage(Image.open("../assets/ic_table_visible.png").resize(
+                    img_table = ImageTk.PhotoImage(Image.open("../../assets/ic_table_visible.png").resize(
                         (image_size, image_size)))
                     btn = CTkButton(self.grid_content, text=num_table, image=img_table, anchor="c", compound="bottom",
                                     corner_radius=0, fg_color="white", text_color="blue",
@@ -85,9 +85,6 @@ class TableView:
                     btn.configure(image=img_table)
                     btn.bind("<Button-2>", lambda e, t=tables[index]: self.__show_context_popup(event=e, tableSelected=t))
                     btn.grid(row=i, column=j, sticky="nsew", padx=5, pady=5, ipadx=column_width // 4, ipady=row_height // 4)
-
-
-
 
     def update_data_table(self):
         pass
