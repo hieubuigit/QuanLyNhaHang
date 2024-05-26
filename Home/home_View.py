@@ -3,6 +3,7 @@ from PIL import Image
 from Bill.bill_controller import BillController
 from Report.report_view import ReportView
 from Table_Order.table_controller import TableController
+from WareHouse.ware_house_controller import WareHouseController
 from WareHouse.ware_house_view import WareHouseView
 from admin.logout.logout_controller import LogoutController
 from employee_view import EmployeeView
@@ -15,12 +16,7 @@ class HomeView:
     size_icon_tab = (28, 28)
 
     def __init__(self, window):
-        self.style = ttk.Style()
-        self.style.theme_use('default')
-        self.style.configure('Custom.Normal.TButton', background='white', foreground='black', font=('Roboto', 24), borderwidth=0)
-        self.style.configure('Custom.CLicked.TButton', background='blue', foreground='white', font=('Roboto', 24))
         self.__root = window
-
         # Tạo frame thanh tab bar
         self.__generate_ui_header(window)
 
@@ -100,7 +96,7 @@ class HomeView:
         page = BillController(main_fr)
 
     def warehouse_page(self, main_fr):
-        warehouse_fr = WareHouseView(main_fr)
+        warehouse_fr = WareHouseController(main_fr)
 
     def report_page(self, main_fr):
         report_fr = ReportView(main_fr)
