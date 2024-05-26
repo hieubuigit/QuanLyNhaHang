@@ -25,7 +25,7 @@ class HomeView:
         self.__main_fr.pack(fill="both", expand=1)
 
         # Mặc định chọn tab 1: Hiển thị page nhân viên
-        ic_empl_click = CTkImage(Image.open("../../assets/ic_employees_click.png").resize(HomeView.size_icon_tab))
+        ic_empl_click = CTkImage(Image.open("../assets/ic_employees_click.png").resize(HomeView.size_icon_tab))
         self.empl_btn.configure(image=ic_empl_click, fg_color="blue", text_color="white")
         self.employee_page(self.__main_fr)
 
@@ -34,7 +34,7 @@ class HomeView:
         header_view.pack(fill="both", expand=0)
         self.tab_bar_view = ttk.Frame(header_view)
         self.tab_bar_view.pack(side="left")
-        avt_default = CTkImage(Image.open("../../assets/avatar_default_man.png").resize((35, 35)))
+        avt_default = CTkImage(Image.open("../assets/avatar_default_man.png").resize((35, 35)))
 
         profile_btn = CTkButton(header_view, text="Admin director", image=avt_default, corner_radius=0,
                                 bg_color="white", fg_color="black")
@@ -128,55 +128,55 @@ class HomeView:
             fr.destroy()
             self.__root.update()
         if button_type == TabType.EMPLOYEE:
-            ic_empl_click = CTkImage(Image.open("../../assets/ic_employees_click.png").resize(HomeView.size_icon_tab))
+            ic_empl_click = CTkImage(Image.open("../assets/ic_employees_click.png").resize(HomeView.size_icon_tab))
             self.empl_btn.configure(image=ic_empl_click, fg_color="blue", text_color="white")
             self.employee_page(self.__main_fr)
         elif button_type == TabType.TABLE:
-            ic_table = CTkImage(Image.open("../../assets/ic_table_white.png").resize(HomeView.size_icon_tab))
+            ic_table = CTkImage(Image.open("../assets/ic_table_white.png").resize(HomeView.size_icon_tab))
             self.table_btn.configure(image=ic_table, fg_color="blue", text_color="white")
             self.table_page(self.__main_fr)
         elif button_type == TabType.BILL:
-            ic_bill_click = CTkImage(Image.open("../../assets/ic_bill_click.png").resize(HomeView.size_icon_tab))
+            ic_bill_click = CTkImage(Image.open("../assets/ic_bill_click.png").resize(HomeView.size_icon_tab))
             self.bill_btn.configure(fg_color="blue", text_color="white", image=ic_bill_click)
             self.bill_page(self.__main_fr)
         elif button_type == TabType.WARE_HOUSE:
             ic_ware_house_click = CTkImage(
-                Image.open("../../assets/ic_house_click.png").resize(HomeView.size_icon_tab))
+                Image.open("../assets/ic_house_click.png").resize(HomeView.size_icon_tab))
             self.ware_house_btn.configure(fg_color="blue", text_color="white", image=ic_ware_house_click)
             self.ware_house_btn.image = ic_ware_house_click
             self.warehouse_page(self.__main_fr)
         elif button_type == TabType.REPORT:
-            ic_report_click = CTkImage(Image.open("../../assets/ic_chart_click.png").resize(HomeView.size_icon_tab))
+            ic_report_click = CTkImage(Image.open("../assets/ic_chart_click.png").resize(HomeView.size_icon_tab))
             self.report_btn.configure(fg_color="blue", text_color="white", image=ic_report_click)
             self.report_btn.image = ic_report_click
             self.report_page(self.__main_fr)
         elif button_type == TabType.LOGOUT:
-            ic_logout_click = CTkImage(Image.open("../../assets/ic_logout_click.png").resize(HomeView.size_icon_tab))
+            ic_logout_click = CTkImage(Image.open("../assets/ic_logout_click.png").resize(HomeView.size_icon_tab))
             self.logout_btn.configure(fg_color="blue", text_color="white", image=ic_logout_click)
             self.logout_btn.image = ic_logout_click
             self.on_logout_click()
 
     def __set_ui_default_emp_tab(self):
-        ic_emp_default = CTkImage(Image.open("../../assets/ic_employees_default.png").resize(HomeView.size_icon_tab))
+        ic_emp_default = CTkImage(Image.open("../assets/ic_employees_default.png").resize(HomeView.size_icon_tab))
         self.empl_btn.configure(image=ic_emp_default, text_color="black", fg_color="white")
 
     def __set_ui_default_table_tab(self):
-        ic_table_default = CTkImage(Image.open("../../assets/ic_table.png").resize(HomeView.size_icon_tab))
+        ic_table_default = CTkImage(Image.open("../assets/ic_table.png").resize(HomeView.size_icon_tab))
         self.table_btn.configure(text_color="black", fg_color="white", image=ic_table_default)
 
     def __set_ui_default_bill_tab(self):
-        ic_bill_default = CTkImage(Image.open("../../assets/ic_bill_default.png").resize(HomeView.size_icon_tab))
+        ic_bill_default = CTkImage(Image.open("../assets/ic_bill_default.png").resize(HomeView.size_icon_tab))
         self.bill_btn.configure(text_color="black", fg_color="white", image=ic_bill_default)
         self.bill_btn.image = ic_bill_default
 
     def __set_ui_default_ware_house_tab(self):
-        ic_ware_house_default = CTkImage(Image.open("../../assets/ic_house_default.png").resize(HomeView.size_icon_tab))
+        ic_ware_house_default = CTkImage(Image.open("../assets/ic_house_default.png").resize(HomeView.size_icon_tab))
         self.ware_house_btn.configure(text_color="black", fg_color="white", image=ic_ware_house_default)
 
     def __set_ui_default_report_tab(self):
-        ic_report_default = CTkImage(Image.open("../../assets/ic_chart_default.png").resize(HomeView.size_icon_tab))
+        ic_report_default = CTkImage(Image.open("../assets/ic_chart_default.png").resize(HomeView.size_icon_tab))
         self.report_btn.configure(text_color="black", fg_color="white", image=ic_report_default)
 
     def __set_ui_default_logout_tab(self):
-        ic_logout_default = CTkImage(Image.open("../../assets/ic_logout_default.png").resize(HomeView.size_icon_tab))
+        ic_logout_default = CTkImage(Image.open("../assets/ic_logout_default.png").resize(HomeView.size_icon_tab))
         self.logout_btn.configure(text_color="black", fg_color="white", image=ic_logout_default)
