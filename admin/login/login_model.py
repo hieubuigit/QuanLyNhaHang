@@ -4,26 +4,6 @@ from entities import models
 from entities.models import *
 
 
-# class User:
-#     id = PrimaryKeyField()
-#     userCode = CharField()
-#     firstName = CharField()
-#     lastName = CharField()
-#     birthDate = DateField()
-#     identity = CharField()
-#     gender = IntegerField()
-#     incomeDate = DateField()
-#     phoneNumber = CharField()
-#     email = CharField()
-#     address = CharField()
-#     # Fields for login account
-#     userName = CharField()
-#     password = CharField()
-#     status = IntegerField()
-#     type = IntegerField()
-#     createdDate = DateTimeField()
-#     updatedDate = DateTimeField()
-
 class UserMapping:
     def __init__(self, **data):
         self.__id = 0

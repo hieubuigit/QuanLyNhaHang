@@ -69,7 +69,7 @@ class EmployeeView:
         delete_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="w")
 
         # Search controls
-        search_frame = ctk.CTkFrame(action_frame)
+        search_frame = ctk.CTkFrame(action_frame, fg_color=Utils.WHITE)
         search_ent = ctk.CTkEntry(master=search_frame, width=500)
         search_ent.pack(side=tk.LEFT, fill='none', anchor='e', expand=True, padx=5, pady=5)
         search_btn = ctk.CTkButton(search_frame,
@@ -99,7 +99,7 @@ class EmployeeView:
         column3 = ctk.CTkFrame(emp_frame, fg_color=Utils.WHITE)
 
         # Column 1;
-        emp_info_lbl = ctk.CTkLabel(column1, text="Thông tin nhân viên: ", font=('TkDefaultFont', 11, 'bold'))
+        emp_info_lbl = ctk.CTkLabel(column1, text="Thông tin nhân viên: ", font=('TkDefaultFont', 16, 'bold'))
         emp_info_lbl.pack(**Utils.heading_group_pack)
 
         # Employee Id
@@ -130,7 +130,7 @@ class EmployeeView:
 
         # Gender
         self.__add_or_update_form['gender'] = tk.StringVar()
-        gender_frm = ctk.CTkFrame(column2)
+        gender_frm = ctk.CTkFrame(column2, width=200)
         gender_lbl = ctk.CTkLabel(gender_frm, text="Giới tính: ")
         gender_lbl.pack(**Utils.label_pack_style)
         self.__add_or_update_form['male_rad'] = ctk.CTkRadioButton(gender_frm, text='Nam', value=Gender.MALE.value,
@@ -142,7 +142,9 @@ class EmployeeView:
         self.__add_or_update_form['other_rad'] = ctk.CTkRadioButton(gender_frm, text='Khác', value=Gender.OTHER.value,
                                                                     variable=self.__add_or_update_form['gender'])
         self.__add_or_update_form['other_rad'].pack(side=tk.LEFT, anchor='center', fill=tk.BOTH, expand=True)
-        gender_frm.pack(**Utils.radio_group_style)
+        gender_style = Utils.radio_group_style
+        gender_style['pady'] = (3, 20)
+        gender_frm.pack(**gender_style)
 
         self.__add_or_update_form['income_date_dpk'] = Utils.date_picker_component(column2, {'lbl': "Ngày vào làm: "})
         self.__add_or_update_form['phone_number_ent'] = Utils.input_component(column2, {'lbl': "Số điện thoại: "})
@@ -150,7 +152,7 @@ class EmployeeView:
         self.__add_or_update_form['address_ent'] = Utils.input_component(column2, {'lbl': "Địa chỉ: "})
 
         # Column 3:
-        account_info_lbl = ctk.CTkLabel(column3, text="Thông tin tài khoản: ", font=('TkDefaultFont', 11, 'bold'))
+        account_info_lbl = ctk.CTkLabel(column3, text="Thông tin tài khoản: ", font=('TkDefaultFont', 16, 'bold'))
         account_info_lbl.pack(**Utils.heading_group_pack)
 
         self.__add_or_update_form['username_ent'] = Utils.input_component(column3, {'lbl': "Tên tài khoản: "})
@@ -195,7 +197,9 @@ class EmployeeView:
             save_or_update_txt = "Cập nhật"
         else:
             save_or_update_txt = "Thêm"
-        button_grp = ctk.CTkFrame(top)
+
+        button_container = ctk.CTkFrame(master=top, fg_color=Utils.WHITE)
+        button_grp = ctk.CTkFrame(button_container, fg_color=Utils.WHITE)
         save_or_update_btn = ctk.CTkButton(button_grp,
                                            text=save_or_update_txt,
                                            width=10,
@@ -210,7 +214,8 @@ class EmployeeView:
                                   fg_color="gray")
         clear_btn.bind("<Button>", self.clear_data())
         clear_btn.pack(side=tk.LEFT, padx=10, pady=10, expand=True)
-        button_grp.pack(side=tk.TOP, padx=10, pady=10, anchor="center", fill=tk.BOTH, expand=False)
+        button_grp.pack(side=tk.TOP, padx=10, pady=10, anchor="center", fill=tk.NONE, expand=False)
+        button_container.pack(side=tk.TOP, fill=tk.BOTH, expand=False)
 
     def set_value_for_widget(self, data):
         if data:
@@ -270,22 +275,58 @@ class EmployeeView:
         print(self.__id_selected)
 
     def search(self, keyword: str):
-        print("keyword: ", keyword)
+        if keyword is None:
+            return
+        else:
+            search_cond = {"keyword": keyword}
+            emp_list = self.__controller.get_list(**search_cond)
+
+            for record in self.__tree.get_children():
+                self.__tree.delete(record)
+
+            if emp_list is not None and len(emp_list) > 0:
+                for emp in emp_list:
+                    self.__tree.insert('', tk.END, values=emp)
 
     def clear_data(self):
-        pass
+        for widget in self.__add_or_update_form:
+            if isinstance(widget, ctk.CTkEntry):
+                widget.delete(0, tk.END)
+            elif isinstance(widget, ctk.CTkRadioButton):
+                widget.deselect()
+            elif isinstance(widget, ctk.CTkComboBox):
+                widget.set("")
 
     def validation_add_or_update_form(self, **form_data):
-        pass
+        err_msg = ""
+        if "first_name" in form_data and form_data["first_name"] == "":
+            err_msg += "Vui lòng nhập trường Họ \n"
+        if "last_name" in form_data and form_data["last_name"] == "":
+            err_msg += "Vui lòng nhập trường Tên \n"
+        if "identity" in form_data and form_data["identity"] == "":
+            err_msg += "Vui lòng nhập trường CCCD/CMND \n"
+        if "gender" in form_data and form_data["gender"] == "":
+            err_msg += "Vui lòng chọn trường Giới tính \n"
+        if "phone_number" in form_data and form_data["phone_number"] == "":
+            err_msg += "Vui lòng nhập trường Số điện thoại\n"
+        if "user_name" in form_data and form_data["user_name"] == "":
+            err_msg += "Vui lòng nhập trường Tên người dùng \n"
+        if "password" in form_data and form_data["password"] == "":
+            err_msg += "Vui lòng nhập trường Mật khẩu \n"
+        if err_msg != "":
+            tkMsgBox.showwarning("Chú ý", err_msg)
+            return False
+        else:
+            return True
 
     def save_data(self, action: Action):
         employeeId = self.__add_or_update_form['employee_id'].get()
         firstName = self.__add_or_update_form['first_name_ent'].get()
         lastName = self.__add_or_update_form['last_name_ent'].get()
-        birthday = self.__add_or_update_form['birthday_dpk'].get()
+        birthday = self.__add_or_update_form['birthday_dpk'].get_date()
         identity = self.__add_or_update_form['identity_ent'].get()
         gender = self.__add_or_update_form['gender'].get()
-        incomeDate = self.__add_or_update_form['income_date_dpk'].get()
+        incomeDate = self.__add_or_update_form['income_date_dpk'].var.get()
         phone_number = self.__add_or_update_form['phone_number_ent'].get()
         email = self.__add_or_update_form['email_ent'].get()
         address = self.__add_or_update_form['address_ent'].get()
@@ -307,7 +348,8 @@ class EmployeeView:
                 'password': password,
                 "status": status,
                 "type": Utils.get_account_type_value(type)}
-        self.validation_add_or_update_form(**data)
+        if self.validation_add_or_update_form(**data):
+            return
 
         result = None
         result_msg = ""
@@ -374,7 +416,7 @@ class EmployeeView:
         self.__tree.bind("<<TreeviewSelect>>", self.on_row_selected)
 
     def load_tree_data(self):
-        # Fill data to tree
+        # Get all record and show in page
         emp_list = self.__controller.get_list()
         if emp_list is not None and len(emp_list) > 0:
             for emp in emp_list:
@@ -386,7 +428,7 @@ class EmployeeView:
         self.load_tree_data()
 
     def init_view(self, parent: ctk.CTkFrame):
-
+        # Init view, include action form and grid
         parent.columnconfigure(0, weight=1)
         parent.rowconfigure(0, weight=1)
         parent.rowconfigure(1, weight=9)
@@ -404,7 +446,6 @@ class EmployeeView:
         tree_scroll.grid(row=1, column=0, sticky="ew")
 
         self.__tree.configure(xscrollcommand=tree_scroll.set)
-
         wrap_grid.grid(row=1, column=0, sticky='ns')
 
 

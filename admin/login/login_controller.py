@@ -2,6 +2,7 @@ import tkinter.messagebox as msgBox
 import bcrypt
 
 from admin.login.login_model import LoginModel
+from share.common_config import UserActive
 from share.utils import Utils
 
 
@@ -12,6 +13,8 @@ class LoginController:
     def login(self, username, password):
         try:
             user = self.__user_model.get_user_by_user_name(username)
+            if user.status == UserActive.INACTIVE:
+                msgBox.showerror("Lỗi", 'Tên tài khoản hiện đang khoá vui lòng liên hệ admin!')
             if user.password == '':
                 msgBox.showerror("Lỗi", 'Tên tài khoản hoặc mật khẩu của bạn không đúng!')
                 return None
