@@ -71,22 +71,28 @@ class WareHouseView:
     def __ui_left_view(self, root, main_fr):
         left_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
         left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=10, pady=10)
-        revenue_btn = CTkButton(left_fr, text="Sản phẩm", width=150, corner_radius=0,
+        gr_btn = CTkFrame(left_fr)
+        gr_btn.pack()
+        revenue_btn = CTkButton(gr_btn, text="Sản phẩm", width=150, corner_radius=0,
                                 command=lambda: self.__switch_page(root, page=StatePage.Product))
         revenue_btn.grid(row=0, column=0)
-        salary_btn = CTkButton(left_fr, text="Khuyến mãi", width=150, corner_radius=0,
+        salary_btn = CTkButton(gr_btn, text="Khuyến mãi", width=150, corner_radius=0,
                                command=lambda: self.__switch_page(root, page=StatePage.Discount))
         salary_btn.grid(row=1, column=0, pady=2)
+
+        # building_img = CTkImage(
+        #     light_image=Image.open('../assets/view-building-with-cartoon-style-architecture.jpg'),
+        #     dark_image=Image.open('../assets/view-building-with-cartoon-style-architecture.jpg'))
+        # building_lbl = CTkLabel(master=left_fr, text="", image=building_img)
+        # building_lbl.image = building_img
+        # building_lbl.pack(side=tk.LEFT, expand=tk.YES, fill=tk.BOTH)
 
     def ui_right_content_view(self):
         style = ttk.Style()
         style.theme_use('default')
-        table_fr = CTkFrame(self.right_fr, border_width=1, corner_radius=0)
-        table_fr.grid(row=1, column=0, sticky=(tk.N, tk.E))
-        self.right_fr.columnconfigure(0, weight=1)
 
-        self.tv = ttk.Treeview(table_fr)
-        self.tv.pack(fill=tk.BOTH, expand=1, padx=10, pady=10, side="right")
+        self.tv = ttk.Treeview(self.right_fr)
+        self.tv.pack(fill=tk.X, expand=0, padx=10, pady=10)
 
         style.configure("Treeview.Heading", background="#007BFF", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = ("id", "name", "unit", "price", "quantity", "capacity",
@@ -121,10 +127,10 @@ class WareHouseView:
         self.tv.bind("<<TreeviewSelect>>", lambda e: self.item_treeview_selected())
 
         line = CTkFrame(self.right_fr, height=1, fg_color="gray")
-        line.grid(row=2, column=0, sticky=(tk.N, tk.E, tk.W, tk.S), pady=3)
+        line.pack(fill=tk.X, expand=0)
 
         option_fr = CTkFrame(self.right_fr, corner_radius=0)
-        option_fr.grid(row=3, column=0, sticky=(tk.N, tk.E, tk.S), padx=20)
+        option_fr.pack(expand=0, pady=10)
         option_fr.columnconfigure(0, weight=1)
         option_fr.rowconfigure(0, weight=1)
 

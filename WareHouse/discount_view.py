@@ -20,7 +20,7 @@ class DiscountView:
     def create_ui_view(self, root):
             style = ttk.Style()
             style.theme_use('default')
-            main_fr = CTkFrame(root, border_width=1, border_color="gray", fg_color="green")
+            main_fr = CTkFrame(root, border_width=1, border_color="gray")
             main_fr.pack(fill=tk.BOTH, expand=1)
 
             self.tv = ttk.Treeview(main_fr)
