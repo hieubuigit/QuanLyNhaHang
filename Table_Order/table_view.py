@@ -16,6 +16,8 @@ class StatusTable(Enum):
     DISABLED = "Đã đặt"
     AVAILABLE = "Trống"
 class TableView:
+
+    hover_color = "LightSkyBlue"
     def __init__(self, window, controller, tables, user_type):
         self.__controller = controller
         self.__user_type = user_type
@@ -47,7 +49,7 @@ class TableView:
         self.vertical_scrollbar.configure(command=self.canvas.yview)
 
         # Tạo một frame con để chứa bàn
-        self.grid_content = CTkFrame(self.canvas)
+        self.grid_content = CTkFrame(self.canvas, fg_color="white")
         self.canvas.create_window((0, 0), window=self.grid_content, anchor="nw")
 
         # Thêm ds bàn vào grid content
@@ -75,18 +77,15 @@ class TableView:
                     print(tables[index])
                     num_table = tables[index].tableNum
                     self.grid_content.grid_columnconfigure(j, weight=1)
-                    img_table = ImageTk.PhotoImage(Image.open("../assets/ic_table_visible.png").resize(
-                        (image_size, image_size)))
-                    btn = CTkButton(self.grid_content, text=num_table, image=img_table, anchor="c", compound="bottom",
-                                    corner_radius=0, fg_color="white", text_color="blue",
-                                    font=CTkFont("Roboto", 24, 'bold'),
-                                    command=lambda t=tables[index]: self.selected_table(window, t))
-
-                    btn.configure(image=img_table)
+                    table_fr = CTkFrame(self.grid_content)
+                    table_fr.grid(row=i, column=j, sticky="nsew", padx=5, pady=5,
+                                  ipadx=column_width // 4,
+                                  ipady=row_height // 4)
+                    img_table = CTkImage(Image.open("../assets/ic_table_visible.png"), size=(image_size, image_size))
+                    btn = CTkLabel(table_fr, text=num_table, image=img_table, font=CTkFont("TkDefaultFont", 18))
+                    btn.bind("<Button-1>", lambda e, t=tables[index]: self.selected_table(window, t))
                     btn.bind("<Button-2>", lambda e, t=tables[index]: self.__show_context_popup(event=e, tableSelected=t))
-                    btn.grid(row=i, column=j, sticky="nsew", padx=5, pady=5, ipadx=column_width // 4, ipady=row_height // 4)
-
-
+                    btn.pack(fill=tk.BOTH, expand=1)
 
 
     def update_data_table(self):

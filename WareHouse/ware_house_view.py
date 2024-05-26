@@ -184,11 +184,11 @@ class WareHouseView:
 
         image_lb = CTkLabel(option_fr, text="Hình ảnh")
         image_lb.grid(row=6, column=0, sticky=(tk.N, tk.W, tk.S), pady=entry_padding, padx=entry_padding)
-        img_table = ImageTk.PhotoImage(Image.open("../assets/ic_table_visible.png").resize((100, 100)))
+        img_table = CTkImage(Image.open("../assets/add.png"), size=(50, 50))
 
         self.add_img_btn = CTkButton(option_fr, text="", image=img_table, width=100, height=100, corner_radius=5,
-                                   border_color="green", border_width=1, command=lambda: self.show_file_dialog(),
-                                   anchor="c", fg_color="white", hover_color="white")
+                                    border_color="green", border_width=1, command=lambda: self.show_file_dialog(),
+                                    anchor="c", fg_color="white", hover_color="white")
         self.add_img_btn.grid(row=6, column=1, pady=entry_padding)
 
     def show_file_dialog(self):
@@ -207,7 +207,7 @@ class WareHouseView:
                     with io.BytesIO() as output:
                         thumbnail.save(output, format="JPEG")  # Chọn định dạng hình ảnh tuỳ thích
                         self.thumbnail_bytes = output.getvalue()
-                        image = ImageTk.PhotoImage(img.resize((100, 100)))
+                        image = CTkImage(img, size=(100, 100))
                         self.add_img_btn.configure(image=image)
             except IOError as e:
                 print("Error:", e)
@@ -224,8 +224,6 @@ class WareHouseView:
             self.__controller.nav_discount_page(self.right_fr)
         else:
             self.product_page()
-
-
 
     def item_treeview_selected(self):
         selected_items = self.tv.selection()
@@ -313,7 +311,6 @@ class WareHouseView:
             for p in products:
                 # ("id", "name", "unit", "price", "quantity", "capacity",
                 #  "alcohol", "type", "create_date", "update_date")
-
                 self.tv.insert("", "end", iid=p.id, text=p.id,
                                values=(p.id, p.name, p.unit, p.price, p.quantity,
                                        p.capacity, p.alcohol, p.productType, p.createdDate, p.updatedDate))

@@ -11,10 +11,13 @@ from customtkinter import *
 from share.common_config import TabType
 
 
-class HomeView:
+class HomeView():
     button_type_clicked = TabType.EMPLOYEE
-    size_icon_tab = (28, 28)
-
+    size_icon_tab = (38, 38)
+    hover_color_tab = "LightSkyBlue"
+    fg_color_tab_click = "#0033FF"
+    fg_color_tab_normal = "#FFFFFF"
+    radius_tab = 5
     def __init__(self, window):
         self.__root = window
         # Tạo frame thanh tab bar
@@ -25,8 +28,7 @@ class HomeView:
         self.__main_fr.pack(fill="both", expand=1)
 
         # Mặc định chọn tab 1: Hiển thị page nhân viên
-        ic_empl_click = CTkImage(Image.open("../assets/ic_employees_click.png").resize(HomeView.size_icon_tab))
-        self.empl_btn.configure(image=ic_empl_click, fg_color="blue", text_color="white")
+        self.empl_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
         self.employee_page(self.__main_fr)
 
     def __generate_ui_header(self, window):
@@ -41,43 +43,81 @@ class HomeView:
         profile_btn.pack(side="right", anchor="ne")
 
         # Tạo các button trong thanh tab bar
-        self.empl_btn = CTkButton(self.tab_bar_view, text="Nhân viên", compound='left', corner_radius=0,
-                                  fg_color="white",
+        font_tab = CTkFont("TkDefaultFont", 16, 'bold')
+
+        self.empl_btn = CTkButton(self.tab_bar_view, text="Nhân viên", compound='top',
+                                  corner_radius=HomeView.radius_tab,
+                                  fg_color=HomeView.fg_color_tab_click,
+                                  font=font_tab,
+                                  hover_color=HomeView.hover_color_tab,
+                                  border_width=1,
+                                  border_color="#0033CC",
                                   command=lambda: self.__action_tab(button_type=TabType.EMPLOYEE))
-        self.empl_btn.grid(row=0, column=0, sticky='ns')
+        self.empl_btn.grid(row=0, column=0, sticky='ns', ipady=3)
         self.__set_ui_default_emp_tab()
 
         # Table tab
         self.table_btn = CTkButton(self.tab_bar_view, text="Đặt bàn",
-                                   compound='left', corner_radius=0,
+                                   corner_radius=HomeView.radius_tab,
+                                   fg_color=HomeView.fg_color_tab_normal,
+                                   font=font_tab,
+                                   hover_color=HomeView.hover_color_tab,
+                                   border_width=1,
+                                   border_color="#0033CC",
+                                   compound='top',
                                    command=lambda: self.__action_tab(button_type=TabType.TABLE))
 
-        self.table_btn.grid(row=0, column=1, sticky='ns')
+        self.table_btn.grid(row=0, column=1, sticky='ns', ipady=3)
         self.__set_ui_default_table_tab()
 
         # Invoice tab
-        self.bill_btn = CTkButton(self.tab_bar_view, text="Hóa đơn", corner_radius=0, compound='left',
+        self.bill_btn = CTkButton(self.tab_bar_view, text="Hóa đơn",
+                                  compound='top',
+                                  corner_radius=HomeView.radius_tab,
+                                  fg_color=HomeView.fg_color_tab_normal,
+                                  font=font_tab,
+                                  hover_color=HomeView.hover_color_tab,
+                                  border_width=1,
+                                  border_color="#0033CC",
                                   command=lambda: self.__action_tab(button_type=TabType.BILL))
-        self.bill_btn.grid(row=0, column=2, sticky='ns')
+        self.bill_btn.grid(row=0, column=2, sticky='ns', ipady=3)
         self.__set_ui_default_bill_tab()
 
         # Warehouse tab
-        self.ware_house_btn = CTkButton(self.tab_bar_view, text="Nhà kho", corner_radius=0,
-                                        compound='left',
+        self.ware_house_btn = CTkButton(self.tab_bar_view, text="Nhà kho",
+                                        corner_radius=HomeView.radius_tab,
+                                        fg_color=HomeView.fg_color_tab_normal,
+                                        font=font_tab,
+                                        hover_color=HomeView.hover_color_tab,
+                                        border_width=1,
+                                        border_color="#0033CC",
+                                        compound="top",
                                         command=lambda: self.__action_tab(button_type=TabType.WARE_HOUSE))
-        self.ware_house_btn.grid(row=0, column=3, sticky='ns')
+        self.ware_house_btn.grid(row=0, column=3, sticky='ns', ipady=3)
         self.__set_ui_default_ware_house_tab()
 
         # Report button
-        self.report_btn = CTkButton(self.tab_bar_view, text="Báo cáo", corner_radius=0,
-                                    compound='left', command=lambda: self.__action_tab(button_type=TabType.REPORT))
-        self.report_btn.grid(row=0, column=4, sticky='ns')
+        self.report_btn = CTkButton(self.tab_bar_view, text="Báo cáo",
+                                    corner_radius=HomeView.radius_tab,
+                                    fg_color=HomeView.fg_color_tab_normal,
+                                    font=font_tab,
+                                    hover_color=HomeView.hover_color_tab,
+                                    border_width=1,
+                                    border_color="#0033CC",
+                                    compound='top', command=lambda: self.__action_tab(button_type=TabType.REPORT))
+        self.report_btn.grid(row=0, column=4, sticky='ns', ipady=3)
         self.__set_ui_default_report_tab()
 
         # Logout tab
-        self.logout_btn = CTkButton(self.tab_bar_view, text="Đăng xuất", corner_radius=0,
-                                    compound='left', command=lambda: self.__action_tab(button_type=TabType.LOGOUT))
-        self.logout_btn.grid(row=0, column=5, sticky='ns')
+        self.logout_btn = CTkButton(self.tab_bar_view, text="Đăng xuất",
+                                    corner_radius=HomeView.radius_tab,
+                                    fg_color=HomeView.fg_color_tab_normal,
+                                    font=font_tab,
+                                    hover_color=HomeView.hover_color_tab,
+                                    border_width=1,
+                                    border_color="#0033CC",
+                                    compound='top', command=lambda: self.__action_tab(button_type=TabType.LOGOUT))
+        self.logout_btn.grid(row=0, column=5, sticky='ns', ipady=3)
         self.__set_ui_default_logout_tab()
 
         for i in range(len(self.tab_bar_view.winfo_children())):
@@ -128,55 +168,45 @@ class HomeView:
             fr.destroy()
             self.__root.update()
         if button_type == TabType.EMPLOYEE:
-            ic_empl_click = CTkImage(Image.open("../assets/ic_employees_click.png").resize(HomeView.size_icon_tab))
-            self.empl_btn.configure(image=ic_empl_click, fg_color="blue", text_color="white")
+            self.empl_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
             self.employee_page(self.__main_fr)
         elif button_type == TabType.TABLE:
-            ic_table = CTkImage(Image.open("../assets/ic_table_white.png").resize(HomeView.size_icon_tab))
-            self.table_btn.configure(image=ic_table, fg_color="blue", text_color="white")
+            self.table_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
             self.table_page(self.__main_fr)
         elif button_type == TabType.BILL:
-            ic_bill_click = CTkImage(Image.open("../assets/ic_bill_click.png").resize(HomeView.size_icon_tab))
-            self.bill_btn.configure(fg_color="blue", text_color="white", image=ic_bill_click)
+            self.bill_btn.configure(text_color="white", fg_color=HomeView.fg_color_tab_click)
             self.bill_page(self.__main_fr)
         elif button_type == TabType.WARE_HOUSE:
-            ic_ware_house_click = CTkImage(
-                Image.open("../assets/ic_house_click.png").resize(HomeView.size_icon_tab))
-            self.ware_house_btn.configure(fg_color="blue", text_color="white", image=ic_ware_house_click)
-            self.ware_house_btn.image = ic_ware_house_click
+            self.ware_house_btn.configure(text_color="white", fg_color=HomeView.fg_color_tab_click)
             self.warehouse_page(self.__main_fr)
         elif button_type == TabType.REPORT:
-            ic_report_click = CTkImage(Image.open("../assets/ic_chart_click.png").resize(HomeView.size_icon_tab))
-            self.report_btn.configure(fg_color="blue", text_color="white", image=ic_report_click)
-            self.report_btn.image = ic_report_click
+            self.report_btn.configure(text_color="white", fg_color=HomeView.fg_color_tab_click)
             self.report_page(self.__main_fr)
         elif button_type == TabType.LOGOUT:
-            ic_logout_click = CTkImage(Image.open("../assets/ic_logout_click.png").resize(HomeView.size_icon_tab))
-            self.logout_btn.configure(fg_color="blue", text_color="white", image=ic_logout_click)
-            self.logout_btn.image = ic_logout_click
+            self.logout_btn.configure(text_color="white", fg_color=HomeView.fg_color_tab_click)
             self.on_logout_click()
 
     def __set_ui_default_emp_tab(self):
-        ic_emp_default = CTkImage(Image.open("../assets/ic_employees_default.png").resize(HomeView.size_icon_tab))
-        self.empl_btn.configure(image=ic_emp_default, text_color="black", fg_color="white")
+        ic_emp_default = CTkImage(Image.open("../assets/ic_tab_employees.png"), size=HomeView.size_icon_tab)
+        self.empl_btn.configure(image=ic_emp_default, text_color="black", fg_color=HomeView.fg_color_tab_normal)
 
     def __set_ui_default_table_tab(self):
-        ic_table_default = CTkImage(Image.open("../assets/ic_table.png").resize(HomeView.size_icon_tab))
-        self.table_btn.configure(text_color="black", fg_color="white", image=ic_table_default)
+        ic_table_default = CTkImage(Image.open("../assets/restaurant.ico"), size=HomeView.size_icon_tab)
+        self.table_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_table_default)
 
     def __set_ui_default_bill_tab(self):
-        ic_bill_default = CTkImage(Image.open("../assets/ic_bill_default.png").resize(HomeView.size_icon_tab))
-        self.bill_btn.configure(text_color="black", fg_color="white", image=ic_bill_default)
+        ic_bill_default = CTkImage(Image.open("../assets/invoice.png"), size=HomeView.size_icon_tab)
+        self.bill_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_bill_default)
         self.bill_btn.image = ic_bill_default
 
     def __set_ui_default_ware_house_tab(self):
-        ic_ware_house_default = CTkImage(Image.open("../assets/ic_house_default.png").resize(HomeView.size_icon_tab))
-        self.ware_house_btn.configure(text_color="black", fg_color="white", image=ic_ware_house_default)
+        ic_ware_house_default = CTkImage(Image.open("../assets/delivery.png"), size=HomeView.size_icon_tab)
+        self.ware_house_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_ware_house_default)
 
     def __set_ui_default_report_tab(self):
-        ic_report_default = CTkImage(Image.open("../assets/ic_chart_default.png").resize(HomeView.size_icon_tab))
-        self.report_btn.configure(text_color="black", fg_color="white", image=ic_report_default)
+        ic_report_default = CTkImage(Image.open("../assets/pie-chart.png"), size=HomeView.size_icon_tab)
+        self.report_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_report_default)
 
     def __set_ui_default_logout_tab(self):
-        ic_logout_default = CTkImage(Image.open("../assets/ic_logout_default.png").resize(HomeView.size_icon_tab))
-        self.logout_btn.configure(text_color="black", fg_color="white", image=ic_logout_default)
+        ic_logout_default = CTkImage(Image.open("../assets/logout.png"), size=HomeView.size_icon_tab)
+        self.logout_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_logout_default)
