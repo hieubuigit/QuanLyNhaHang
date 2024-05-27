@@ -13,9 +13,9 @@ import os
 
 class HomeView():
     button_type_clicked = TabType.EMPLOYEE
-    size_icon_tab = (38, 38)
+    size_icon_tab = (35, 35)
     hover_color_tab = "LightSkyBlue"
-    fg_color_tab_click = "#0033FF"
+    fg_color_tab_click = "DodgerBlue1"
     fg_color_tab_normal = "#FFFFFF"
     radius_tab = 5
     def __init__(self, window):
@@ -44,7 +44,7 @@ class HomeView():
 
         # Tạo các button trong thanh tab bar
         font_tab = CTkFont("TkDefaultFont", 16, 'bold')
-
+        ipadx_tab_button = 10
         self.empl_btn = CTkButton(self.tab_bar_view, text="Nhân viên", compound='top',
                                   corner_radius=HomeView.radius_tab,
                                   fg_color=HomeView.fg_color_tab_click,
@@ -53,7 +53,7 @@ class HomeView():
                                   border_width=1,
                                   border_color="#0033CC",
                                   command=lambda: self.__action_tab(button_type=TabType.EMPLOYEE))
-        self.empl_btn.grid(row=0, column=0, sticky='ns', ipady=3)
+        self.empl_btn.grid(row=0, column=0, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
         self.__set_ui_default_emp_tab()
 
         # Table tab
@@ -67,7 +67,7 @@ class HomeView():
                                    compound='top',
                                    command=lambda: self.__action_tab(button_type=TabType.TABLE))
 
-        self.table_btn.grid(row=0, column=1, sticky='ns', ipady=3)
+        self.table_btn.grid(row=0, column=1, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
         self.__set_ui_default_table_tab()
 
         # Invoice tab
@@ -80,7 +80,7 @@ class HomeView():
                                   border_width=1,
                                   border_color="#0033CC",
                                   command=lambda: self.__action_tab(button_type=TabType.BILL))
-        self.bill_btn.grid(row=0, column=2, sticky='ns', ipady=3)
+        self.bill_btn.grid(row=0, column=2, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
         self.__set_ui_default_bill_tab()
 
         # Warehouse tab
@@ -93,7 +93,7 @@ class HomeView():
                                         border_color="#0033CC",
                                         compound="top",
                                         command=lambda: self.__action_tab(button_type=TabType.WARE_HOUSE))
-        self.ware_house_btn.grid(row=0, column=3, sticky='ns', ipady=3)
+        self.ware_house_btn.grid(row=0, column=3, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
         self.__set_ui_default_ware_house_tab()
 
         # Report button
@@ -105,7 +105,7 @@ class HomeView():
                                     border_width=1,
                                     border_color="#0033CC",
                                     compound='top', command=lambda: self.__action_tab(button_type=TabType.REPORT))
-        self.report_btn.grid(row=0, column=4, sticky='ns', ipady=3)
+        self.report_btn.grid(row=0, column=4, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
         self.__set_ui_default_report_tab()
 
         # Logout tab
@@ -117,7 +117,7 @@ class HomeView():
                                     border_width=1,
                                     border_color="#0033CC",
                                     compound='top', command=lambda: self.__action_tab(button_type=TabType.LOGOUT))
-        self.logout_btn.grid(row=0, column=5, sticky='ns', ipady=3)
+        self.logout_btn.grid(row=0, column=5, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
         self.__set_ui_default_logout_tab()
 
         for i in range(len(self.tab_bar_view.winfo_children())):

@@ -28,7 +28,7 @@ class EmployeeView:
                'updated_date')
 
     def __init__(self, parent: ctk.CTkFrame):
-        ctk.set_default_color_theme("../share/theme.json")
+        # ctk.set_default_color_theme("../share/theme.json")
         self.__controller = EmployeeController()
         self.__employee_model = EmployeeModel()
 

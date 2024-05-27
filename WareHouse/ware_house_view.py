@@ -15,6 +15,7 @@ class StatePage(Enum):
     Product = 0
     Discount = 1
 
+
 class WareHouseView:
     def __init__(self, root, controller):
         self.__controller = controller
@@ -43,49 +44,89 @@ class WareHouseView:
         option_group_fr = CTkFrame(header_fr, border_width=0)
         option_group_fr.pack(fill=tk.X, expand=0, side="left", anchor="nw")
 
-        add_btn = CTkButton(option_group_fr, text="Thêm mới", corner_radius=4, border_width=0,
+        add_btn = CTkButton(option_group_fr,
+                            text="Thêm mới",
+                            corner_radius=18,
+                            border_width=0,
+                            height=36,
+                            fg_color="DodgerBlue1",
+                            hover_color="#63B8FF",
+                            text_color="black",
+                            font=CTkFont("TkDefaultFont", 16),
                             command=lambda: self.add_click())
         add_btn.grid(row=0, column=0)
 
-        update_btn = CTkButton(option_group_fr, text="Chỉnh sửa", corner_radius=4, border_width=0,
+        update_btn = CTkButton(option_group_fr,
+                               text="Chỉnh sửa",
+                               corner_radius=18,
+                               border_width=0,
+                               height=36,
+                               fg_color="LimeGreen",
+                               hover_color="#54FF9F",
+                               text_color="black",
+                               font=CTkFont("TkDefaultFont", 16),
                                command=lambda: self.update_click())
         update_btn.grid(row=0, column=1, padx=5)
 
-        delete_btn = CTkButton(option_group_fr, text="Xóa", corner_radius=4, border_width=0,
+        delete_btn = CTkButton(option_group_fr,
+                               text="Xóa",
+                               corner_radius=18,
+                               border_width=0,
+                               height=36,
+                               fg_color="Firebrick1",
+                               hover_color="#FFC0CB",
+                               text_color="black",
+                               font=CTkFont("TkDefaultFont", 16),
                                command=lambda: self.delete_click())
         delete_btn.grid(row=0, column=2)
 
         search_group_fr = CTkFrame(header_fr)
         search_group_fr.pack(fill=tk.X, expand=0, side="right", anchor="ne")
-        search_entry = CTkEntry(search_group_fr, placeholder_text="Nhập thông tin....", placeholder_text_color="gray",
-                                width=370, corner_radius=0, fg_color="white")
+        search_entry = CTkEntry(search_group_fr,
+                                placeholder_text="Nhập thông tin....",
+                                placeholder_text_color="gray",
+                                width=370,
+                                height=35,
+                                corner_radius=6,
+                                fg_color="white")
         search_entry.grid(row=0, column=3, padx=5)
-        search_btn = CTkButton(search_group_fr, text="Tìm kiếm", width=80, corner_radius=4, border_width=0)
+        search_btn = CTkButton(search_group_fr,
+                               text="Tìm kiếm",
+                               corner_radius=6,
+                               border_width=0,
+                               height=36,
+                               width=100,
+                               fg_color="DodgerBlue1",
+                               hover_color="#FFC0CB",
+                               text_color="black",
+                               font=CTkFont("TkDefaultFont", 16))
         search_btn.grid(row=0, column=4)
 
         self.__ui_left_view(root, main_fr)
 
         self.right_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
-        self.right_fr.pack(fill=tk.BOTH, expand=1, side="right")
+        self.right_fr.pack(fill=tk.BOTH, expand=1, side="right", pady=10)
 
     def __ui_left_view(self, root, main_fr):
         left_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
         left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=10, pady=10)
         gr_btn = CTkFrame(left_fr)
         gr_btn.pack()
-        revenue_btn = CTkButton(gr_btn, text="Sản phẩm", width=150, corner_radius=0,
+        revenue_btn = CTkButton(gr_btn,
+                                text="Sản phẩm",
+                                width=150,
+                                height=30,
+                                corner_radius=0,
                                 command=lambda: self.__switch_page(root, page=StatePage.Product))
         revenue_btn.grid(row=0, column=0)
-        salary_btn = CTkButton(gr_btn, text="Khuyến mãi", width=150, corner_radius=0,
+        salary_btn = CTkButton(gr_btn,
+                               text="Khuyến mãi",
+                               width=150,
+                               height=30,
+                               corner_radius=0,
                                command=lambda: self.__switch_page(root, page=StatePage.Discount))
         salary_btn.grid(row=1, column=0, pady=2)
 
-        # building_img = CTkImage(
-        #     light_image=Image.open('../assets/view-building-with-cartoon-style-architecture.jpg'),
-        #     dark_image=Image.open('../assets/view-building-with-cartoon-style-architecture.jpg'))
-        # building_lbl = CTkLabel(master=left_fr, text="", image=building_img)
-        # building_lbl.image = building_img
-        # building_lbl.pack(side=tk.LEFT, expand=tk.YES, fill=tk.BOTH)
 
     def ui_right_content_view(self):
         style = ttk.Style()
@@ -94,7 +135,7 @@ class WareHouseView:
         self.tv = ttk.Treeview(self.right_fr)
         self.tv.pack(fill=tk.X, expand=0, padx=10, pady=10)
 
-        style.configure("Treeview.Heading", background="#007BFF", forceground="white", font=("TkDefaultFont", 18))
+        style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = ("id", "name", "unit", "price", "quantity", "capacity",
                               "alcohol", "type", "create_date", "update_date")
         self.tv["show"] = "headings"
@@ -126,72 +167,80 @@ class WareHouseView:
         self.insert_row_treeview()
         self.tv.bind("<<TreeviewSelect>>", lambda e: self.item_treeview_selected())
 
+        #Setup UI Detail form
+        self.ui_detail_form()
+
+    def ui_detail_form(self):
+        padding_x = 25
+        padding_y = 5
+        entry_width = 300
+        entry_padding_y = 5
+        entry_padding = 8
         line = CTkFrame(self.right_fr, height=1, fg_color="gray")
         line.pack(fill=tk.X, expand=0)
 
-        option_fr = CTkFrame(self.right_fr, corner_radius=0)
+        option_fr = CTkFrame(self.right_fr, corner_radius=10)
         option_fr.pack(expand=0, pady=10)
-        option_fr.columnconfigure(0, weight=1)
-        option_fr.rowconfigure(0, weight=1)
 
-        entry_width = 220
-        entry_padding = 8
-        heading2 = CTkFont("TkDefaultFont", 18, 'bold')
-        title_option = CTkLabel(option_fr, text="Thông tin chi tiết", font=heading2)
-        title_option.grid(row=0, column=0, sticky=(tk.N, tk.S), padx=entry_padding)
+        heading2 = CTkFont("TkDefaultFont", 16, 'bold')
 
-        product_name_lb = CTkLabel(option_fr, text="Tên")
-        product_name_lb.grid(row=1, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
+        detail_lb = CTkLabel(option_fr, text="Thông tin chi tiết", text_color="#000088",
+                             font=heading2)
+        detail_lb.pack(fill=tk.X, expand=0, padx=20, side="top", pady=5)
 
-        product_name_entry = CTkEntry(option_fr, entry_width, textvariable=self.product_name_var)
-        product_name_entry.grid(row=1, column=1, pady=entry_padding)
+        self.sub_fr = CTkFrame(option_fr, fg_color="white")
+        self.sub_fr.pack(fill=tk.X, expand=0, padx=padding_x, pady=padding_y, ipadx=10)
 
-        unit_lb = CTkLabel(option_fr, text="Đơn vị")
-        unit_lb.grid(row=2, column=0, sticky=(tk.N, tk.W), padx=entry_padding, pady=entry_padding)
+        product_name_lb = CTkLabel(self.sub_fr, text="Tên")
+        product_name_lb.grid(row=0, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
 
-        unit_entry = CTkEntry(option_fr, entry_width, textvariable=self.product_unit_var)
-        unit_entry.grid(row=2, column=1)
+        product_name_entry = CTkEntry(self.sub_fr, entry_width, textvariable=self.product_name_var)
+        product_name_entry.grid(row=0, column=1, pady=entry_padding)
 
-        price_lb = CTkLabel(option_fr, text="Giá")
-        price_lb.grid(row=3, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
+        unit_lb = CTkLabel(self.sub_fr, text="Đơn vị")
+        unit_lb.grid(row=1, column=0, sticky=(tk.N, tk.W), padx=entry_padding, pady=entry_padding)
 
-        price_entry = CTkEntry(option_fr, entry_width, textvariable=self.product_price_var)
-        price_entry.grid(row=3, column=1, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
+        unit_entry = CTkEntry(self.sub_fr, entry_width, textvariable=self.product_unit_var)
+        unit_entry.grid(row=1, column=1)
 
-        quantity_lb = CTkLabel(option_fr, text="Số lượng")
-        quantity_lb.grid(row=4, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
+        price_lb = CTkLabel(self.sub_fr, text="Giá")
+        price_lb.grid(row=2, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
 
-        quantity_entry = CTkEntry(option_fr, entry_width, textvariable=self.product_quantity_var)
-        quantity_entry.grid(row=4, column=1, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
+        price_entry = CTkEntry(self.sub_fr, entry_width, textvariable=self.product_price_var)
+        price_entry.grid(row=2, column=1, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
 
-        product_type_lb = CTkLabel(option_fr, text="Loại")
-        product_type_lb.grid(row=5, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
+        quantity_lb = CTkLabel(self.sub_fr, text="Số lượng")
+        quantity_lb.grid(row=3, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
 
-        product_type_cbb = CTkComboBox(option_fr, entry_width, values=["Food", "Drink"], variable=self.product_type_var)
-        product_type_cbb.grid(row=5, column=1, pady=entry_padding, padx=entry_padding)
+        quantity_entry = CTkEntry(self.sub_fr, entry_width, textvariable=self.product_quantity_var)
+        quantity_entry.grid(row=3, column=1, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
 
-        capacity_lb = CTkLabel(option_fr, text="Dung tích")
-        capacity_lb.grid(row=1, column=2, sticky=(tk.N, tk.W), padx=30, pady=entry_padding)
+        product_type_lb = CTkLabel(self.sub_fr, text="Loại")
+        product_type_lb.grid(row=4, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
 
-        capacity_entry = CTkEntry(option_fr, entry_width, textvariable=self.product_capacity_var)
-        capacity_entry.grid(row=1, column=3, padx=entry_padding)
+        product_type_cbb = CTkComboBox(self.sub_fr, entry_width, values=["Food", "Drink"], variable=self.product_type_var)
+        product_type_cbb.grid(row=4, column=1, pady=entry_padding, padx=entry_padding)
 
-        alcohol_lb = CTkLabel(option_fr, text="Nồng độ cồn")
-        alcohol_lb.grid(row=2, column=2, sticky=(tk.N, tk.W), pady=entry_padding, padx=30)
+        capacity_lb = CTkLabel(self.sub_fr, text="Dung tích")
+        capacity_lb.grid(row=0, column=2, sticky=(tk.N, tk.W), padx=30, pady=entry_padding)
 
-        alcohol_entry = CTkEntry(option_fr, entry_width, textvariable=self.product_alcohol_var)
-        alcohol_entry.grid(row=2, column=3, pady=entry_padding, padx=entry_padding)
+        capacity_entry = CTkEntry(self.sub_fr, entry_width, textvariable=self.product_capacity_var)
+        capacity_entry.grid(row=0, column=3)
 
-        image_lb = CTkLabel(option_fr, text="Hình ảnh")
-        image_lb.grid(row=6, column=0, sticky=(tk.N, tk.W, tk.S), pady=entry_padding, padx=entry_padding)
+        alcohol_lb = CTkLabel(self.sub_fr, text="Nồng độ cồn")
+        alcohol_lb.grid(row=1, column=2, sticky=(tk.N, tk.W), pady=entry_padding, padx=30)
+
+        alcohol_entry = CTkEntry(self.sub_fr, entry_width, textvariable=self.product_alcohol_var)
+        alcohol_entry.grid(row=1, column=3, pady=entry_padding)
+
+        image_lb = CTkLabel(self.sub_fr, text="Hình ảnh")
+        image_lb.grid(row=5, column=0, sticky=(tk.N, tk.W, tk.S), pady=entry_padding, padx=entry_padding)
         img_table = CTkImage(Image.open("../assets/add.png"), size=(50, 50))
 
-
-        self.add_img_btn = CTkButton(option_fr, text="", image=img_table, width=100, height=100, corner_radius=5,
-                                    border_color="green", border_width=1, command=lambda: self.show_file_dialog(),
-                                    anchor="c", fg_color="white", hover_color="white")
-        self.add_img_btn.grid(row=6, column=1, pady=entry_padding)
-
+        self.add_img_btn = CTkButton(self.sub_fr, text="", image=img_table, width=100, height=100, corner_radius=5,
+                                     border_color="green", border_width=1, command=lambda: self.show_file_dialog(),
+                                     anchor="c", fg_color="white", hover_color="white")
+        self.add_img_btn.grid(row=5, column=1, pady=entry_padding)
     def show_file_dialog(self):
         self.file_path = filedialog.askopenfilename(title="Chọn hình",
                                                     filetypes=(("jpeg", "*.jpg"), ("png", "*.png")))
@@ -203,7 +252,7 @@ class WareHouseView:
                         img = img.convert("RGB")
                     # Tạo thumbnail
                     thumbnail = img.copy()
-                    thumbnail.thumbnail((100,100))
+                    thumbnail.thumbnail((100, 100))
                     # Chuyển đổi thumbnail thành dạng bytes
                     with io.BytesIO() as output:
                         thumbnail.save(output, format="JPEG")  # Chọn định dạng hình ảnh tuỳ thích
@@ -237,7 +286,7 @@ class WareHouseView:
             self.product_capacity_var.set(item.get("values")[5])
             self.product_alcohol_var.set(item.get("values")[6])
             self.product_type_var.set(item.get("values")[7])
-            get_product_by_id = lambda id:next((item for item in self.__controller.products if item.id == id), None)
+            get_product_by_id = lambda id: next((item for item in self.__controller.products if item.id == id), None)
             produc_item = get_product_by_id(item.get("values")[0])
             if produc_item:
                 image_decode = produc_item.image + b'=' * (-len(produc_item.image) % 4)
@@ -262,7 +311,6 @@ class WareHouseView:
         else:
             self.__controller.add_discount()
 
-
     def update_click(self):
         if self.__current_page == StatePage.Product:
             selected_items = self.tv.selection()
@@ -284,7 +332,6 @@ class WareHouseView:
             self.reload_treeview()
         else:
             self.__controller.update_row_discount()
-
 
     def delete_click(self):
         if self.__current_page == StatePage.Product:
@@ -315,4 +362,3 @@ class WareHouseView:
                 self.tv.insert("", "end", iid=p.id, text=p.id,
                                values=(p.id, p.name, p.unit, p.price, p.quantity,
                                        p.capacity, p.alcohol, p.productType, p.createdDate, p.updatedDate))
-
