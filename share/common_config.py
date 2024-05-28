@@ -16,7 +16,7 @@ class Gender(Enum):
     MALE = 1
     OTHER = 2
 
-class UserActive(Enum):
+class UserStatus(Enum):
     INACTIVE = 0
     ACTIVE = 1
 

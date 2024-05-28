@@ -265,18 +265,18 @@ class BillView:
         valid_text = ""
         is_validate = lambda text: 0 if len(text) == 0 or text.isspace() == 1 else 1
         if not is_validate(self.__creator_name_var.get()):
-            valid_text = f"Vui lòng nhập" + f" {self.creator_name_lb.cget("text")}"
+            valid_text = f"Vui lòng nhập" + f" {self.creator_name_lb.cget('text')}"
         if not is_validate(self.__customer_name_var.get()):
             if len(valid_text) == 0:
-                valid_text = f"Vui lòng nhập" + f" {self.customer_name_lb.cget("text")}"
+                valid_text = f"Vui lòng nhập" + f" {self.customer_name_lb.cget('text')}"
             else:
-                valid_text = valid_text + f", {self.customer_name_lb.cget("text")}"
+                valid_text = valid_text + f", {self.customer_name_lb.cget('text')}"
 
         if not is_validate(self.__money_var.get()):
             if len(valid_text) == 0:
-                valid_text = f"Vui lòng nhập" + f" {self.money_lb.cget("text")}"
+                valid_text = f"Vui lòng nhập" + f" {self.money_lb.cget('text')}"
             else:
-                valid_text = valid_text + f", {self.money_lb.cget("text")}"
+                valid_text = valid_text + f", {self.money_lb.cget('text')}"
 
         if valid_text:
             self.show_validate(valid_text)

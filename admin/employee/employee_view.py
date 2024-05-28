@@ -3,10 +3,11 @@ from tkinter import ttk
 # from ctypes import windll
 from employee_controller import EmployeeController
 from employee_model import EmployeeModel
-from share.common_config import Gender, Action, UserActive
+from share.common_config import Gender, Action, UserStatus
 from share.utils import Utils
 import customtkinter as ctk
 import tkinter.messagebox as tkMsgBox
+import datetime
 
 
 class EmployeeView:
@@ -28,11 +29,11 @@ class EmployeeView:
                'updated_date')
 
     def __init__(self, parent: ctk.CTkFrame):
-        # ctk.set_default_color_theme("../share/theme.json")
+        ctk.set_default_color_theme("../../share/theme.json")
         self.__controller = EmployeeController()
         self.__employee_model = EmployeeModel()
 
-        # Tree
+        # Tree view
         self.__tree = None
         self.__id_selected = -1
 
@@ -166,11 +167,11 @@ class EmployeeView:
         status_lbl = ctk.CTkLabel(status_frm, text="Trạng thái tài khoản: ")
         status_lbl.pack(**Utils.label_pack_style)
         self.__add_or_update_form['active_rad'] = ctk.CTkRadioButton(status_frm, text='Hoạt động',
-                                                                     value=UserActive.ACTIVE.value,
+                                                                     value=UserStatus.ACTIVE.value,
                                                                      variable=self.__add_or_update_form['status'])
         self.__add_or_update_form['active_rad'].pack(side=tk.TOP, anchor="w")
         self.__add_or_update_form['inactive_rad'] = ctk.CTkRadioButton(status_frm, text='Không hoạt động',
-                                                                       value=UserActive.INACTIVE.value,
+                                                                       value=UserStatus.INACTIVE.value,
                                                                        variable=self.__add_or_update_form['status'])
         self.__add_or_update_form['inactive_rad'].pack(side=tk.TOP, anchor='w')
         status_frm.pack(**Utils.entry_pack_style)
@@ -237,8 +238,11 @@ class EmployeeView:
     def set_value_for_combobox(self, widget_name: str, new_value):
         self.__add_or_update_form[widget_name].set(new_value)
 
-    def set_value_for_date_entry(self, widget_name: str, new_value):
-        self.__add_or_update_form[widget_name].set_date(new_value)
+    def set_value_for_date_entry(self, widget_name: str, new_value: datetime.date):
+        frm_date = tk.StringVar()
+        test = new_value.strftime('%d/%m/%Y')
+        frm_date.set(test)
+        self.__add_or_update_form[widget_name].entry.config(text=frm_date)
 
     def set_value_for_radio_btn(self, value, rad_type):
         # rad_type is gender (0) or status(1)
@@ -250,9 +254,9 @@ class EmployeeView:
             elif value == Gender.OTHER.value:
                 self.__add_or_update_form['other_rad'].select()
         elif rad_type == 1:
-            if value == UserActive.ACTIVE.value:
+            if value == UserStatus.ACTIVE.value:
                 self.__add_or_update_form['active_rad'].select()
-            elif value == UserActive.INACTIVE.value:
+            elif value == UserStatus.INACTIVE.value:
                 self.__add_or_update_form['inactive_rad'].select()
 
     def set_value_for_entry(self, widget_name: str, new_value, is_disabled=False):
@@ -264,14 +268,17 @@ class EmployeeView:
             self.__add_or_update_form[widget_name].configure(state='disabled')
 
     def delete_item(self):
-        result = self.__controller.delete(self.__id_selected)
-        if result == 1:
-            self.__id_selected = -1
-            self.reload_tree_data()
-            tkMsgBox.showinfo("Thông báo", f"Xoá thành công!")
-        else:
-            self.reload_tree_data()
-            tkMsgBox.showinfo("Thông báo", f"Xoá thất bại!")
+        # Delete an item from grid
+        answer = tkMsgBox.askyesno("Thông báo", "Bạn có chắc muốn xoá không?")
+        if answer:
+            result = self.__controller.delete(self.__id_selected)
+            if result == 1:
+                self.__id_selected = -1
+                self.reload_tree_data()
+                tkMsgBox.showinfo("Thông báo", f"Xoá thành công!")
+            else:
+                self.reload_tree_data()
+                tkMsgBox.showinfo("Thông báo", f"Xoá thất bại!")
         print(self.__id_selected)
 
     def search(self, keyword: str):
@@ -323,10 +330,10 @@ class EmployeeView:
         employeeId = self.__add_or_update_form['employee_id'].get()
         firstName = self.__add_or_update_form['first_name_ent'].get()
         lastName = self.__add_or_update_form['last_name_ent'].get()
-        birthday = self.__add_or_update_form['birthday_dpk'].get_date()
+        birthday = self.__add_or_update_form['birthday_dpk'].entry.get()
         identity = self.__add_or_update_form['identity_ent'].get()
         gender = self.__add_or_update_form['gender'].get()
-        incomeDate = self.__add_or_update_form['income_date_dpk'].var.get()
+        incomeDate = self.__add_or_update_form['income_date_dpk'].entry.get()
         phone_number = self.__add_or_update_form['phone_number_ent'].get()
         email = self.__add_or_update_form['email_ent'].get()
         address = self.__add_or_update_form['address_ent'].get()
@@ -348,8 +355,8 @@ class EmployeeView:
                 'password': password,
                 "status": status,
                 "type": Utils.get_account_type_value(type)}
-        if self.validation_add_or_update_form(**data):
-            return
+
+        if self.validation_add_or_update_form(**data) == False: return
 
         result = None
         result_msg = ""
@@ -393,14 +400,14 @@ class EmployeeView:
 
         self.__tree.column(EmployeeView.columns[0], width=50, anchor='center')
         self.__tree.column(EmployeeView.columns[1], anchor='center')
-        self.__tree.column(EmployeeView.columns[2], anchor='center')
+        self.__tree.column(EmployeeView.columns[2], anchor='w')
         self.__tree.column(EmployeeView.columns[3], anchor='center')
-        self.__tree.column(EmployeeView.columns[4], anchor='center')
+        self.__tree.column(EmployeeView.columns[4], anchor='w')
         self.__tree.column(EmployeeView.columns[5], anchor='center')
         self.__tree.column(EmployeeView.columns[6], anchor='center')
         self.__tree.column(EmployeeView.columns[7], anchor='center')
         self.__tree.column(EmployeeView.columns[8], anchor='center')
-        self.__tree.column(EmployeeView.columns[9], anchor='center')
+        self.__tree.column(EmployeeView.columns[9], width=300, anchor='w')
         self.__tree.column(EmployeeView.columns[10], anchor='center')
         self.__tree.column(EmployeeView.columns[11], anchor='center')
         self.__tree.column(EmployeeView.columns[12], anchor='center')
@@ -437,16 +444,19 @@ class EmployeeView:
         action_form.grid(column=0, row=0, sticky='nwse')
 
         wrap_grid = ctk.CTkFrame(parent)
-
         self.init_employee_grid_data(wrap_grid)
-        self.__tree.grid(column=0, row=0, sticky='ns')
 
         # Add scroll for grid
-        tree_scroll = ctk.CTkScrollbar(wrap_grid, command=self.__tree.xview, width=200, orientation="horizontal")
-        tree_scroll.grid(row=1, column=0, sticky="ew")
+        tree_scroll_x = ctk.CTkScrollbar(wrap_grid, command=self.__tree.xview, height=15, orientation=ctk.HORIZONTAL)
+        tree_scroll_x.pack(side=ctk.BOTTOM, fill=ctk.X)
+        tree_scroll_y = ctk.CTkScrollbar(wrap_grid, command=self.__tree.yview, width=15, orientation=ctk.VERTICAL)
+        tree_scroll_y.pack(side=ctk.RIGHT, fill=ctk.Y)
 
-        self.__tree.configure(xscrollcommand=tree_scroll.set)
-        wrap_grid.grid(row=1, column=0, sticky='ns')
+        self.__tree.configure(xscrollcommand=tree_scroll_x.set)
+        self.__tree.configure(yscrollcommand=tree_scroll_y.set)
+
+        self.__tree.pack(side=ctk.BOTTOM, fill=tk.BOTH, expand=True)
+        wrap_grid.grid(row=1, column=0, sticky='nsew')
 
 
 if __name__ == '__main__':

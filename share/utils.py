@@ -1,9 +1,8 @@
 import customtkinter as ctk
-# from tkcalendar import DateEntry
 from entities.models import User
 import tkinter as tk
 import datetime
-from share.common_config import UserType, Gender
+from share.common_config import UserType, Gender, UserStatus
 from ttkbootstrap import DateEntry
 
 
@@ -12,8 +11,9 @@ class Utils:
     global user_profile
     user_profile = User()
 
-    user_type = ("Admin", "Bình thường")
+    USER_TYPE = ("Admin", "Bình thường")
     gender = ("Nam", "Nữ", "Khác")
+    ACCOUNT_STATUS = ("Hoạt động", "Không hoạt dộng")
 
     def __init__(self):
         pass
@@ -64,18 +64,26 @@ class Utils:
         return dt.strftime("%Y-%m-%d")
 
     @staticmethod
+    def format_date_entry(date_str):
+        # Format date with d/mm/yyyy to set data for ttkBootstrap DateEntry
+        date_value = date_str.split("-")
+        if len(date_value) == 3:
+            return f"{date_value[2]}/{date_value[1]}/{date_value[0]}/"
+        return ""
+
+    @staticmethod
     def get_account_type_value(str_value):
-        if str_value == Utils.user_type[0]:
+        if str_value == Utils.USER_TYPE[0]:
             return UserType.ADMIN.value
-        elif str_value == Utils.user_type[1]:
+        elif str_value == Utils.USER_TYPE[1]:
             return UserType.NORMAL.value
 
     @staticmethod
     def get_account_type_str(user_type_enum):
         if user_type_enum == UserType.ADMIN.value:
-            return Utils.user_type[0]
+            return Utils.USER_TYPE[0]
         elif user_type_enum == UserType.NORMAL.value:
-            return Utils.user_type[1]
+            return Utils.USER_TYPE[1]
 
     @staticmethod
     def get_gender(gender_enum):
@@ -86,3 +94,10 @@ class Utils:
         elif gender_enum == Gender.OTHER.value:
             return Utils.gender[2]
         return None
+
+    @staticmethod
+    def get_status_account_name(status):
+        if status == UserStatus.ACTIVE.value:
+            return Utils.ACCOUNT_STATUS[0]
+        if status == UserStatus.INACTIVE.value:
+            return Utils.ACCOUNT_STATUS[1]
