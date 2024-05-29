@@ -42,6 +42,7 @@ class BillController:
             pr = Billing.table_exists()
             if not pr:
                 Billing.create_table()
+            billType = 1 if bill_type == "Chi" else 0
             row = Billing(tableId=table_id,
                           userId=user_id,
                           discountId=discount_id,
@@ -49,7 +50,7 @@ class BillController:
                           customerPhoneNumber=customer_phone,
                           creatorName=creator_name,
                           totalMoney=money,
-                          type=bill_type,
+                          type=billType,
                           createdDate=datetime.now())
             row.save()
             messagebox.showinfo("Thông báo", "Thêm sản phẩm thành công")
@@ -105,6 +106,7 @@ class BillController:
         customer_phone = detail_form_values.get("customerPhoneNumber")
         money = detail_form_values.get("totalMoney")
         bill_type = detail_form_values.get("bill_type")
+        print(bill_type)
         self.save_data_to_db(table_id, user_id, creator_name, discount_id, customer_name, customer_phone, money, bill_type)
         self.get_data(datetime.now())
 

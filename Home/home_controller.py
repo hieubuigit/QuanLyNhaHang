@@ -2,12 +2,16 @@ import tkinter as tk
 from tkinter import ttk
 import customtkinter
 from Home.home_View import HomeView
+from Report.report_controller import ReportController
 
 
 class HomeController:
     def __init__(self, root):
         super().__init__()
-        view = HomeView(root)
+        view = HomeView(root, self)
+
+    def nav_report_page(self, root):
+        report = ReportController(root=root)
 
 
 if __name__ == '__main__':

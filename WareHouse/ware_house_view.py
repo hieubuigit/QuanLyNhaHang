@@ -109,24 +109,39 @@ class WareHouseView:
 
     def __ui_left_view(self, root, main_fr):
         left_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
-        left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=10, pady=10)
+        left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=10, pady=10, ipadx=2)
         gr_btn = CTkFrame(left_fr)
-        gr_btn.pack()
-        revenue_btn = CTkButton(gr_btn,
-                                text="Sản phẩm",
-                                width=150,
-                                height=30,
-                                corner_radius=0,
-                                command=lambda: self.__switch_page(root, page=StatePage.Product))
-        revenue_btn.grid(row=0, column=0)
-        salary_btn = CTkButton(gr_btn,
-                               text="Khuyến mãi",
-                               width=150,
-                               height=30,
-                               corner_radius=0,
-                               command=lambda: self.__switch_page(root, page=StatePage.Discount))
-        salary_btn.grid(row=1, column=0, pady=2)
+        gr_btn.pack(pady=3)
+        img_product = CTkImage(Image.open("../assets/diet.png"), size=(25, 25))
+        self.product_btn = CTkButton(gr_btn,
+                                     text="Sản phẩm",
+                                     width=150,
+                                     height=30,
+                                     corner_radius=1,
+                                     image=img_product,
+                                     compound=tk.LEFT,
+                                     fg_color="white",
+                                     text_color="DodgerBlue1",
+                                     command=lambda: self.__switch_page(root, page=StatePage.Product))
+        self.product_btn.grid(row=0, column=0)
+        img_discount = CTkImage(Image.open("../assets/discount.png"), size=(25, 25))
+        self.product_line = CTkFrame(gr_btn, fg_color="DodgerBlue1", height=30, width=2, corner_radius=0,
+                                     border_width=0)
+        self.product_line.grid(row=0, column=1)
 
+        self.discount_btn = CTkButton(gr_btn,
+                                      text="Khuyến mãi",
+                                      width=150,
+                                      height=30,
+                                      corner_radius=1,
+                                      fg_color="white",
+                                      image=img_discount,
+                                      compound=tk.LEFT,
+                                      text_color="black",
+                                      command=lambda: self.__switch_page(root, page=StatePage.Discount))
+        self.discount_btn.grid(row=1, column=0)
+        self.discount_line = CTkFrame(gr_btn, fg_color="white", height=30, width=2, corner_radius=0, border_width=0)
+        self.discount_line.grid(row=1, column=1)
 
     def ui_right_content_view(self):
         style = ttk.Style()
@@ -167,19 +182,18 @@ class WareHouseView:
         self.insert_row_treeview()
         self.tv.bind("<<TreeviewSelect>>", lambda e: self.item_treeview_selected())
 
-        #Setup UI Detail form
+        # Setup UI Detail form
         self.ui_detail_form()
 
     def ui_detail_form(self):
         padding_x = 25
         padding_y = 5
         entry_width = 300
-        entry_padding_y = 5
         entry_padding = 8
         line = CTkFrame(self.right_fr, height=1, fg_color="gray")
         line.pack(fill=tk.X, expand=0)
 
-        option_fr = CTkFrame(self.right_fr, corner_radius=10)
+        option_fr = CTkFrame(self.right_fr, corner_radius=10, fg_color="white")
         option_fr.pack(expand=0, pady=10)
 
         heading2 = CTkFont("TkDefaultFont", 16, 'bold')
@@ -218,7 +232,8 @@ class WareHouseView:
         product_type_lb = CTkLabel(self.sub_fr, text="Loại")
         product_type_lb.grid(row=4, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
 
-        product_type_cbb = CTkComboBox(self.sub_fr, entry_width, values=["Food", "Drink"], variable=self.product_type_var)
+        product_type_cbb = CTkComboBox(self.sub_fr, entry_width, values=["Food", "Drink"],
+                                       variable=self.product_type_var)
         product_type_cbb.grid(row=4, column=1, pady=entry_padding, padx=entry_padding)
 
         capacity_lb = CTkLabel(self.sub_fr, text="Dung tích")
@@ -241,6 +256,7 @@ class WareHouseView:
                                      border_color="green", border_width=1, command=lambda: self.show_file_dialog(),
                                      anchor="c", fg_color="white", hover_color="white")
         self.add_img_btn.grid(row=5, column=1, pady=entry_padding)
+
     def show_file_dialog(self):
         self.file_path = filedialog.askopenfilename(title="Chọn hình",
                                                     filetypes=(("jpeg", "*.jpg"), ("png", "*.png")))
@@ -272,8 +288,17 @@ class WareHouseView:
             root.update()
         if page == StatePage.Discount:
             self.__controller.nav_discount_page(self.right_fr)
+            self.discount_line.configure(fg_color="DodgerBlue1")
+            self.discount_btn.configure(text_color="DodgerBlue1")
+            self.product_line.configure(fg_color="white")
+            self.product_btn.configure(text_color="black")
+
         else:
             self.product_page()
+            self.product_line.configure(fg_color="DodgerBlue1")
+            self.product_btn.configure(text_color="DodgerBlue1")
+            self.discount_line.configure(fg_color="white")
+            self.discount_btn.configure(text_color="black")
 
     def item_treeview_selected(self):
         selected_items = self.tv.selection()

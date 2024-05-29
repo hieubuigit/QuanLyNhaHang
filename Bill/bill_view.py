@@ -1,11 +1,14 @@
 from datetime import datetime
 import tkinter as tk
+from enum import Enum
 from tkinter import ttk, messagebox
 import customtkinter
 import ttkbootstrap as bt
 from customtkinter import *
 
-
+class BillType(Enum):
+    REVENUE = 0
+    EXPANDING = 1
 class BillView:
     def __init__(self, window, controller):
         self.__controller = controller
@@ -186,12 +189,13 @@ class BillView:
         bill_type_lb = CTkLabel(self.sub_fr, text="Loại hóa đơn", anchor=tk.W,
                                 font=CTkFont("TkDefaultFont", 14, 'bold'))
         bill_type_lb.grid(row=5, column=0, sticky=tk.NW)
-
+        bill_type_dict = {BillType.REVENUE.value: "Thu", BillType.EXPANDING.value: "Chi"}
         bill_type_cbb = CTkComboBox(self.sub_fr,
                                     width=150,
                                     button_color="DodgerBlue2",
                                     variable=self.__bill_type_var,
-                                    values=["Thu", "Chi"])
+                                    state="readonly",
+                                    values=bill_type_dict.values())
         bill_type_cbb.grid(row=5, column=1, sticky=tk.NW, pady=entry_padding_y)
 
         discount_lb = CTkLabel(self.sub_fr, text="Khuyến mãi", anchor=tk.W,
@@ -262,21 +266,22 @@ class BillView:
                            tags=my_tag)
 
     def add_click(self):
+        print(self.__bill_type_var.get())
         valid_text = ""
         is_validate = lambda text: 0 if len(text) == 0 or text.isspace() == 1 else 1
         if not is_validate(self.__creator_name_var.get()):
-            valid_text = f"Vui lòng nhập" + f" {self.creator_name_lb.cget("text")}"
+            valid_text = f"Vui lòng nhập {self.creator_name_lb.cget('text')}"
         if not is_validate(self.__customer_name_var.get()):
             if len(valid_text) == 0:
-                valid_text = f"Vui lòng nhập" + f" {self.customer_name_lb.cget("text")}"
+                valid_text = f"Vui lòng nhập {self.customer_name_lb.cget('text')}"
             else:
-                valid_text = valid_text + f", {self.customer_name_lb.cget("text")}"
+                valid_text = f"{valid_text}, {self.customer_name_lb.cget('text')}"
 
         if not is_validate(self.__money_var.get()):
             if len(valid_text) == 0:
-                valid_text = f"Vui lòng nhập" + f" {self.money_lb.cget("text")}"
+                valid_text = f"Vui lòng nhập {self.money_lb.cget('text')}"
             else:
-                valid_text = valid_text + f", {self.money_lb.cget("text")}"
+                valid_text = f"{valid_text}, {self.money_lb.cget("text")}"
 
         if valid_text:
             self.show_validate(valid_text)

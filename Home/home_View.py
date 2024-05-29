@@ -18,8 +18,9 @@ class HomeView():
     fg_color_tab_click = "DodgerBlue1"
     fg_color_tab_normal = "#FFFFFF"
     radius_tab = 5
-    def __init__(self, window):
+    def __init__(self, window, controller):
         self.__root = window
+        self.__controller = controller
         # Tạo frame thanh tab bar
         self.__generate_ui_header(window)
 
@@ -140,7 +141,7 @@ class HomeView():
         warehouse_fr = WareHouseController(main_fr)
 
     def report_page(self, main_fr):
-        report_fr = ReportView(main_fr)
+       self.__controller.nav_report_page(main_fr)
 
     def on_logout_click(self):
         logout_controller = LogoutController()

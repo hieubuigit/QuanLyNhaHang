@@ -22,7 +22,7 @@ class DiscountView:
         customtkinter.set_appearance_mode("light")
         style = ttk.Style()
         style.theme_use('default')
-        main_fr = CTkFrame(root, border_width=1, border_color="gray", fg_color="transparent")
+        main_fr = CTkFrame(root, border_width=1, border_color="gray")
         main_fr.pack(fill=tk.BOTH, expand=1)
         self.tv = ttk.Treeview(main_fr)
         self.tv.pack(fill=tk.X, expand=0, padx=10, pady=5)
@@ -60,12 +60,11 @@ class DiscountView:
         padding_x = 25
         padding_y = 5
         entry_width = 300
-        entry_padding_y = 8
 
         line = CTkFrame(main_fr, height=2, corner_radius=0, border_width=0)
         line.pack(fill=tk.X, expand=0)
 
-        option_fr = CTkFrame(main_fr, corner_radius=10)
+        option_fr = CTkFrame(main_fr, corner_radius=10, fg_color="white")
         option_fr.pack(expand=0, pady=10)
 
         heading2 = CTkFont("TkDefaultFont", 16, 'bold')
@@ -73,7 +72,7 @@ class DiscountView:
         detail_lb = CTkLabel(option_fr, text="Thông tin chi tiết", text_color="#000088",
                              font=heading2)
         detail_lb.pack(fill=tk.X, expand=0, padx=20, side="top", pady=5)
-        self.sub_fr = CTkFrame(option_fr, corner_radius=0, fg_color="transparent")
+        self.sub_fr = CTkFrame(option_fr, corner_radius=0)
         self.sub_fr.pack(fill=tk.BOTH, expand=1, padx=padding_x, pady=20, ipadx=10)
         self.sub_fr.columnconfigure(0, weight=1)
         self.sub_fr.rowconfigure(0, weight=1)
