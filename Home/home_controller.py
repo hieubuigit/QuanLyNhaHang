@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import customtkinter
-from Home.home_View import HomeView
+from Home.home_view import HomeView
 
 
 class HomeController:

@@ -9,7 +9,7 @@ from ttkbootstrap import DateEntry
 class Utils:
     # Contain information to set role on UI and features
     global user_profile
-    user_profile = User()
+    user_profile = dict()
 
     USER_TYPE = ("Admin", "Bình thường")
     gender = ("Nam", "Nữ", "Khác")

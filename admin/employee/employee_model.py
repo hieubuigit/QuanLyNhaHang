@@ -73,3 +73,4 @@ class EmployeeModel(Model):
     def delete_by_id(self, id):
         query = User.delete().where(User.id == id)
         return query.execute()
+

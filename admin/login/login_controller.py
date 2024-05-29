@@ -2,7 +2,7 @@ import tkinter.messagebox as msgBox
 import bcrypt
 
 from admin.login.login_model import LoginModel
-from share.common_config import UserStatus
+from share.common_config import UserStatus, UserType
 from share.utils import Utils
 
 
@@ -25,7 +25,15 @@ class LoginController:
                 return None
             isPass = bcrypt.checkpw(bytes(password, encoding="utf8"), bytes(user.password, encoding="utf8"))
             if isPass:
-                Utils.user_profile = user
+                user_profile = {
+                    "user_code": user.user_code,
+                    "type": user.type,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "email": user.email,
+                    "phone_number": user.phone_number,
+                }
+                Utils.user_profile = user_profile
                 return user
             else:
                 msgBox.showerror("Lỗi", 'Tên tài khoản hoặc mật khẩu của bạn không đúng!')
@@ -34,3 +42,10 @@ class LoginController:
             print(ex)
             return None
 
+    @staticmethod
+    def is_have_permission():
+        is_allow = False
+        if Utils.user_profile is not None:
+            if Utils.user_profile["type"] == UserType.ADMIN.value:
+                is_allow = True
+        return is_allow

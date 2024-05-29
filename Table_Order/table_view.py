@@ -1,20 +1,14 @@
 import math
 import tkinter as tk
-from enum import Enum
 from tkinter import ttk
-
 import customtkinter
 from PIL import Image, ImageTk
-
 from Table_Order.table_model import TableType, Table
 from share.CustomMenu import CustomMenu
-from share.common_config import Action, UserType
+from share.common_config import Action, UserType, StatusTable
 from customtkinter import *
 from functools import partial
 
-class StatusTable(Enum):
-    DISABLED = "Đã đặt"
-    AVAILABLE = "Trống"
 class TableView:
 
     hover_color = "LightSkyBlue"

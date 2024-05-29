@@ -44,3 +44,7 @@ class TabType(Enum):
     REPORT = "REPORT"
     LOGOUT = "LOGOUT"
     WARE_HOUSE = "WARE_HOUSE"
+
+class StatusTable(Enum):
+    DISABLED = "Đã đặt"
+    AVAILABLE = "Trống"

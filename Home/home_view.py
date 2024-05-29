@@ -4,14 +4,16 @@ from Bill.bill_controller import BillController
 from Report.report_view import ReportView
 from Table_Order.table_controller import TableController
 from WareHouse.ware_house_controller import WareHouseController
+from admin.login.login_controller import LoginController
 from admin.logout.logout_controller import LogoutController
 from employee_view import EmployeeView
 from customtkinter import *
-from share.common_config import TabType
+from share.common_config import TabType, UserType
 import os
+from share.utils import Utils
 
 
-class HomeView():
+class HomeView:
     button_type_clicked = TabType.EMPLOYEE
     size_icon_tab = (35, 35)
     hover_color_tab = "LightSkyBlue"
@@ -27,34 +29,40 @@ class HomeView():
         self.__main_fr = ttk.Frame(window)
         self.__main_fr.pack(fill="both", expand=1)
 
-        # Mặc định chọn tab 1: Hiển thị page nhân viên
-        self.empl_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
-        self.employee_page(self.__main_fr)
+        # Set default page will display after user login
+        if LoginController.is_have_permission():
+            self.empl_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
+            self.employee_page(self.__main_fr)
+        else:
+            self.table_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
+            self.table_page(self.__main_fr)
 
     def __generate_ui_header(self, window):
         header_view = ttk.Frame(window, borderwidth=5)
         header_view.pack(fill="both", expand=0)
         self.tab_bar_view = ttk.Frame(header_view)
         self.tab_bar_view.pack(side="left")
-        avt_default = self.get_image_file("../assets/avatar_default_man.png")
+        font_tab = CTkFont("TkDefaultFont", 16, 'bold')
+        ipadx_tab_button = 10
 
+        # Admin Director button
+        avt_default = self.get_image_file("../assets/avatar_default_man.png")
         profile_btn = CTkButton(header_view, text="Admin director", image=avt_default, corner_radius=0,
                                 bg_color="white", fg_color="black")
         profile_btn.pack(side="right", anchor="ne")
 
         # Tạo các button trong thanh tab bar
-        font_tab = CTkFont("TkDefaultFont", 16, 'bold')
-        ipadx_tab_button = 10
-        self.empl_btn = CTkButton(self.tab_bar_view, text="Nhân viên", compound='top',
-                                  corner_radius=HomeView.radius_tab,
-                                  fg_color=HomeView.fg_color_tab_click,
-                                  font=font_tab,
-                                  hover_color=HomeView.hover_color_tab,
-                                  border_width=1,
-                                  border_color="#0033CC",
-                                  command=lambda: self.__action_tab(button_type=TabType.EMPLOYEE))
-        self.empl_btn.grid(row=0, column=0, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
-        self.__set_ui_default_emp_tab()
+        if LoginController.is_have_permission():
+            self.empl_btn = CTkButton(self.tab_bar_view, text="Nhân viên", compound='top',
+                                    corner_radius=HomeView.radius_tab,
+                                    fg_color=HomeView.fg_color_tab_click,
+                                    font=font_tab,
+                                    hover_color=HomeView.hover_color_tab,
+                                    border_width=1,
+                                    border_color="#0033CC",
+                                    command=lambda: self.__action_tab(button_type=TabType.EMPLOYEE))
+            self.empl_btn.grid(row=0, column=0, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
+            self.__set_ui_default_emp_tab()
 
         # Table tab
         self.table_btn = CTkButton(self.tab_bar_view, text="Đặt bàn",
@@ -124,8 +132,6 @@ class HomeView():
             self.tab_bar_view.grid_columnconfigure(i, weight=1)
 
     def employee_page(self, main_fr):
-        # add employee fram
-        self.__root.style = ttk.Style()
         empl_page_fr = EmployeeView(main_fr)
 
     def table_page(self, main_fr):
@@ -188,30 +194,43 @@ class HomeView():
             self.on_logout_click()
 
     def __set_ui_default_emp_tab(self):
-        ic_emp_default = CTkImage(Image.open("../assets/ic_tab_employees.png"), size=HomeView.size_icon_tab)
+        ic_emp_default = CTkImage(Image.open("../../assets/ic_tab_employees.png"), size=HomeView.size_icon_tab)
         self.empl_btn.configure(image=ic_emp_default, text_color="black", fg_color=HomeView.fg_color_tab_normal)
 
     def __set_ui_default_table_tab(self):
-        ic_table_default = CTkImage(Image.open("../assets/restaurant.ico"), size=HomeView.size_icon_tab)
+        ic_table_default = CTkImage(Image.open("../../assets/restaurant.ico"), size=HomeView.size_icon_tab)
         self.table_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_table_default)
 
     def __set_ui_default_bill_tab(self):
-        ic_bill_default = CTkImage(Image.open("../assets/invoice.png"), size=HomeView.size_icon_tab)
+        ic_bill_default = CTkImage(Image.open("../../assets/invoice.png"), size=HomeView.size_icon_tab)
         self.bill_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_bill_default)
         self.bill_btn.image = ic_bill_default
 
     def __set_ui_default_ware_house_tab(self):
-        ic_ware_house_default = CTkImage(Image.open("../assets/delivery.png"), size=HomeView.size_icon_tab)
+        ic_ware_house_default = CTkImage(Image.open("../../assets/delivery.png"), size=HomeView.size_icon_tab)
         self.ware_house_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_ware_house_default)
 
     def __set_ui_default_report_tab(self):
-        ic_report_default = CTkImage(Image.open("../assets/pie-chart.png"), size=HomeView.size_icon_tab)
+        ic_report_default = CTkImage(Image.open("../../assets/pie-chart.png"), size=HomeView.size_icon_tab)
         self.report_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_report_default)
 
     def __set_ui_default_logout_tab(self):
-        ic_logout_default = CTkImage(Image.open("../assets/logout.png"), size=HomeView.size_icon_tab)
+        ic_logout_default = CTkImage(Image.open("../../assets/logout.png"), size=HomeView.size_icon_tab)
         self.logout_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_logout_default)
-    
+
+    def __create_tab(self, tab_name, icon_path: str):
+        tab = CTkButton(self.tab_bar_view, text=tab_name,
+                  compound='top',
+                  corner_radius=HomeView.radius_tab,
+                  fg_color=HomeView.fg_color_tab_normal,
+                  # font=font_tab,
+                  hover_color=HomeView.hover_color_tab,
+                  border_width=1,
+                  border_color="#0033CC",
+                  command=lambda: self.__action_tab(button_type=TabType.BILL))
+        # self.bill_btn.grid(row=0, column=2, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
+        return tab
+
 
     def get_image_file(self, path_file:str):
         try:

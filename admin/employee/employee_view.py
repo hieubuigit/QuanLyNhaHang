@@ -240,9 +240,8 @@ class EmployeeView:
 
     def set_value_for_date_entry(self, widget_name: str, new_value: datetime.date):
         frm_date = tk.StringVar()
-        test = new_value.strftime('%d/%m/%Y')
-        frm_date.set(test)
-        self.__add_or_update_form[widget_name].entry.config(text=frm_date)
+        frm_date.set(new_value.strftime('%d/%m/%Y'))
+        self.__add_or_update_form[widget_name].entry.configure(textvariable=frm_date)
 
     def set_value_for_radio_btn(self, value, rad_type):
         # rad_type is gender (0) or status(1)

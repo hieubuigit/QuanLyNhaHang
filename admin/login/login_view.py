@@ -3,7 +3,7 @@ import tkinter.messagebox as tkMessageBox
 from PIL import Image
 from ctypes import windll
 import customtkinter as ctk
-from Home.home_View import HomeView
+from Home.home_view import HomeView
 from admin.login.login_controller import LoginController
 from entities.models import User
 from share.utils import Utils
