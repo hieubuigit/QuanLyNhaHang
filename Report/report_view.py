@@ -3,15 +3,20 @@ from datetime import datetime
 from tkinter import ttk
 
 import customtkinter
+import numpy as np
 from PIL import Image, ImageTk
 from customtkinter import *
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from Bill.bill_view import BillType
+
+
 class ReportView:
     def __init__(self, window, controller):
         customtkinter.set_appearance_mode("light")
         self.__controller = controller
+        self.__quarters = {1: "Quý 1", 2: "Quý 2", 3: "Quý 3", 4: "Quý 4"}
         self.__quarter_var = tk.StringVar()
         self.__ui_main_content(window)
 
@@ -31,7 +36,7 @@ class ReportView:
         style = ttk.Style()
         style.theme_use('default')
         left_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
-        left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=1, pady=1, ipadx=2)
+        left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=2, pady=1, ipadx=2)
 
         btn_gr = CTkFrame(left_fr)
         btn_gr.pack(pady=3)
@@ -76,15 +81,17 @@ class ReportView:
         header_fr = CTkFrame(self.sub_fr, corner_radius=0)
         header_fr.pack(fill=tk.X, expand=0, padx=padding, pady=padding)
         header_fr.columnconfigure(0, weight=1)
-        quarters = {1: "Quý 1", 2: "Quý 2", 3: "Quý 3", 4: "Quý 4"}
-        quarters_values = list(quarters.values())
+        quarters_values = list(self.__quarters.values())
+        current_quarter_key = self.__controller.current_quarter
+        self.__quarter_var.set(self.__quarters.get(current_quarter_key))
         ic_filter = CTkImage(Image.open("../assets/funnel.png"), size=(25, 25))
         filter_btn = CTkButton(header_fr, text="", image=ic_filter, width=50,
                                fg_color="white", border_width=1, hover_color="#63B8FF",
-                               command=lambda:self.quarter_button_callback())
+                               command=lambda: self.quarter_button_callback())
         filter_btn.pack(fill=tk.BOTH, expand=0, side=tk.RIGHT, anchor=tk.E, padx=3)
 
-        filter_cbb = CTkComboBox(header_fr, values=quarters_values,
+        filter_cbb = CTkComboBox(header_fr,
+                                 values=quarters_values,
                                  state="readonly",
                                  variable=self.__quarter_var)
 
@@ -93,15 +100,15 @@ class ReportView:
         chart_fr = CTkFrame(self.sub_fr, corner_radius=0)
         chart_fr.pack(fill=tk.BOTH, expand=1, padx=padding, pady=padding)
 
-        left_fr = CTkFrame(chart_fr, corner_radius=0, border_width=1, border_color="gray", fg_color="white")
-        left_fr.grid(row=0, column=0)
+        self.left_fr = CTkFrame(chart_fr, corner_radius=0, border_width=1, border_color="gray", fg_color="white")
+        self.left_fr.grid(row=0, column=0)
 
-        self.open_pie_chart(left_fr)
+        self.open_pie_chart(self.left_fr)
         chart_fr.grid_columnconfigure(0, weight=1)
-        right_fr = CTkFrame(chart_fr, corner_radius=0, border_width=1, border_color="gray")
 
-        right_fr.grid(row=0, column=1)
-        self.open_bar_chart(right_fr)
+        self.right_fr = CTkFrame(chart_fr, corner_radius=0, border_width=1, border_color="gray")
+        self.right_fr.grid(row=0, column=1)
+        self.open_bar_chart(self.right_fr)
         chart_fr.grid_columnconfigure(1, weight=1)
 
         # Tạo UI Treeview load thông tin hóa đơn
@@ -110,14 +117,14 @@ class ReportView:
     def create_ui_buttom(self):
         padding = 2
         bottom_fr = CTkFrame(self.sub_fr)
-        bottom_fr.pack(fill=tk.BOTH, expand=1, padx=padding)
+        bottom_fr.pack(fill=tk.BOTH, expand=1, padx=padding, pady=2)
         # UI TreeView
         style = ttk.Style()
         style.theme_use('default')
         tree_scrollX = customtkinter.CTkScrollbar(bottom_fr, height=15)
         tree_scrollX.pack(side=tk.BOTTOM, fill='x')
         self.tv = ttk.Treeview(bottom_fr, yscrollcommand=tree_scrollX.set)
-        self.tv.pack(fill=tk.BOTH, expand=1, padx=10, pady=10)
+        self.tv.pack(fill=tk.BOTH, expand=1, padx=10, pady=3)
         style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = (
             "id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
@@ -147,6 +154,7 @@ class ReportView:
 
         # Fill data vào treeview
         self.__insert_column_values()
+
     def __switch_page(self, root, main_fr, page):
         for fr in self.sub_fr.winfo_children():
             fr.destroy()
@@ -164,45 +172,70 @@ class ReportView:
             self.salary_line.configure(fg_color="white")
             self.salary_btn.configure(text_color="black")
 
-    def data_example(self):
-        bills = (200, 300)
-        return bills
-
     def open_pie_chart(self, main_fr):
-        data = self.data_example()
-        input_text = [data.__getitem__(0), data.__getitem__(1)]
-        vehicles = ['Tổng Thu', 'Tổng Chi']
-        fig = plt.Figure(figsize=(5, 3.7), dpi=100)
-        ax = fig.add_subplot(111)
-        ax.pie(input_text, radius=1, labels=vehicles, colors=["#009900", "#FF6633"])
-        chart = FigureCanvasTkAgg(fig, main_fr)
-        chart.get_tk_widget().pack(side="top", fill='both', expand=True, padx=1, pady=1)
-        note_fr = CTkFrame(main_fr, corner_radius=0)
-        note_fr.pack(fill=tk.X, expand=0)
-        total_revenue_title = CTkButton(note_fr, text=str(data.__getitem__(0)), fg_color="#009900",
-                                        text_color="black",
-                                        border_width=1, state="disable", corner_radius=0)
-        total_revenue_title.grid(row=0, column=0)
-        total_spending_title = CTkButton(note_fr, text=str(data.__getitem__(1)),
-                                         fg_color="#FF6633",
-                                         text_color="black",
-                                         border_width=1, state="disable", corner_radius=0)
-        total_spending_title.grid(row=0, column=1)
+        input_text = [self.__controller.total_revenue, self.__controller.total_expend]
+        vehicles = ["Tổng Thu", "Tổng Chi"]
+        if self.__controller.total_expend > 0 or self.__controller.total_revenue > 0:
+            fig = plt.Figure(figsize=(5, 3.7), dpi=100)
+            ax = fig.add_subplot(111)
+            ax.pie(input_text, radius=1, labels=vehicles, colors=["#009900", "#FF6633"])
+            chart = FigureCanvasTkAgg(fig, main_fr)
+            chart.get_tk_widget().pack(side="top", fill='both', expand=True, padx=1, pady=1)
+            note_fr = CTkFrame(main_fr, corner_radius=0)
+            note_fr.pack(fill=tk.X, expand=0)
+            total_revenue_value = f"{self.__controller.total_revenue:0,.0f} VND"
+            total_expand_value = f"{self.__controller.total_expend:0,.0f} VND"
+
+            total_revenue_title = CTkButton(note_fr, text=total_revenue_value, fg_color="#009900",
+                                            text_color="black",
+                                            border_width=1, state="disable", corner_radius=0)
+            total_revenue_title.grid(row=0, column=0)
+            total_spending_title = CTkButton(note_fr, text=total_expand_value,
+                                             fg_color="#FF6633",
+                                             text_color="black",
+                                             border_width=1, state="disable", corner_radius=0)
+            total_spending_title.grid(row=0, column=1)
+        else:
+            fig = plt.Figure(figsize=(6, 4), dpi=100)
+            ax = fig.text(x=0.35, y=0.5, s="Không có dữ liệu")
+            empty_fr = FigureCanvasTkAgg(fig, main_fr)
+            empty_fr.draw()
+            empty_fr.get_tk_widget().pack(side="top", fill='both', expand=True, padx=1, pady=1)
+
 
     def open_bar_chart(self, main_fr):
-        f = plt.Figure(figsize=(5, 4), dpi=100)
+        f = plt.Figure(figsize=(6, 4), dpi=100)
         ax = f.add_subplot(111)
-        data = (20, 35, 30)
-        # ind_quarter = quarters[0].get(1)
-        # print(ind_quarter)
-        # start_range_quarter = ind_quarter * 2
-        # end_range_quarter = start_range_quarter + 3
-        ind = [x for x in range(1, 4)]
-        width = .5
-        ind_str = [f"Tháng {x}" for x in range(1, 4)]
-        ax.bar(ind, data, width, tick_label=ind_str)
+        ax.set_ylabel('Đơn vị: Triệu')
+        bills = self.__controller.bills
+        ind_month = self.__controller.months_of_the_quarter
+        width = .4
+        r = np.arange(3)
+        expend_value_by_month = []
+        revenue_value_by_month = []
+        for m in ind_month:
+            revenue_total = sum(i.totalMoney for i in bills if i.type == BillType.REVENUE.value[0]
+                                and i.createdDate.month == m) / 1000000
+            revenue_value_by_month.append(revenue_total)
+            expend_total = sum(i.totalMoney for i in bills if i.type == BillType.EXPANDING.value[0]
+                               and i.createdDate.month == m) / 1000000
+            expend_value_by_month.append(expend_total)
+        expand_max_value = float(max(expend_value_by_month, key=lambda x: float(x)))
+        revenue_max_value = float(max(revenue_value_by_month, key=lambda x: float(x)))
+        max_value = expand_max_value if expand_max_value > revenue_max_value else revenue_max_value
+        if max_value < 1:
+            max_value = 10
+        step = max_value / 5
+        ticks_loc = np.arange(0, max_value, step=step)
+        print("expend_value_by_month", expend_value_by_month)
+        print("len revenue_value_by_month", len(revenue_value_by_month))
+        ind_str = [f"Tháng {x}" for x in ind_month]
+        ax.bar(r - 0.2, revenue_value_by_month, width, label='Thu')
+        ax.bar(r + 0.2, expend_value_by_month, width, label="Chi")
+        ax.set_xticks(r, ind_str)
+        ax.set_yticks(ticks_loc)
+        ax.legend()
         canvas = FigureCanvasTkAgg(f, master=main_fr)
-        canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=1)
 
     def __report_page(self):
@@ -216,11 +249,16 @@ class ReportView:
         salary_fr.pack()
 
     def quarter_button_callback(self):
-        print(self.__quarter_var.get())
+        value_key_dict = {value: key for key, value in self.__quarters.items()}
+        searched_key = value_key_dict[self.__quarter_var.get()]
+        print("search key", searched_key)
+        self.__controller.get_bills_and_reload_view(searched_key)
+        self.reload_pie_chart_view(self.left_fr)
+        self.reload_bar_chart_view(self.right_fr)
 
     def __insert_column_values(self):
         my_tag = "blue"
-        bills = self.__controller.get_bills()
+        bills = self.__controller.bills
         for b in bills:
             if my_tag == "normal":
                 my_tag = "blue"
@@ -232,15 +270,24 @@ class ReportView:
             if user_name or user_name == "":
                 user_name = b.creatorName
             table_num = ""
+            bill_type = BillType.REVENUE.value[1] if b.type == 0 else BillType.EXPANDING.value[1]
             self.tv.insert("", "end", iid=b.id, text=b.id,
                            values=(b.id, user_name, b.customerName, b.customerPhoneNumber,
-                                   table_num, b.createdDate, "Thu", b.totalMoney, b.updatedDate),
+                                   table_num, b.createdDate, bill_type, f"{b.totalMoney:0,.0f}",
+                                   b.updatedDate),
                            tags=my_tag)
 
-    def change_date_reload_view(self):
-        pass
-        # if self.__date_variable.get() != '':
-        #     for item in self.tv.get_children():
-        #         self.tv.delete(item)
-        #     self.__insert_column_values(datetime.strptime(self.__date_variable.get(), "%d/%m/%Y"))
+    def reload_treeview(self):
+        for item in self.tv.get_children():
+            self.tv.delete(item)
+        self.__insert_column_values()
 
+    def reload_pie_chart_view(self, main_fr):
+        for child in main_fr.winfo_children():
+            child.destroy()
+        self.open_pie_chart(main_fr)
+
+    def reload_bar_chart_view(self, main_fr):
+        for child in main_fr.winfo_children():
+            child.destroy()
+        self.open_bar_chart(main_fr)

@@ -7,21 +7,24 @@ import ttkbootstrap as bt
 from customtkinter import *
 
 class BillType(Enum):
-    REVENUE = 0
-    EXPANDING = 1
+    REVENUE = (0, "Thu")
+    EXPANDING = (1, "Chi")
 class BillView:
     def __init__(self, window, controller):
         self.__controller = controller
         self.__date_variable = tk.StringVar()
-        self.__date_variable.set(f"{datetime.now():%d/%m/%Y}")
+        self.__date_variable.set(f"{datetime.now():%Y-%m-%d}")
         self.__creator_name_var = tk.StringVar()
         self.__customer_name_var = tk.StringVar()
         self.__phone_var = tk.StringVar()
         self.__bill_created_date_var = tk.StringVar()
+        self.__bill_created_date_var.set(f"{datetime.now():%Y-%m-%d}")
         self.__table_num_var = tk.StringVar()
         self.__discount_var = tk.StringVar()
         self.__bill_type_var = tk.StringVar()
         self.__money_var = tk.StringVar()
+        self.bill_type_dict = {BillType.REVENUE.value[0]: BillType.REVENUE.value[1],
+                          BillType.EXPANDING.value[0]: BillType.EXPANDING.value[1]}
         # Setup UI
         self.phone_validation = window.register(self.validate_phone_number_input)
         self.__generate_ui_content(window)
@@ -75,7 +78,7 @@ class BillView:
         lb_date = CTkLabel(option_fr, text="Ngày tạo")
         lb_date.pack(fill=tk.X, expand=0, side="left", padx=5)
 
-        date_entry = bt.DateEntry(option_fr, dateformat="%d/%m/%Y", bootstyle="primary")
+        date_entry = bt.DateEntry(option_fr, dateformat="%Y-%m-%d", bootstyle="primary")
         date_entry.entry.configure(textvariable=self.__date_variable)
         self.__date_variable.trace('w',
                                    lambda name, index, mode,
@@ -172,7 +175,7 @@ class BillView:
         created_date_lb = CTkLabel(self.sub_fr, text="Ngày tạo", anchor=tk.W,
                                    font=CTkFont("TkDefaultFont", 14, 'bold'))
         created_date_lb.grid(row=3, column=0, sticky=tk.NW)
-        created_date_entry = bt.DateEntry(self.sub_fr, dateformat="%d/%m/%Y", bootstyle="primary")
+        created_date_entry = bt.DateEntry(self.sub_fr, dateformat="%Y-%m-%d", bootstyle="primary")
         created_date_entry.grid(row=3, column=1, sticky=tk.NW, pady=entry_padding_y)
         created_date_entry.entry.configure(textvariable=self.__bill_created_date_var)
 
@@ -189,13 +192,13 @@ class BillView:
         bill_type_lb = CTkLabel(self.sub_fr, text="Loại hóa đơn", anchor=tk.W,
                                 font=CTkFont("TkDefaultFont", 14, 'bold'))
         bill_type_lb.grid(row=5, column=0, sticky=tk.NW)
-        bill_type_dict = {BillType.REVENUE.value: "Thu", BillType.EXPANDING.value: "Chi"}
+
         bill_type_cbb = CTkComboBox(self.sub_fr,
                                     width=150,
                                     button_color="DodgerBlue2",
                                     variable=self.__bill_type_var,
                                     state="readonly",
-                                    values=bill_type_dict.values())
+                                    values=self.bill_type_dict.values())
         bill_type_cbb.grid(row=5, column=1, sticky=tk.NW, pady=entry_padding_y)
 
         discount_lb = CTkLabel(self.sub_fr, text="Khuyến mãi", anchor=tk.W,
@@ -244,7 +247,7 @@ class BillView:
         if self.__date_variable.get() != '':
             for item in self.tv.get_children():
                 self.tv.delete(item)
-            self.__insert_column_values(datetime.strptime(self.__date_variable.get(), "%d/%m/%Y"))
+            self.__insert_column_values(datetime.strptime(self.__date_variable.get(), "%Y-%m-%d"))
 
     def __insert_column_values(self, by_date=datetime.now()):
         my_tag = "blue"
@@ -260,9 +263,12 @@ class BillView:
             if user_name or user_name == "":
                 user_name = b.creatorName
             table_num = ""
+            update_date = lambda x: f"{x:%Y-%m-%d}" if x else ""
             self.tv.insert("", "end", iid=b.id, text=b.id,
                            values=(b.id, user_name, b.customerName, b.customerPhoneNumber,
-                                   table_num, b.createdDate, "Thu", b.totalMoney, b.updatedDate),
+                                   table_num, f"{b.createdDate:%Y-%m-%d}",
+                                   self.bill_type_dict.get(b.type), f"{b.totalMoney:0,.0f}",
+                                   update_date(b.updatedDate)),
                            tags=my_tag)
 
     def add_click(self):
@@ -327,13 +333,11 @@ class BillView:
                 "created_date": self.__bill_created_date_var.get()}
 
     def validate_phone_number_input(self, new_value):
-        print(new_value)
         try:
             if str.isdigit(new_value) and len(new_value) <= 10:
                 return True
             else:
                 return False
-
         except ValueError:
             return False
 
@@ -360,4 +364,3 @@ class BillView:
             self.__bill_created_date_var.set(rows[5])
             self.__bill_type_var.set(rows[6])
             self.__money_var.set(rows[7])
-            print(item)

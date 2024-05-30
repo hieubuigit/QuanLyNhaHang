@@ -1,8 +1,9 @@
 from datetime import datetime
+from decimal import Decimal
 from tkinter import messagebox
 import peewee
 from Bill.bill_model import Billing
-from Bill.bill_view import BillView
+from Bill.bill_view import BillView, BillType
 from Table_Order.table_model import Table
 from WareHouse.discount_model import Discount
 from database.connection import Connection
@@ -36,13 +37,13 @@ class BillController:
             Connection.db_handle.close()
         return self.__bills
 
-    def save_data_to_db(self, table_id, user_id, creator_name, discount_id, customer_name, customer_phone, money, bill_type):
+    def save_data_to_db(self, table_id, user_id, creator_name, discount_id,
+                        customer_name, customer_phone, money, bill_type, created_date):
         try:
             Connection.db_handle.connect()
             pr = Billing.table_exists()
             if not pr:
                 Billing.create_table()
-            billType = 1 if bill_type == "Chi" else 0
             row = Billing(tableId=table_id,
                           userId=user_id,
                           discountId=discount_id,
@@ -50,8 +51,8 @@ class BillController:
                           customerPhoneNumber=customer_phone,
                           creatorName=creator_name,
                           totalMoney=money,
-                          type=billType,
-                          createdDate=datetime.now())
+                          type=bill_type,
+                          createdDate=created_date)
             row.save()
             messagebox.showinfo("Thông báo", "Thêm sản phẩm thành công")
 
@@ -105,9 +106,10 @@ class BillController:
         customer_name = detail_form_values.get("customerName")
         customer_phone = detail_form_values.get("customerPhoneNumber")
         money = detail_form_values.get("totalMoney")
-        bill_type = detail_form_values.get("bill_type")
-        print(bill_type)
-        self.save_data_to_db(table_id, user_id, creator_name, discount_id, customer_name, customer_phone, money, bill_type)
+        created_date = detail_form_values.get('created_date')
+        bill_type = 0 if detail_form_values.get("bill_type") == BillType.REVENUE.value[1] else 1
+        self.save_data_to_db(table_id, user_id, creator_name, discount_id, customer_name,
+                             customer_phone, money, bill_type, created_date)
         self.get_data(datetime.now())
 
 
