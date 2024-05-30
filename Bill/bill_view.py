@@ -1,14 +1,17 @@
 from datetime import datetime
 import tkinter as tk
 from enum import Enum
-from tkinter import ttk, messagebox
-import customtkinter
+from tkinter import messagebox
+import customtkinter as ctk
 import ttkbootstrap as bt
-from customtkinter import *
+from share.utils import Utils
+from tkinter import ttk
+
 
 class BillType(Enum):
     REVENUE = (0, "Thu")
     EXPANDING = (1, "Chi")
+
 class BillView:
     def __init__(self, window, controller):
         self.__controller = controller
@@ -26,19 +29,22 @@ class BillView:
         self.bill_type_dict = {BillType.REVENUE.value[0]: BillType.REVENUE.value[1],
                           BillType.EXPANDING.value[0]: BillType.EXPANDING.value[1]}
         # Setup UI
+        Utils.set_appearance_mode(ctk)
         self.phone_validation = window.register(self.validate_phone_number_input)
         self.__generate_ui_content(window)
 
     def __generate_ui_content(self, window):
-        customtkinter.set_appearance_mode("light")
         style = ttk.Style()
-        style.theme_use('default')
-        main_fr = CTkFrame(window)
+        style.theme_use("default")
+        main_fr = ctk.CTkFrame(window)
         main_fr.pack(fill=tk.BOTH, expand=1)
+
         self.ui_header(main_fr)
+
         # UI TreeView
         self.tv = ttk.Treeview(main_fr)
         self.tv.pack(fill=tk.X, expand=0, padx=10, pady=10)
+
         style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = (
             "id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
@@ -70,24 +76,28 @@ class BillView:
         self.__insert_column_values()
         self.tv.bind("<<TreeviewSelect>>", lambda e: self.item_treeview_selected())
 
-        self.__ui_detail_form(main_fr, window)
+        self.__ui_detail_form(main_fr)
 
     def ui_header(self, main_fr):
-        option_fr = CTkFrame(main_fr, fg_color="transparent")
+        style = ttk.Style()
+        style.configure("default")
+        option_fr = ctk.CTkFrame(main_fr, fg_color="transparent")
         option_fr.pack(fill=tk.X, expand=0, pady=10, padx=20)
-        lb_date = CTkLabel(option_fr, text="Ngày tạo")
-        lb_date.pack(fill=tk.X, expand=0, side="left", padx=5)
+        date_group_fr = ctk.CTkFrame(option_fr)
+        date_group_fr.pack(fill=tk.X, expand=0, side=tk.LEFT, anchor=tk.NW)
+        lb_date = ctk.CTkLabel(date_group_fr, text="Ngày tạo")
+        lb_date.pack(fill=tk.X, expand=0, side="left", anchor="nw", padx=5)
 
-        date_entry = bt.DateEntry(option_fr, dateformat="%Y-%m-%d", bootstyle="primary")
+        date_entry = bt.DateEntry(date_group_fr, dateformat="%Y-%m-%d")
         date_entry.entry.configure(textvariable=self.__date_variable)
         self.__date_variable.trace('w',
                                    lambda name, index, mode,
                                           date_value=self.__date_variable: self.change_date_reload_view())
-        date_entry.pack(side="left")
+        date_entry.pack(side="left", anchor="nw")
 
-        group_option = CTkFrame(option_fr)
+        group_option = ctk.CTkFrame(option_fr)
         group_option.pack(side="right", ipadx=5)
-        add_btn = CTkButton(group_option,
+        add_btn = ctk.CTkButton(group_option,
                             text="Thêm mới",
                             corner_radius=18,
                             border_width=0,
@@ -95,11 +105,11 @@ class BillView:
                             fg_color="DodgerBlue1",
                             hover_color="#63B8FF",
                             text_color="black",
-                            font=CTkFont("TkDefaultFont", 16),
+                            font=ctk.CTkFont("TkDefaultFont", 16),
                             command=lambda: self.add_click())
         add_btn.pack(fill=tk.X, expand=0, side="left")
 
-        update_btn = CTkButton(group_option,
+        update_btn = ctk.CTkButton(group_option,
                                text="Chỉnh sửa",
                                corner_radius=18,
                                border_width=0,
@@ -107,11 +117,11 @@ class BillView:
                                fg_color="LimeGreen",
                                hover_color="#54FF9F",
                                text_color="black",
-                               font=CTkFont("TkDefaultFont", 16),
+                               font=ctk.CTkFont("TkDefaultFont", 16),
                                command=lambda: self.update_click())
         update_btn.pack(fill=tk.X, expand=0, side="left", padx=5)
 
-        delete_btn = CTkButton(group_option,
+        delete_btn = ctk.CTkButton(group_option,
                                text="Xóa",
                                corner_radius=18,
                                border_width=0,
@@ -119,52 +129,53 @@ class BillView:
                                fg_color="Firebrick1",
                                hover_color="#FFC0CB",
                                text_color="black",
-                               font=CTkFont("TkDefaultFont", 16),
+                               font=ctk.CTkFont("TkDefaultFont", 16),
                                command=lambda: self.delete_click())
         delete_btn.pack(fill=tk.X, expand=0, side="left")
 
-    def __ui_detail_form(self, main_fr, window):
+
+    def __ui_detail_form(self, main_fr):
         padding_x = 25
         padding_y = 5
         entry_width = 300
         entry_padding_y = 5
 
-        detail_fr = CTkFrame(main_fr, border_width=2,
+        detail_fr = ctk.CTkFrame(main_fr, border_width=2,
                              fg_color="white",
                              corner_radius=10, border_color="gray")
         detail_fr.pack(fill=tk.Y, expand=1, padx=20, pady=5)
 
-        detail_lb = CTkLabel(detail_fr, text="Thông tin chi tiết", text_color="#000088",
-                             font=CTkFont("TkDefaultFont", 16, 'bold'))
+        detail_lb = ctk.CTkLabel(detail_fr, text="Thông tin chi tiết", text_color="#000088",
+                             font=ctk.CTkFont("TkDefaultFont", 16, 'bold'))
         detail_lb.pack(fill=tk.X, expand=0, padx=20, side="top", pady=5)
 
-        self.sub_fr = CTkFrame(detail_fr, fg_color="white")
+        self.sub_fr = ctk.CTkFrame(detail_fr, fg_color="white")
         self.sub_fr.pack(fill=tk.X, expand=0, padx=padding_x, pady=padding_y, ipadx=10)
         self.sub_fr.columnconfigure(0, weight=1)
-        self.creator_name_lb = CTkLabel(self.sub_fr, text="Tên người tạo",
-                                        font=CTkFont("TkDefaultFont", 14, 'bold'),
+        self.creator_name_lb = ctk.CTkLabel(self.sub_fr, text="Tên người tạo",
+                                        font=ctk.CTkFont("TkDefaultFont", 14, 'bold'),
                                         anchor=tk.W)
         self.creator_name_lb.grid(row=0, column=0, sticky=tk.NW)
-        creator_name_entry = CTkEntry(self.sub_fr,
+        creator_name_entry = ctk.CTkEntry(self.sub_fr,
                                       textvariable=self.__creator_name_var,
                                       placeholder_text="Nhập họ tên người tạo",
                                       width=entry_width)
         creator_name_entry.grid(row=0, column=1, sticky=(tk.N, tk.W), pady=entry_padding_y)
 
-        self.customer_name_lb = CTkLabel(self.sub_fr, text="Họ tên khách hàng", anchor=tk.W,
-                                         font=CTkFont("TkDefaultFont", 14, 'bold'))
+        self.customer_name_lb = ctk.CTkLabel(self.sub_fr, text="Họ tên khách hàng", anchor=tk.W,
+                                         font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
         self.customer_name_lb.grid(row=1, column=0, sticky=tk.NW)
-        customer_name_entry = CTkEntry(self.sub_fr,
+        customer_name_entry = ctk.CTkEntry(self.sub_fr,
                                        textvariable=self.__customer_name_var,
                                        placeholder_text="Nhập họ tên khách hàng",
                                        width=entry_width)
         customer_name_entry.grid(row=1, column=1, sticky=tk.NW, pady=entry_padding_y)
 
-        customer_phone_lb = CTkLabel(self.sub_fr, text="Số điện thoại khách hàng", anchor=tk.W,
-                                     font=CTkFont("TkDefaultFont", 14, 'bold'))
+        customer_phone_lb = ctk.CTkLabel(self.sub_fr, text="Số điện thoại khách hàng", anchor=tk.W,
+                                     font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
         customer_phone_lb.grid(row=2, column=0, sticky=tk.NW)
 
-        customer_phone_entry = CTkEntry(self.sub_fr,
+        customer_phone_entry = ctk.CTkEntry(self.sub_fr,
                                         textvariable=self.__phone_var,
                                         placeholder_text="Nhập số điện thoại",
                                         width=entry_width,
@@ -172,16 +183,16 @@ class BillView:
                                         validatecommand=(self.phone_validation, '%P'))
         customer_phone_entry.grid(row=2, column=1, sticky=tk.NW, pady=entry_padding_y)
 
-        created_date_lb = CTkLabel(self.sub_fr, text="Ngày tạo", anchor=tk.W,
-                                   font=CTkFont("TkDefaultFont", 14, 'bold'))
+        created_date_lb = ctk.CTkLabel(self.sub_fr, text="Ngày tạo", anchor=tk.W,
+                                   font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
         created_date_lb.grid(row=3, column=0, sticky=tk.NW)
         created_date_entry = bt.DateEntry(self.sub_fr, dateformat="%Y-%m-%d", bootstyle="primary")
         created_date_entry.grid(row=3, column=1, sticky=tk.NW, pady=entry_padding_y)
         created_date_entry.entry.configure(textvariable=self.__bill_created_date_var)
 
-        table_lb = CTkLabel(self.sub_fr, text="Số bàn", anchor=tk.W, font=CTkFont("TkDefaultFont", 14, 'bold'))
+        table_lb = ctk.CTkLabel(self.sub_fr, text="Số bàn", anchor=tk.W, font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
         table_lb.grid(row=4, column=0, sticky=tk.NW)
-        self.table_cbb = CTkComboBox(self.sub_fr,
+        self.table_cbb = ctk.CTkComboBox(self.sub_fr,
                                      width=entry_width,
                                      button_color="DodgerBlue2",
                                      values=["Unknow"],
@@ -189,11 +200,11 @@ class BillView:
                                      variable=self.__table_num_var)
         self.table_cbb.grid(row=4, column=1, sticky=tk.NW, pady=entry_padding_y)
         self.set_values_table_cbb(self.table_cbb)
-        bill_type_lb = CTkLabel(self.sub_fr, text="Loại hóa đơn", anchor=tk.W,
-                                font=CTkFont("TkDefaultFont", 14, 'bold'))
+        bill_type_lb = ctk.CTkLabel(self.sub_fr, text="Loại hóa đơn", anchor=tk.W,
+                                font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
         bill_type_lb.grid(row=5, column=0, sticky=tk.NW)
 
-        bill_type_cbb = CTkComboBox(self.sub_fr,
+        bill_type_cbb = ctk.CTkComboBox(self.sub_fr,
                                     width=150,
                                     button_color="DodgerBlue2",
                                     variable=self.__bill_type_var,
@@ -201,11 +212,11 @@ class BillView:
                                     values=self.bill_type_dict.values())
         bill_type_cbb.grid(row=5, column=1, sticky=tk.NW, pady=entry_padding_y)
 
-        discount_lb = CTkLabel(self.sub_fr, text="Khuyến mãi", anchor=tk.W,
-                               font=CTkFont("TkDefaultFont", 14, 'bold'))
+        discount_lb = ctk.CTkLabel(self.sub_fr, text="Khuyến mãi", anchor=tk.W,
+                               font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
         discount_lb.grid(row=6, column=0, sticky=tk.NW)
 
-        self.discount_cbb = CTkComboBox(self.sub_fr,
+        self.discount_cbb = ctk.CTkComboBox(self.sub_fr,
                                         width=entry_width,
                                         button_color="DodgerBlue2",
                                         variable=self.__discount_var,
@@ -213,10 +224,10 @@ class BillView:
                                         values=["Unknow"])
         self.discount_cbb.grid(row=6, column=1, sticky=tk.NW, pady=entry_padding_y)
         self.set_values_discount_cbb(self.discount_cbb)
-        self.money_lb = CTkLabel(self.sub_fr, text="Tổng tiền", anchor=tk.W,
-                                 font=CTkFont("TkDefaultFont", 14, 'bold'))
+        self.money_lb = ctk.CTkLabel(self.sub_fr, text="Tổng tiền", anchor=tk.W,
+                                 font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
         self.money_lb.grid(row=7, column=0, sticky=tk.NW)
-        money_entry = CTkEntry(self.sub_fr,
+        money_entry = ctk.CTkEntry(self.sub_fr,
                                textvariable=self.__money_var,
                                width=entry_width,
                                placeholder_text="Nhập tổng tiền",
@@ -224,9 +235,9 @@ class BillView:
                                validate="key",
                                validatecommand=(self.phone_validation, '%P'))
         money_entry.grid(row=7, column=1, sticky=tk.NW, pady=entry_padding_y)
-        self.valid_lb = CTkLabel(master=detail_fr,
+        self.valid_lb = ctk.CTkLabel(master=detail_fr,
                                  text="Vui lòng nhập tổng tiền",
-                                 font=CTkFont("TkDefaultFont", 14),
+                                 font=ctk.CTkFont("TkDefaultFont", 14),
                                  text_color="red",
                                  anchor=tk.CENTER)
         self.valid_lb.pack(fill=tk.BOTH, expand=0, padx=padding_x, pady=padding_y)
@@ -341,12 +352,12 @@ class BillView:
         except ValueError:
             return False
 
-    def set_values_table_cbb(self, table_cbb: CTkComboBox):
+    def set_values_table_cbb(self, table_cbb: ctk.CTkComboBox):
         dict_tables = self.__controller.get_tables()
         if len(dict_tables.values()) > 0:
             table_cbb.configure(values=dict_tables.values())
 
-    def set_values_discount_cbb(self, discount_cbb: CTkComboBox):
+    def set_values_discount_cbb(self, discount_cbb: ctk.CTkComboBox):
         dict_discount = self.__controller.get_discounts()
         if len(dict_discount.values()) > 0:
             discount_cbb.configure(values=dict_discount.values())

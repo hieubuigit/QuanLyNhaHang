@@ -1,22 +1,17 @@
 import math
 import tkinter as tk
 from enum import Enum
-from tkinter import ttk
-
-import customtkinter
-from PIL import Image, ImageTk
-
+import customtkinter as ctk
+from PIL import Image
 from Table_Order.table_model import TableType, Table
-from share.CustomMenu import CustomMenu
 from share.common_config import Action, UserType
-from customtkinter import *
-from functools import partial
+from share.utils import Utils
+
 
 class StatusTable(Enum):
     DISABLED = "Đã đặt"
     AVAILABLE = "Trống"
 class TableView:
-
     hover_color = "LightSkyBlue"
     def __init__(self, window, controller, tables, user_type):
         self.__controller = controller
@@ -27,20 +22,19 @@ class TableView:
         self.__table_selected = Table()
         self.__screen_width = window.winfo_width()
         self.__screen_height = window.winfo_height()
-
-        self.grid_frame = CTkFrame(window)
+        self.grid_frame = ctk.CTkFrame(window)
         self.grid_frame.pack(fill="both", expand=True)
 
         # Tạo thanh cuộn ngang
-        self.horizontal_scrollbar = CTkScrollbar(self.grid_frame, orientation="horizontal")
+        self.horizontal_scrollbar = ctk.CTkScrollbar(self.grid_frame, orientation="horizontal")
         self.horizontal_scrollbar.pack(side="bottom", fill="x")
 
         # Tạo thanh cuộn dọc
-        self.vertical_scrollbar = CTkScrollbar(self.grid_frame, orientation="vertical")
+        self.vertical_scrollbar = ctk.CTkScrollbar(self.grid_frame, orientation="vertical")
         self.vertical_scrollbar.pack(side="right", fill="y")
 
         # Tạo một canvas để chứa lưới
-        self.canvas = CTkCanvas(self.grid_frame, xscrollcommand=self.horizontal_scrollbar.set,
+        self.canvas = ctk.CTkCanvas(self.grid_frame, xscrollcommand=self.horizontal_scrollbar.set,
                                 yscrollcommand=self.vertical_scrollbar.set)
         self.canvas.pack(side="left", fill=tk.BOTH, expand=True)
 
@@ -49,7 +43,7 @@ class TableView:
         self.vertical_scrollbar.configure(command=self.canvas.yview)
 
         # Tạo một frame con để chứa bàn
-        self.grid_content = CTkFrame(self.canvas, fg_color="white")
+        self.grid_content = ctk.CTkFrame(self.canvas, fg_color="white")
         self.canvas.create_window((0, 0), window=self.grid_content, anchor="nw")
 
         # Thêm ds bàn vào grid content
@@ -59,9 +53,6 @@ class TableView:
         self.grid_content.bind("<Configure>", self.on_frame_configure)
 
         self.create_menu_option_right(window)
-
-
-
 
     def _add_content(self, window, tables):
         """Thêm nội dung vào Frame (trong trường hợp này là một grid)"""
@@ -77,20 +68,15 @@ class TableView:
                     print(tables[index])
                     num_table = tables[index].tableNum
                     self.grid_content.grid_columnconfigure(j, weight=1)
-                    table_fr = CTkFrame(self.grid_content)
+                    table_fr = ctk.CTkFrame(self.grid_content)
                     table_fr.grid(row=i, column=j, sticky="nsew", padx=5, pady=5,
                                   ipadx=column_width // 4,
                                   ipady=row_height // 4)
-                    img_table = CTkImage(Image.open("../assets/ic_table_visible.png"), size=(image_size, image_size))
-                    btn = CTkLabel(table_fr, text=num_table, image=img_table, font=CTkFont("TkDefaultFont", 18))
+                    img_table = ctk.CTkImage(Image.open("../assets/ic_table_visible.png"), size=(image_size, image_size))
+                    btn = ctk.CTkLabel(table_fr, text=num_table, image=img_table, font=ctk.CTkFont("TkDefaultFont", 18))
                     btn.bind("<Button-1>", lambda e, t=tables[index]: self.selected_table(window, t))
                     btn.bind("<Button-2>", lambda e, t=tables[index]: self.__show_context_popup(event=e, tableSelected=t))
                     btn.pack(fill=tk.BOTH, expand=1)
-
-
-
-    def update_data_table(self):
-        pass
 
     def selected_table(self, window, table):
         if self.__user_type == UserType.ADMIN:
@@ -108,31 +94,37 @@ class TableView:
 
 
     def create_ui_toplevel(self, window, action_type):
-        customtkinter.set_appearance_mode("light")
-        self.toplevel = CTkToplevel(window)
+        self.toplevel = ctk.CTkToplevel(window)
         self.toplevel.resizable(True, False)
         self.toplevel.geometry("290x250")
         validation = window.register(self.validate_input)
-        table_popup_frame = CTkFrame(self.toplevel)
-        lb_table_num = CTkLabel(table_popup_frame, text="Số bàn")
+        table_popup_frame = ctk.CTkFrame(self.toplevel)
+        lb_table_num = ctk.CTkLabel(table_popup_frame, text="Số bàn")
         lb_table_num.place(x=10, y=20)
-        self.entry_table_num = CTkEntry(table_popup_frame, textvariable=self.table_num_value, validate="key")
+        self.entry_table_num = ctk.CTkEntry(table_popup_frame,
+                                        textvariable=self.table_num_value,
+                                        border_width=0,
+                                        border_color="white",
+                                        validate="key", fg_color=("white", "white"))
         self.entry_table_num.place(x=80, y=20)
 
-        lb_seat_num = CTkLabel(table_popup_frame, text="Số ghế")
+        lb_seat_num = ctk.CTkLabel(table_popup_frame, text="Số ghế")
         lb_seat_num.place(x=10, y=60)
-        self.entry_seat_num = CTkEntry(table_popup_frame, textvariable=self.seat_num_value, validate="key",
-                                       validatecommand=(validation, '%P'))
+        self.entry_seat_num = ctk.CTkEntry(table_popup_frame, textvariable=self.seat_num_value, validate="key",
+                                       validatecommand=(validation, '%P'),
+                                       fg_color="white",
+                                       border_width=1, border_color=("red", "green"), state="normal")
+
         self.entry_seat_num.place(x=80, y=60)
 
-        lb_table_status = CTkLabel(table_popup_frame, text="Trạng thái")
+        lb_table_status = ctk.CTkLabel(table_popup_frame, text="Trạng thái")
         lb_table_status.place(x=10, y=100)
-        self.status_combox = CTkComboBox(table_popup_frame, values=[StatusTable.AVAILABLE.value, StatusTable.DISABLED.value], state="readonly")
+        self.status_combox = ctk.CTkComboBox(table_popup_frame, values=[StatusTable.AVAILABLE.value, StatusTable.DISABLED.value], state="readonly")
         self.status_combox.place(x=80, y=100)
-        self.lb_validate_table_info = CTkLabel(table_popup_frame, text="", text_color="red")
+        self.lb_validate_table_info = ctk.CTkLabel(table_popup_frame, text="", text_color="red")
         self.lb_validate_table_info.place(x=60, y=140)
 
-        btn_save = CTkButton(table_popup_frame, text="Lưu", command=lambda: self.click_button_add_or_edit_popup(window, action_type))
+        btn_save = ctk.CTkButton(table_popup_frame, text="Lưu", command=lambda: self.click_button_add_or_edit_popup(window, action_type))
         btn_save.pack(fill=tk.Y, expand=0, side="bottom", pady=40)
         if action_type == Action.ADD:
             self.table_num_value.set("")

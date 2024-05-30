@@ -9,6 +9,7 @@ from customtkinter import *
 from tkinter import filedialog
 
 from WareHouse.discount_view import DiscountView
+from share.utils import Utils
 
 
 class StatePage(Enum):
@@ -27,13 +28,15 @@ class WareHouseView:
         self.product_capacity_var = tk.StringVar()
         self.product_alcohol_var = tk.StringVar()
         self.product_type_var = tk.StringVar()
+
+        style = ttk.Style()
+        style.theme_use("default")
+        Utils.set_appearance_mode(customtkinter)
         # default right content
         self.product_page()
         self.__current_page = StatePage.Product
 
     def __ui_main_content(self, root):
-
-        customtkinter.set_appearance_mode("light")
 
         main_fr = CTkFrame(root)
         main_fr.pack(fill="both", expand=True)

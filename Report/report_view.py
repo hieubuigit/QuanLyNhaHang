@@ -2,7 +2,7 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
-import customtkinter
+import customtkinter as ctk
 import numpy as np
 from PIL import Image, ImageTk
 from customtkinter import *
@@ -11,18 +11,17 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from Bill.bill_view import BillType
 
-
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("blue")
 class ReportView:
     def __init__(self, window, controller):
-        customtkinter.set_appearance_mode("light")
         self.__controller = controller
         self.__quarters = {1: "Quý 1", 2: "Quý 2", 3: "Quý 3", 4: "Quý 4"}
         self.__quarter_var = tk.StringVar()
         self.__ui_main_content(window)
 
     def __ui_main_content(self, root):
-        style = ttk.Style()
-        style.theme_use('default')
+
         main_fr = CTkFrame(root)
         main_fr.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.__ui_left_view(root, main_fr)
@@ -33,8 +32,6 @@ class ReportView:
         self.__report_page()
 
     def __ui_left_view(self, root, main_fr):
-        style = ttk.Style()
-        style.theme_use('default')
         left_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
         left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=2, pady=1, ipadx=2)
 
@@ -94,7 +91,6 @@ class ReportView:
                                  values=quarters_values,
                                  state="readonly",
                                  variable=self.__quarter_var)
-
         filter_cbb.pack(fill=tk.BOTH, expand=0, side=tk.RIGHT, anchor=tk.E)
 
         chart_fr = CTkFrame(self.sub_fr, corner_radius=0)
@@ -121,7 +117,7 @@ class ReportView:
         # UI TreeView
         style = ttk.Style()
         style.theme_use('default')
-        tree_scrollX = customtkinter.CTkScrollbar(bottom_fr, height=15)
+        tree_scrollX = CTkScrollbar(bottom_fr, height=15)
         tree_scrollX.pack(side=tk.BOTTOM, fill='x')
         self.tv = ttk.Treeview(bottom_fr, yscrollcommand=tree_scrollX.set)
         self.tv.pack(fill=tk.BOTH, expand=1, padx=10, pady=3)

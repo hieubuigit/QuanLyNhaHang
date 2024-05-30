@@ -86,3 +86,8 @@ class Utils:
         elif gender_enum == Gender.OTHER.value:
             return Utils.gender[2]
         return None
+
+    @staticmethod
+    def set_appearance_mode(ctk):
+        ctk.set_appearance_mode("light")
+        ctk.set_default_color_theme("blue")
