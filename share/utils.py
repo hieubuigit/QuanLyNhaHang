@@ -4,7 +4,7 @@ from entities.models import User
 import tkinter as tk
 import datetime
 from share.common_config import UserType, Gender
-from ttkbootstrap import DateEntry
+# from ttkbootstrap import DateEntry
 
 
 class Utils:
@@ -48,14 +48,14 @@ class Utils:
         return my_entry
 
     @staticmethod
-    def date_picker_component(parent, kw: dict):
-        frame_item = ctk.CTkFrame(master=parent)
-        label = ctk.CTkLabel(master=frame_item, text=kw['lbl'])
-        label.pack(**Utils.label_pack_style)
-        date_picker = DateEntry(master=frame_item, dateformat="%d/%m/%Y")
-        date_picker.pack(**Utils.entry_pack_style)
-        frame_item.pack(**Utils.sub_frame_style)
-        return date_picker
+    # def date_picker_component(parent, kw: dict):
+    #     frame_item = ctk.CTkFrame(master=parent)
+    #     label = ctk.CTkLabel(master=frame_item, text=kw['lbl'])
+    #     label.pack(**Utils.label_pack_style)
+    #     date_picker = DateEntry(master=frame_item, dateformat="%d/%m/%Y")
+    #     date_picker.pack(**Utils.entry_pack_style)
+    #     frame_item.pack(**Utils.sub_frame_style)
+    #     return date_picker
 
     @staticmethod
     def format_date(date_str):
@@ -91,3 +91,5 @@ class Utils:
     def set_appearance_mode(ctk):
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
+
+

@@ -1,24 +1,27 @@
 import tkinter as tk
 from tkinter import ttk
-import customtkinter as ctk
+import tkcalendar as tkc
+
 from Home.home_View import HomeView
 from Report.report_controller import ReportController
 
 
+
+
+
 class HomeController:
-    def __init__(self, root):
-        super().__init__()
-        view = HomeView(root, self)
+    def __init__(self, app_root):
+        view = HomeView(app_root, self)
 
-    def nav_report_page(self, root):
-        report = ReportController(root=root)
-
+    def nav_report_page(self, parent):
+        report = ReportController(root=parent)
 
 if __name__ == '__main__':
-    root = ctk.CTk()
+    root = tk.Tk()
+    root.iconbitmap('../assets/restaurant.ico')
     root.resizable(True, True)
     root.state('zoomed')  # full screen
-    root.title("Restaurant Information")
+    root.title("Quản lý nhà hàng")
     home = HomeController(root)
     root.mainloop()
 

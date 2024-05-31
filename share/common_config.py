@@ -42,5 +42,4 @@ class TabType(Enum):
     TABLE = "TABLE"
     BILL = "BILL"
     REPORT = "REPORT"
-    LOGOUT = "LOGOUT"
     WARE_HOUSE = "WARE_HOUSE"

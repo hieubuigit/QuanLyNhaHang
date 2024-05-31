@@ -2,7 +2,6 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 import customtkinter
-import ttkbootstrap as bt
 from customtkinter import *
 
 
@@ -109,20 +108,20 @@ class DiscountView:
         start_date_lb = CTkLabel(self.sub_fr, text="Ngày bắt đầu")
         start_date_lb.grid(row=3, column=0, sticky=tk.NW + tk.S, pady=padding_y)
 
-        start_date_entry = bt.DateEntry(self.sub_fr,
-                                        dateformat="%Y-%m-%d",
-                                        bootstyle="success",
-                                        firstweekday=0,
-                                        borderwidth=1)
-        start_date_entry.entry.configure(textvariable=self.start_date_var)
-        start_date_entry.grid(row=3, column=1, sticky=tk.NW + tk.S)
-
-        end_date_lb = CTkLabel(self.sub_fr, text="Ngày kết thúc")
-        end_date_lb.grid(row=4, column=0, sticky=tk.NW + tk.S)
-
-        end_date_entry = bt.DateEntry(self.sub_fr, dateformat="%Y-%m-%d", bootstyle="danger", firstweekday=0)
-        end_date_entry.entry.configure(textvariable=self.end_date_var)
-        end_date_entry.grid(row=4, column=1, sticky=tk.NW + tk.S)
+        # start_date_entry = bt.DateEntry(self.sub_fr,
+        #                                 dateformat="%Y-%m-%d",
+        #                                 bootstyle="success",
+        #                                 firstweekday=0,
+        #                                 borderwidth=1)
+        # start_date_entry.entry.configure(textvariable=self.start_date_var)
+        # start_date_entry.grid(row=3, column=1, sticky=tk.NW + tk.S)
+        #
+        # end_date_lb = CTkLabel(self.sub_fr, text="Ngày kết thúc")
+        # end_date_lb.grid(row=4, column=0, sticky=tk.NW + tk.S)
+        #
+        # end_date_entry = bt.DateEntry(self.sub_fr, dateformat="%Y-%m-%d", bootstyle="danger", firstweekday=0)
+        # end_date_entry.entry.configure(textvariable=self.end_date_var)
+        # end_date_entry.grid(row=4, column=1, sticky=tk.NW + tk.S)
 
     def insert_row_treeview(self):
         pass

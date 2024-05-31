@@ -3,13 +3,13 @@ from tkinter import ttk
 import customtkinter as ctk
 from PIL import Image
 from Bill.bill_controller import BillController
+from Home.SlidePanel import SlidePanel
 from Table_Order.table_controller import TableController
 from WareHouse.ware_house_controller import WareHouseController
 from admin.logout.logout_controller import LogoutController
 from employee_view import EmployeeView
 from share.common_config import TabType
 import os
-
 from share.utils import Utils
 
 
@@ -27,35 +27,56 @@ class HomeView:
         style = ttk.Style()
         style.theme_use("default")
         Utils.set_appearance_mode(ctk)
-        home_fr = ctk.CTkFrame(window, fg_color="pink")
+        home_fr = ctk.CTkFrame(master=window, fg_color="white", corner_radius=0)
         home_fr.pack(fill=tk.BOTH, expand=1)
         # Tạo UI thanh tab bar
-        self.__generate_ui_header(home_fr)
+        self.__generate_ui_header(window=home_fr)
 
         # Tạo một frame chính để chuyển đổi nhiều page
-        self.__main_fr = ctk.CTkFrame(home_fr)
+        self.__main_fr = ctk.CTkFrame(master=home_fr, fg_color="white")
         self.__main_fr.pack(fill="both", expand=1)
 
         # Mặc định chọn tab 1: Hiển thị nhân viên page
         self.employee_page(self.__main_fr)
         self.empl_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
 
-
     def __generate_ui_header(self, window):
-        header_view = ctk.CTkFrame(window, border_width=5)
-        header_view.pack(fill="both", expand=0)
-        self.tab_bar_view = ctk.CTkFrame(header_view)
-        self.tab_bar_view.pack(side="left")
-        avt_default = self.get_image_file("../assets/avatar_default_man.png")
+        # animated widget
+        animated_panel = SlidePanel(self.__root, 1, 0.866)
+        animated_panel.configure(corner_radius=0, border_color="gray", border_width=1, fg_color="white")
+        change_password_btn = ctk.CTkButton(animated_panel, text='Đổi mật khẩu',
+                                            corner_radius=0, fg_color="white", text_color="black",
+                                            hover_color=HomeView.hover_color_tab,
+                                            font=ctk.CTkFont("Roboto", 16))
+        change_password_btn.pack(expand=False, fill=tk.X, pady=(10, 0), padx=2)
+        ic_logout_default = ctk.CTkImage(Image.open("../assets/logout.png"), size=(25, 25))
+        logout_btn = ctk.CTkButton(animated_panel, text='Logout', corner_radius=0, fg_color="white",
+                                   hover_color=HomeView.hover_color_tab,
+                                   font=ctk.CTkFont("Roboto", 16),
+                                   image=ic_logout_default, compound=tk.LEFT, text_color="black",
+                                   command=lambda: self.on_logout_click())
+        logout_btn.pack(expand=False, fill=tk.X, pady=10, padx=2)
 
-        profile_btn = ctk.CTkButton(header_view, text="Admin director", image=avt_default, corner_radius=0,
-                                    bg_color="white", fg_color="black")
-        profile_btn.pack(side="right", anchor="ne")
-
-        # Tạo các button trong thanh tab bar
+        header_view = ctk.CTkFrame(window,corner_radius=0, fg_color="white")
+        header_view.pack(fill=tk.X, expand=0, padx=(3, 0))
         font_tab = ctk.CTkFont("TkDefaultFont", 16, 'bold')
         ipadx_tab_button = 10
+        self.tab_bar_view = ctk.CTkFrame(header_view)
+        self.tab_bar_view.pack(side="left")
 
+        avt_default = ctk.CTkImage(self.get_image_file("../assets/avatar_default_man.png"), size=(30, 30))
+        profile_btn = ctk.CTkButton(header_view, text="Admin director",
+                                    image=avt_default, corner_radius=0,
+                                    width=200,
+                                    font=font_tab,
+                                    text_color="#000080",
+                                    bg_color="white",
+                                    fg_color="white",
+                                    compound=tk.RIGHT,
+                                    command=lambda: animated_panel.animate())
+        profile_btn.pack(fill=tk.Y, side="right", anchor="ne", pady=(0, 6))
+
+        # # Tạo các button trong thanh tab bar
         self.empl_btn = ctk.CTkButton(self.tab_bar_view, text="Nhân viên", compound='top',
                                       corner_radius=HomeView.radius_tab,
                                       fg_color=HomeView.fg_color_tab_click,
@@ -66,7 +87,6 @@ class HomeView:
                                       command=lambda: self.__action_tab(button_type=TabType.EMPLOYEE))
         self.empl_btn.grid(row=0, column=0, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
         self.__set_ui_default_emp_tab()
-
 
         # Table tab
         self.table_btn = ctk.CTkButton(self.tab_bar_view, text="Đặt bàn",
@@ -120,18 +140,6 @@ class HomeView:
         self.report_btn.grid(row=0, column=4, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
         self.__set_ui_default_report_tab()
 
-        # Logout tab
-        self.logout_btn = ctk.CTkButton(self.tab_bar_view, text="Đăng xuất",
-                                        corner_radius=HomeView.radius_tab,
-                                        fg_color=HomeView.fg_color_tab_normal,
-                                        font=font_tab,
-                                        hover_color=HomeView.hover_color_tab,
-                                        border_width=1,
-                                        border_color="#0033CC",
-                                        compound='top', command=lambda: self.__action_tab(button_type=TabType.LOGOUT))
-        self.logout_btn.grid(row=0, column=5, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
-        self.__set_ui_default_logout_tab()
-
         for i in range(len(self.tab_bar_view.winfo_children())):
             self.tab_bar_view.grid_columnconfigure(i, weight=1)
 
@@ -167,8 +175,6 @@ class HomeView:
             self.__set_ui_default_ware_house_tab()
         elif HomeView.button_type_clicked == TabType.REPORT:
             self.__set_ui_default_report_tab()
-        elif HomeView.button_type_clicked == TabType.LOGOUT:
-            self.__set_ui_default_logout_tab()
 
     def __action_tab(self, button_type: TabType):
         self.__update_tab_clicked()
@@ -192,9 +198,6 @@ class HomeView:
         elif button_type == TabType.REPORT:
             self.report_btn.configure(text_color="white", fg_color=HomeView.fg_color_tab_click)
             self.report_page(self.__main_fr)
-        elif button_type == TabType.LOGOUT:
-            self.logout_btn.configure(text_color="white", fg_color=HomeView.fg_color_tab_click)
-            self.on_logout_click()
 
     def __set_ui_default_emp_tab(self):
         ic_emp_default = ctk.CTkImage(Image.open("../assets/ic_tab_employees.png"), size=HomeView.size_icon_tab)
@@ -218,10 +221,6 @@ class HomeView:
         ic_report_default = ctk.CTkImage(Image.open("../assets/pie-chart.png"), size=HomeView.size_icon_tab)
         self.report_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_report_default)
 
-    def __set_ui_default_logout_tab(self):
-        ic_logout_default = ctk.CTkImage(Image.open("../assets/logout.png"), size=HomeView.size_icon_tab)
-        self.logout_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_logout_default)
-
     def get_image_file(self, path_file: str):
         try:
             if path_file == "": return
@@ -231,6 +230,6 @@ class HomeView:
             else:
                 path = f"../{path_file}"
             if os.path.exists(path):
-                return ctk.CTkImage(Image.open(path).resize(HomeView.size_icon_tab))
+                return Image.open(path)
         except Exception as ex:
             print(ex)
