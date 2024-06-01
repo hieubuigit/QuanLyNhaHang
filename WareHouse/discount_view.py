@@ -2,7 +2,6 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 import customtkinter
-import ttkbootstrap as bt
 from customtkinter import *
 
 
@@ -22,7 +21,7 @@ class DiscountView:
         customtkinter.set_appearance_mode("light")
         style = ttk.Style()
         style.theme_use('default')
-        main_fr = CTkFrame(root, border_width=1, border_color="gray", fg_color="transparent")
+        main_fr = CTkFrame(root, border_width=1, border_color="gray")
         main_fr.pack(fill=tk.BOTH, expand=1)
         self.tv = ttk.Treeview(main_fr)
         self.tv.pack(fill=tk.X, expand=0, padx=10, pady=5)
@@ -60,12 +59,11 @@ class DiscountView:
         padding_x = 25
         padding_y = 5
         entry_width = 300
-        entry_padding_y = 8
 
         line = CTkFrame(main_fr, height=2, corner_radius=0, border_width=0)
         line.pack(fill=tk.X, expand=0)
 
-        option_fr = CTkFrame(main_fr, corner_radius=10)
+        option_fr = CTkFrame(main_fr, corner_radius=10, fg_color="white")
         option_fr.pack(expand=0, pady=10)
 
         heading2 = CTkFont("TkDefaultFont", 16, 'bold')
@@ -73,7 +71,7 @@ class DiscountView:
         detail_lb = CTkLabel(option_fr, text="Thông tin chi tiết", text_color="#000088",
                              font=heading2)
         detail_lb.pack(fill=tk.X, expand=0, padx=20, side="top", pady=5)
-        self.sub_fr = CTkFrame(option_fr, corner_radius=0, fg_color="transparent")
+        self.sub_fr = CTkFrame(option_fr, corner_radius=0)
         self.sub_fr.pack(fill=tk.BOTH, expand=1, padx=padding_x, pady=20, ipadx=10)
         self.sub_fr.columnconfigure(0, weight=1)
         self.sub_fr.rowconfigure(0, weight=1)
@@ -110,20 +108,20 @@ class DiscountView:
         start_date_lb = CTkLabel(self.sub_fr, text="Ngày bắt đầu")
         start_date_lb.grid(row=3, column=0, sticky=tk.NW + tk.S, pady=padding_y)
 
-        start_date_entry = bt.DateEntry(self.sub_fr,
-                                        dateformat="%Y-%m-%d",
-                                        bootstyle="success",
-                                        firstweekday=0,
-                                        borderwidth=1)
-        start_date_entry.entry.configure(textvariable=self.start_date_var)
-        start_date_entry.grid(row=3, column=1, sticky=tk.NW + tk.S)
-
-        end_date_lb = CTkLabel(self.sub_fr, text="Ngày kết thúc")
-        end_date_lb.grid(row=4, column=0, sticky=tk.NW + tk.S)
-
-        end_date_entry = bt.DateEntry(self.sub_fr, dateformat="%Y-%m-%d", bootstyle="danger", firstweekday=0)
-        end_date_entry.entry.configure(textvariable=self.end_date_var)
-        end_date_entry.grid(row=4, column=1, sticky=tk.NW + tk.S)
+        # start_date_entry = bt.DateEntry(self.sub_fr,
+        #                                 dateformat="%Y-%m-%d",
+        #                                 bootstyle="success",
+        #                                 firstweekday=0,
+        #                                 borderwidth=1)
+        # start_date_entry.entry.configure(textvariable=self.start_date_var)
+        # start_date_entry.grid(row=3, column=1, sticky=tk.NW + tk.S)
+        #
+        # end_date_lb = CTkLabel(self.sub_fr, text="Ngày kết thúc")
+        # end_date_lb.grid(row=4, column=0, sticky=tk.NW + tk.S)
+        #
+        # end_date_entry = bt.DateEntry(self.sub_fr, dateformat="%Y-%m-%d", bootstyle="danger", firstweekday=0)
+        # end_date_entry.entry.configure(textvariable=self.end_date_var)
+        # end_date_entry.grid(row=4, column=1, sticky=tk.NW + tk.S)
 
     def insert_row_treeview(self):
         pass

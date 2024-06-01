@@ -21,7 +21,6 @@ class DiscountController:
         self.__discounts = []
         try:
             Connection.db_handle.connect()
-            # Discount.drop_table()
             pr = Discount.table_exists()
             if not pr:
                 Discount.create_table()

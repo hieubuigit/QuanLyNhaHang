@@ -15,7 +15,7 @@ class TableController:
         self.__user_type = UserType.ADMIN
         self.root = window
         self.__get_data()
-        self.view = TableView(window, self, self.__data_table, self.__user_type)
+        self.view = TableView(window, self, self.__user_type)
 
     @property
     def tables(self):

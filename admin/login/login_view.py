@@ -79,7 +79,7 @@ class LoginView:
             if user is None:
                 return
             self.__login_page.pack_forget()
-            homepage = HomeView(self.__parent)
+            homepage = HomeView(self.__parent, controller=None)
 
 
 if __name__ == '__main__':
