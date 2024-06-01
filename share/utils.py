@@ -11,7 +11,7 @@ class Utils:
     user_profile = dict()
 
     USER_TYPE = ("Admin", "Bình thường")
-    gender = ("Nam", "Nữ", "Khác")
+    GENDER = ("Nam", "Nữ", "Khác")
     ACCOUNT_STATUS = ("Hoạt động", "Không hoạt dộng")
 
     def __init__(self):
