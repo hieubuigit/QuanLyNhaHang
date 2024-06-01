@@ -7,8 +7,7 @@ class HomeController:
     def __init__(self, app_root):
         view = HomeView(app_root, self)
 
-    def nav_report_page(self, parent):
-        report = ReportController(root=parent)
+
 
 if __name__ == '__main__':
     root = tk.Tk()

@@ -1,14 +1,7 @@
-from enum import Enum
 
-import peewee
-
-from database.connection import Connection
 from share.base_model import BaseModel
 from peewee import *
 
-class ProductType(Enum):
-    Food = 0
-    Drink = 1
 class Product(BaseModel):
     id = AutoField(primary_key=True, null=True)
     name = CharField(null=True)

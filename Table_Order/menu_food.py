@@ -18,8 +18,13 @@ class MenuFood:
         toplevel.resizable(True, False)
         toplevel.geometry("1000x700")
         toplevel.title("Thực đơn nhà hàng")
+        toplevel.protocol("WM_DELETE_WINDOW", lambda: self.on_toplevel_closing(toplevel))
         self.create_ui_bill(toplevel)
         self.create_ui_menu(toplevel)
+
+    def on_toplevel_closing(self, toplevel):
+        self.__controller.update_quantity()
+        # toplevel.destroy()
 
     def create_ui_bill(self, parent):
         bill_fr = ctk.CTkFrame(parent)
@@ -144,19 +149,20 @@ class MenuFood:
         for index, item in enumerate(foods):
             sub_menu_fr = ctk.CTkFrame(menu_fr, border_width=1, border_color="gray", fg_color="white")
             sub_menu_fr.pack(fill=tk.X, expand=0, padx=20, pady=3)
-            food_image = ctk.CTkLabel(sub_menu_fr, text="Image Food", width=100, height=100)
+            food_image = ctk.CTkButton(sub_menu_fr, text="Image Food", width=100, height=100, corner_radius=0,
+                                       border_width=1)
             food_image.grid(row=index, column=0, pady=4, padx=4)
             if item.image:
                 image_decode = item.image + b'=' * (-len(item.image) % 4)
                 de = base64.b64decode(image_decode)
                 image = Image.open(io.BytesIO(de))
                 photo = ctk.CTkImage(image, size=(100, 100))
-                # food_image.configure(image=photo, text="")
+                food_image.configure(image=photo, text="")
             right_fr = ctk.CTkFrame(sub_menu_fr, corner_radius=0, fg_color="white")
             right_fr.grid(row=index, column=1, padx=(40, 20))
-            food_name_lb = ctk.CTkLabel(right_fr, text=f"Tên món: {item.name}")
+            food_name_lb = ctk.CTkLabel(right_fr, text=f"{item.name}")
             food_name_lb.pack(expand=0)
-            price_lb = ctk.CTkLabel(right_fr, text=f"Giá: {item.price} đ")
+            price_lb = ctk.CTkLabel(right_fr, text=f"{item.price} đ")
             price_lb.pack(expand=0)
 
 

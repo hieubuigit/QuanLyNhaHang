@@ -1,14 +1,9 @@
-from enum import Enum
 
-import mysql.connector
 from peewee import *
-import datetime
-
 from share.base_model import BaseModel
+from share.common_config import TableType
 
-class TableType(Enum):
-    Add = "ADD"
-    Normal = "NORMAL"
+
 class Table(BaseModel):
     id = AutoField(primary_key=True, null=True)
     tableNum = CharField()

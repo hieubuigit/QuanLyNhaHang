@@ -47,3 +47,11 @@ class TabType(Enum):
 class StatusTable(Enum):
     DISABLED = "Đã đặt"
     AVAILABLE = "Trống"
+
+class TableType(Enum):
+    Add = "ADD"
+    Normal = "NORMAL"
+
+class ProductType(Enum):
+    Food = 0
+    Drink = 1

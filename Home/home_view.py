@@ -4,6 +4,7 @@ import customtkinter as ctk
 from PIL import Image
 from Bill.bill_controller import BillController
 from Home.SlidePanel import SlidePanel
+from Report.report_controller import ReportController
 from Table_Order.table_controller import TableController
 from WareHouse.ware_house_controller import WareHouseController
 from employee.employee_view import EmployeeView
@@ -156,7 +157,7 @@ class HomeView:
         warehouse_fr = WareHouseController(main_fr)
 
     def report_page(self, main_fr):
-        self.__controller.nav_report_page(main_fr)
+        report_p = ReportController(root=main_fr)
 
     def on_logout_click(self):
         logout_controller = LogoutController()
@@ -176,6 +177,7 @@ class HomeView:
             self.__set_ui_default_report_tab()
 
     def __action_tab(self, button_type: TabType):
+        print(button_type)
         self.__update_tab_clicked()
         HomeView.button_type_clicked = button_type
         # Hủy đi màn hinh load tab cũ
