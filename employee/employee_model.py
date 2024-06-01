@@ -4,6 +4,7 @@ from entities.models import User
 from share.utils import Utils
 import datetime
 
+
 class EmployeeModel(Model):
     prefix_emp_code = "NV"
 
@@ -34,13 +35,14 @@ class EmployeeModel(Model):
         return user
 
     def get_employee_list(self, **search_condition):
-        # Get all employee list
+        # Get all employee list, with search condition
         search_pattern = ""
         if "keyword" in search_condition and search_condition["keyword"] != "":
             search_pattern = search_condition["keyword"]
-        data: list[User] = (User.select().where(search_pattern == "" or (fn.CONCAT(User.first_name, ' ', User.last_name).contains(search_pattern))
-                                                or User.user_code.contains(search_pattern))
-                            .order_by(User.first_name.desc()))
+        data: list[User] = (User.select().where(search_pattern == ""
+                                                or (User.user_code.contains(search_pattern)
+                                                    | (fn.CONCAT(User.first_name, ' ', User.last_name).contains(search_pattern))))
+                                        .order_by(User.first_name.desc()))
         emp_list = list()
         if data:
             for idx, user in enumerate(data):
@@ -73,4 +75,3 @@ class EmployeeModel(Model):
     def delete_by_id(self, id):
         query = User.delete().where(User.id == id)
         return query.execute()
-

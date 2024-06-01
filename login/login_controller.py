@@ -1,6 +1,5 @@
 import tkinter.messagebox as msgBox
 import bcrypt
-
 from login.login_model import LoginModel
 from share.common_config import UserStatus, UserType
 from share.utils import Utils

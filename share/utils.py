@@ -1,12 +1,8 @@
 import customtkinter as ctk
-from tkcalendar import DateEntry
-from entities.models import User
 import tkinter as tk
 import datetime
-from share.common_config import UserType, Gender
+from tkcalendar import DateEntry
 from share.common_config import UserType, Gender, UserStatus
-from PIL import Image, ImageTk
-import os
 
 
 class Utils:
@@ -23,8 +19,8 @@ class Utils:
 
     # Employee page
     heading_group_pack = {'side': tk.TOP, 'expand': True, 'padx': 5, 'pady': 3, 'anchor': tk.W, 'fill': tk.X}
-    label_pack_style = {'side': tk.TOP, 'expand': True, 'padx': 5, 'pady': 3, 'anchor': tk.W, 'fill': tk.X}
-    entry_pack_style = {'side': tk.TOP, 'expand': True, 'anchor': tk.W, 'padx': 5, 'pady': 3, 'ipadx': 3, 'ipady': 3,
+    label_pack_style = {'side': tk.TOP, 'expand': True, 'padx': 5, 'pady': 3, 'anchor': tk.W, 'fill': tk.NONE}
+    entry_pack_style = {'side': tk.TOP, 'expand': True, 'anchor': "nw", 'padx': 5, 'pady': 3, 'ipadx': 3, 'ipady': 3,
                         'fill': tk.X}
     sub_frame_style = {'side': tk.TOP, 'expand': True, 'anchor': tk.W, 'pady': 5, 'fill': tk.X}
     radio_group_style = {'side': tk.TOP, 'expand': True, 'anchor': tk.W, 'padx': (0, 100), 'pady': 3, 'ipadx': 3,
@@ -55,7 +51,7 @@ class Utils:
         frame_item = ctk.CTkFrame(master=parent)
         label = ctk.CTkLabel(master=frame_item, text=kw['lbl'])
         label.pack(**Utils.label_pack_style)
-        date_picker = DateEntry(master=frame_item, dateformat="%d/%m/%Y")
+        date_picker = DateEntry(master=frame_item, date_pattern='dd/mm/yyyy')
         date_picker.pack(**Utils.entry_pack_style)
         frame_item.pack(**Utils.sub_frame_style)
         return date_picker
@@ -109,20 +105,3 @@ class Utils:
     def set_appearance_mode(ctk):
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
-
-
-    @staticmethod
-    def get_image_file(path_file: str):
-        try:
-            if path_file == "": return
-            path = ""
-            if os.path.exists(path_file):
-                path = path_file
-            else:
-                path = f"../{path_file}"
-            if os.path.exists(path):
-                return Image.open(path)
-        except Exception as ex:
-            print(ex)
-
-
