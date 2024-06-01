@@ -40,8 +40,7 @@ class WareHouseController:
             Connection.db_handle.connect()
             pr = Product.table_exists()
             if not pr:
-                Product.create_table()
-
+                Connection.db_handle.create_tables([Product], safe=True)
             row = Product(name=name, price=price, unit=unit, quantity=quantity, capacity=capacity, alcohol=alcohol,
 
                           productType=product_type, image=image, createdDate=datetime.datetime.now())
