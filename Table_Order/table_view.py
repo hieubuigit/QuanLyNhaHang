@@ -3,10 +3,10 @@ import tkinter as tk
 from enum import Enum
 import customtkinter as ctk
 from PIL import Image
+
+from Table_Order.menu_food import MenuFood
 from Table_Order.table_model import TableType, Table
 from share.common_config import Action, UserType
-from share.utils import Utils
-from tkinter import ttk
 
 
 class StatusTable(Enum):
@@ -29,39 +29,42 @@ class TableView:
         self.__screen_height = window.winfo_height()
         self.status_cbb_var = tk.StringVar()
 
-        self.grid_frame = ctk.CTkFrame(window)
-        self.grid_frame.pack(fill="both", expand=True)
-
         # Utils.set_appearance_mode(ctk)
-        ctk.set_appearance_mode("light")
+        # Setup UI
+        self.create_ui(window)
+
+    def create_ui(self, master):
+        global grid_frame, grid_content, canvas
+        grid_frame = ctk.CTkFrame(master, fg_color="white")
+        grid_frame.pack(fill="both", expand=True)
 
         # Tạo thanh cuộn ngang
-        self.horizontal_scrollbar = ctk.CTkScrollbar(self.grid_frame, orientation="horizontal")
-        self.horizontal_scrollbar.pack(side="bottom", fill="x")
+        horizontal_scrollbar = ctk.CTkScrollbar(grid_frame, orientation="horizontal")
+        horizontal_scrollbar.pack(side="bottom", fill="x")
 
         # Tạo thanh cuộn dọc
-        self.vertical_scrollbar = ctk.CTkScrollbar(self.grid_frame, orientation="vertical")
-        self.vertical_scrollbar.pack(side="right", fill="y")
+        vertical_scrollbar = ctk.CTkScrollbar(grid_frame, orientation="vertical")
+        vertical_scrollbar.pack(side="right", fill="y")
 
         # Tạo một canvas để chứa lưới
-        self.canvas = ctk.CTkCanvas(self.grid_frame, xscrollcommand=self.horizontal_scrollbar.set,
-                                    yscrollcommand=self.vertical_scrollbar.set)
-        self.canvas.pack(side="left", fill=tk.BOTH, expand=True)
+        canvas = ctk.CTkCanvas(grid_frame, xscrollcommand=horizontal_scrollbar.set,
+                               yscrollcommand=vertical_scrollbar.set)
+        canvas.pack(side="left", fill=tk.BOTH, expand=True)
 
         # Kết nối thanh cuộn với canvas
-        self.horizontal_scrollbar.configure(command=self.canvas.xview)
-        self.vertical_scrollbar.configure(command=self.canvas.yview)
+        horizontal_scrollbar.configure(command=canvas.xview)
+        vertical_scrollbar.configure(command=canvas.yview)
 
         # Tạo một frame con để chứa bàn
-        self.grid_content = ctk.CTkFrame(self.canvas, fg_color="white")
-        self.canvas.create_window((0, 0), window=self.grid_content, anchor="nw")
+        grid_content = ctk.CTkFrame(canvas, fg_color="white")
+        canvas.create_window((0, 0), window=grid_content, anchor="nw")
 
         # Thêm ds bàn vào grid content
-        self._add_content(window, self.__controller.tables)
+        self._add_content(master, self.__controller.tables)
 
         # Đặt sự kiện để cập nhật kích thước của canvas
-        self.grid_content.bind("<Configure>", self.on_frame_configure)
-        self.create_menu_option_right(window)
+        grid_content.bind("<Configure>", self.on_frame_configure)
+        self.create_menu_option_right(master)
 
     def _add_content(self, window, tables):
         """Thêm nội dung vào Frame (trong trường hợp này là một grid)"""
@@ -76,8 +79,8 @@ class TableView:
                 if index < len(tables):
                     print(tables[index])
                     num_table = tables[index].tableNum
-                    self.grid_content.grid_columnconfigure(j, weight=1)
-                    table_fr = ctk.CTkFrame(self.grid_content)
+                    grid_content.grid_columnconfigure(j, weight=1)
+                    table_fr = ctk.CTkFrame(grid_content)
                     table_fr.grid(row=i, column=j, sticky="nsew", padx=5, pady=5,
                                   ipadx=column_width // 4,
                                   ipady=row_height // 4)
@@ -92,18 +95,20 @@ class TableView:
     def selected_table(self, window, table):
         if self.__user_type == UserType.ADMIN:
             if table.table_type == TableType.Add:
-                self.create_ui_toplevel(window, Action.ADD)
+                print("win", window)
+                self.create_ui_add_toplevel(window, Action.ADD)
                 print("add table")
         else:
             # order
             print("selected table")
-            pass
+            self.__controller.show_menu_food(view_master=window)
+            # self.create_ui_menu_toplevel(window)
 
     def on_frame_configure(self, event):
         # Cập nhật kích thước của canvas khi nội dung thay đổi
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        canvas.configure(scrollregion=canvas.bbox("all"))
 
-    def create_ui_toplevel(self, window, action_type):
+    def create_ui_add_toplevel(self, window, action_type):
         global toplevel, entry_table_num, entry_seat_num, status_combox, lb_validate_table_info
 
         toplevel = ctk.CTkToplevel(window)
@@ -177,12 +182,12 @@ class TableView:
                 context_menu.grab_release()
 
     def edit_table(self, window):
-        self.create_ui_toplevel(window, Action.UPDATE)
+        self.create_ui_add_toplevel(window, Action.UPDATE)
 
     def delete_table(self, window):
         print(f"dd {self.__table_selected.tableNum}")
         self.__controller.delete_and_reload(table_id=self.__table_selected.id)
-        for item in self.grid_content.winfo_children():
+        for item in grid_content.winfo_children():
             item.destroy()
         self._add_content(window, self.__controller.tables)
         self.__table_selected = None
@@ -220,3 +225,7 @@ class TableView:
             toplevel.destroy()
         # Thực hiện reload lại UI danh sách bàn
         self._add_content(window=window, tables=self.__controller.tables)
+
+    def format_money(self, str_money, unit="đ"):
+        pass
+        # for i in len(str):

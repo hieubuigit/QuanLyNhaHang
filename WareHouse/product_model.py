@@ -1,5 +1,8 @@
 from enum import Enum
 
+import peewee
+
+from database.connection import Connection
 from share.base_model import BaseModel
 from peewee import *
 
