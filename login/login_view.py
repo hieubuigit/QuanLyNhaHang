@@ -3,6 +3,7 @@ import tkinter.messagebox as tkMessageBox
 from PIL import Image
 from ctypes import windll
 import customtkinter as ctk
+from Home.home_controller import HomeController
 from Home.home_view import HomeView
 from login.login_controller import LoginController
 from entities.models import User
@@ -82,7 +83,7 @@ class LoginView:
             if user is None:
                 return
             self.__login_page.pack_forget()
-            homepage = HomeView(self.__parent, controller=None)
+            homepage = HomeController(self.__parent)
 
 
 if __name__ == '__main__':
