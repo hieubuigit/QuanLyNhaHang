@@ -21,11 +21,11 @@ class CEntryDate(ctk.CTkFrame):
                                     textvariable=self._textvariable,
                                     state=state)
         self.__entry.pack(side="left")
-        icon_btn = ctk.CTkImage(Image.open("../assets/calendar_primary.png"), size=(20, 20))
+        icon_btn = ctk.CTkImage(Image.open("../../assets/calendar_primary.png"), size=(20, 20))
         if style == "success":
-            icon_btn = ctk.CTkImage(Image.open("../assets/calendar_success.png"), size=(20, 20))
+            icon_btn = ctk.CTkImage(Image.open("../../assets/calendar_success.png"), size=(20, 20))
         elif style == "danger":
-            icon_btn = ctk.CTkImage(Image.open("../assets/calendar_danger.png"), size=(20, 20))
+            icon_btn = ctk.CTkImage(Image.open("../../assets/calendar_danger.png"), size=(20, 20))
         self.__btn = ctk.CTkButton(master=self, text="",
                                    corner_radius=0,
                                    width=30,

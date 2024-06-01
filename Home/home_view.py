@@ -221,16 +221,3 @@ class HomeView:
     def __set_ui_default_report_tab(self):
         ic_report_default = ctk.CTkImage(Image.open("../../assets/pie-chart.png"), size=HomeView.size_icon_tab)
         self.report_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_report_default)
-
-    def get_image_file(self, path_file: str):
-        try:
-            if path_file == "": return
-            path = ""
-            if os.path.exists(path_file):
-                path = path_file
-            else:
-                path = f"../{path_file}"
-            if os.path.exists(path):
-                return Image.open(path)
-        except Exception as ex:
-            print(ex)

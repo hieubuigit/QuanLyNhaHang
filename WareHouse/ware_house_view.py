@@ -4,7 +4,7 @@ import tkinter as tk
 from enum import Enum
 from tkinter import ttk, messagebox
 import customtkinter
-from PIL import ImageTk, Image, ImageFile
+from PIL import ImageTk, Image
 from customtkinter import *
 from tkinter import filedialog
 
@@ -115,7 +115,7 @@ class WareHouseView:
         left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=10, pady=10, ipadx=2)
         gr_btn = CTkFrame(left_fr)
         gr_btn.pack(pady=3)
-        img_product = CTkImage(Image.open("../assets/diet.png"), size=(25, 25))
+        img_product = CTkImage(Image.open("../../assets/diet.png"), size=(25, 25))
         self.product_btn = CTkButton(gr_btn,
                                      text="Sản phẩm",
                                      width=150,

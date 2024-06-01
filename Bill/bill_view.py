@@ -95,7 +95,7 @@ class BillView:
 
         date_entry_filter = CEntryDate(date_group_fr)
         date_entry_filter.pack(side="left", anchor="nw")
-        ic_filter = ctk.CTkImage(Image.open("../assets/funnel.png"), size=(20, 20))
+        ic_filter = ctk.CTkImage(Image.open("../../assets/funnel.png"), size=(20, 20))
         filter_btn = ctk.CTkButton(date_group_fr, text="", image=ic_filter, width=50, height=28, fg_color="white",
                                    border_width=1, border_color="gray",
                                    command=lambda:self.change_date_reload_view())
