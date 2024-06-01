@@ -313,7 +313,7 @@ class BillView:
             if len(valid_text) == 0:
                 valid_text = f"Vui lòng nhập {self.money_lb.cget('text')}"
             else:
-                valid_text = f"{valid_text}, {self.money_lb.cget("text")}"
+                valid_text = f"{valid_text}, {self.money_lb.cget('text')}"
 
         if valid_text:
             self.show_validate(valid_text)

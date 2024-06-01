@@ -1,12 +1,6 @@
 import tkinter as tk
-from tkinter import ttk
-import tkcalendar as tkc
-
-from Home.home_View import HomeView
 from Report.report_controller import ReportController
-
-
-
+from Home.home_view import HomeView
 
 
 class HomeController:

@@ -1,9 +1,8 @@
 import tkinter
 import customtkinter
-from functools import partial
 import customtkinter as ctk
 from PIL import Image
-from employee_view import EmployeeView
+from employee.employee_view import EmployeeView
 from share.common_config import Tab
 from share.utils import Utils
 DARK_MODE = "light"
@@ -49,17 +48,17 @@ class TabControls(customtkinter.CTk):
 
     def create_tab_selector(self, parent, tab_id: Tab):
         if tab_id == Tab.EMPLOYEE:
-            self.create_tab_btn("../../assets/officer.png", "Nhân viên", tab_id)
+            self.create_tab_btn("../assets/officer.png", "Nhân viên", tab_id)
         elif tab_id == Tab.TABLE:
             self.create_tab_btn("../../assets/around-table.png", "Bàn", tab_id)
         elif tab_id == Tab.INVOICE:
-            self.create_tab_btn("../../assets/shopping-bag.png", "Hoá đơn", tab_id)
+            self.create_tab_btn("../assets/shopping-bag.png", "Hoá đơn", tab_id)
         elif tab_id == Tab.WARE_HOUSE:
-            self.create_tab_btn("../../assets/warehouse.png", "Kho", tab_id)
+            self.create_tab_btn("../assets/warehouse.png", "Kho", tab_id)
         elif tab_id == Tab.REPORT:
-            self.create_tab_btn("../../assets/calendar.png", "Báo cáo", tab_id)
+            self.create_tab_btn("../assets/calendar.png", "Báo cáo", tab_id)
         elif tab_id == Tab.LOG_OUT:
-            self.create_tab_btn("../../assets/logout.png", "Đăng xuất", tab_id)
+            self.create_tab_btn("../assets/logout.png", "Đăng xuất", tab_id)
 
     def create_tab_btn(self, logo_path, btn_name, tab_id: Tab):
         try:

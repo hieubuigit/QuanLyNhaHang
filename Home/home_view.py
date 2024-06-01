@@ -6,10 +6,9 @@ from Bill.bill_controller import BillController
 from Home.SlidePanel import SlidePanel
 from Table_Order.table_controller import TableController
 from WareHouse.ware_house_controller import WareHouseController
-from admin.logout.logout_controller import LogoutController
-from employee_view import EmployeeView
+from employee.employee_view import EmployeeView
+from logout.logout_controller import LogoutController
 from share.common_config import TabType
-import os
 from share.utils import Utils
 
 
@@ -64,7 +63,7 @@ class HomeView:
         self.tab_bar_view = ctk.CTkFrame(header_view)
         self.tab_bar_view.pack(side="left")
 
-        avt_default = ctk.CTkImage(self.get_image_file("../assets/avatar_default_man.png"), size=(30, 30))
+        avt_default = ctk.CTkImage(Image.open("../assets/avatar_default_man.png"), size=(30, 30))
         profile_btn = ctk.CTkButton(header_view, text="Admin director",
                                     image=avt_default, corner_radius=0,
                                     width=200,
@@ -220,16 +219,3 @@ class HomeView:
     def __set_ui_default_report_tab(self):
         ic_report_default = ctk.CTkImage(Image.open("../assets/pie-chart.png"), size=HomeView.size_icon_tab)
         self.report_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_report_default)
-
-    def get_image_file(self, path_file: str):
-        try:
-            if path_file == "": return
-            path = ""
-            if os.path.exists(path_file):
-                path = path_file
-            else:
-                path = f"../{path_file}"
-            if os.path.exists(path):
-                return Image.open(path)
-        except Exception as ex:
-            print(ex)

@@ -34,6 +34,7 @@ class EmployeeModel(Model):
         return user
 
     def get_employee_list(self, **search_condition):
+        # Get all employee list
         search_pattern = ""
         if "keyword" in search_condition and search_condition["keyword"] != "":
             search_pattern = search_condition["keyword"]
@@ -55,8 +56,9 @@ class EmployeeModel(Model):
                 emp.append(user.email)
                 emp.append(user.address)
                 emp.append(user.user_name)
-                emp.append(user.status)
-                emp.append(user.type)
+                emp.append(Utils.get_status_account_name(user.status))
+                emp.append(Utils.get_account_type_str(user.type))
+                emp.append(user.created_date.strftime("%Y-%m-%d %H:%M:%S"))
                 emp.append(user.id)
                 emp_list.append(emp)
         return emp_list
@@ -71,3 +73,4 @@ class EmployeeModel(Model):
     def delete_by_id(self, id):
         query = User.delete().where(User.id == id)
         return query.execute()
+

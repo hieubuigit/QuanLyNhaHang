@@ -16,7 +16,7 @@ class Gender(Enum):
     MALE = 1
     OTHER = 2
 
-class UserActive(Enum):
+class UserStatus(Enum):
     INACTIVE = 0
     ACTIVE = 1
 
@@ -43,3 +43,7 @@ class TabType(Enum):
     BILL = "BILL"
     REPORT = "REPORT"
     WARE_HOUSE = "WARE_HOUSE"
+
+class StatusTable(Enum):
+    DISABLED = "Đã đặt"
+    AVAILABLE = "Trống"

@@ -4,7 +4,7 @@ import tkinter as tk
 from enum import Enum
 from tkinter import ttk, messagebox
 import customtkinter
-from PIL import ImageTk, Image, ImageFile
+from PIL import ImageTk, Image
 from customtkinter import *
 from tkinter import filedialog
 

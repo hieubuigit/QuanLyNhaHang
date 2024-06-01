@@ -1,5 +1,6 @@
 from datetime import datetime
-import Image
+# import Image
+from PIL import Image
 import customtkinter as ctk
 import tkcalendar as tkc
 from tkinter import ttk
