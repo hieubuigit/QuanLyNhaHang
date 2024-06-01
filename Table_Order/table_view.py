@@ -81,7 +81,7 @@ class TableView:
                     table_fr.grid(row=i, column=j, sticky="nsew", padx=5, pady=5,
                                   ipadx=column_width // 4,
                                   ipady=row_height // 4)
-                    img_table = ctk.CTkImage(Image.open("../../assets/ic_table_visible.png"),
+                    img_table = ctk.CTkImage(Image.open("../assets/ic_table_visible.png"),
                                              size=(image_size, image_size))
                     btn = ctk.CTkLabel(table_fr, text=num_table, image=img_table, font=ctk.CTkFont("TkDefaultFont", 18))
                     btn.bind("<Button-1>", lambda e, t=tables[index]: self.selected_table(window, t))

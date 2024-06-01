@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
+
+from employee.employee_controller import EmployeeController
+from employee.employee_model import EmployeeModel
 # from ctypes import windll
-from employee_controller import EmployeeController
-from employee_model import EmployeeModel
 from share.common_config import Gender, Action, UserStatus
 from share.utils import Utils
 import customtkinter as ctk
@@ -29,7 +30,7 @@ class EmployeeView:
                'updated_date')
 
     def __init__(self, parent: ctk.CTkFrame):
-        ctk.set_default_color_theme("../../share/theme.json")
+        ctk.set_default_color_theme("../share/theme.json")
         self.__controller = EmployeeController()
         self.__employee_model = EmployeeModel()
 

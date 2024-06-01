@@ -4,7 +4,7 @@ from PIL import Image
 from ctypes import windll
 import customtkinter as ctk
 from Home.home_view import HomeView
-from admin.login.login_controller import LoginController
+from login.login_controller import LoginController
 from entities.models import User
 from share.utils import Utils
 
@@ -20,7 +20,8 @@ class LoginView:
         #Left column
         try:
             left_col = ctk.CTkFrame(parent, fg_color="#fff")
-            building_img = ctk.CTkImage(light_image=Image.open('../../assets/view-building-with-cartoon-style-architecture.jpg'), dark_image=Image.open('../../assets/view-building-with-cartoon-style-architecture.jpg'), size=(450, 600))
+            building_img = ctk.CTkImage(light_image=Image.open('../assets/view-building-with-cartoon-style-architecture.jpg'),
+                dark_image=Image.open('../assets/view-building-with-cartoon-style-architecture.jpg'), size=(450, 600))
             building_lbl = ctk.CTkLabel(master=left_col, text="", image=building_img)
             building_lbl.image = building_img
             building_lbl.pack(side=tk.LEFT, expand=tk.YES, fill=tk.BOTH)
@@ -36,7 +37,8 @@ class LoginView:
         heading.pack(side=tk.TOP, fill=tk.BOTH)
 
         try:
-            photo = ctk.CTkImage(light_image=Image.open('../../assets/profile.png'), dark_image=Image.open('../../assets/profile.png'), size=(100, 100))
+            photo = ctk.CTkImage(light_image=Image.open('../assets/profile.png'), dark_image=Image.open(
+                '../assets/profile.png'), size=(100, 100))
             photo_lbl = ctk.CTkLabel(master=wrap_controls, text="", image=photo)
             photo_lbl.image = photo
             photo_lbl.pack(side=tk.TOP, fill=tk.BOTH, pady=30)
@@ -62,7 +64,8 @@ class LoginView:
         group_item.pack(side=tk.TOP, anchor="center", expand=tk.YES)
 
         # Login button
-        my_image = ctk.CTkImage(light_image=Image.open('../../assets/arrow.png'), dark_image=Image.open('../../assets/arrow.png'), size=(20, 20))
+        my_image = ctk.CTkImage(light_image=Image.open('../assets/arrow.png'), dark_image=Image.open(
+            '../assets/arrow.png'), size=(20, 20))
         login_btn = ctk.CTkButton(master=wrap_controls, text='Đăng nhập', width=10, fg_color=Utils.BLUE, text_color="white", font=('', 18, 'bold'), image=my_image, compound='left',
                                   command=lambda: self.on_login_click(username_ent.get(), password_ent.get()))
         login_btn.pack(side=tk.TOP, fill='none', expand=tk.NO, pady=30)
@@ -87,7 +90,7 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.state('zoomed')  # full screen
     root.resizable(True, True)
-    root.iconbitmap('../../assets/restaurant.ico')
+    root.iconbitmap('../assets/restaurant.ico')
     root.title("Restaurant Information")
 
     view = LoginView(root)

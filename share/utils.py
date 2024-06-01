@@ -5,6 +5,8 @@ import tkinter as tk
 import datetime
 from share.common_config import UserType, Gender
 from share.common_config import UserType, Gender, UserStatus
+from PIL import Image, ImageTk
+import os
 
 
 class Utils:
@@ -110,7 +112,7 @@ class Utils:
 
 
     @staticmethod
-    def get_image_file(self, path_file: str):
+    def get_image_file(path_file: str):
         try:
             if path_file == "": return
             path = ""

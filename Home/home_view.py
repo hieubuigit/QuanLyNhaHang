@@ -6,11 +6,9 @@ from Bill.bill_controller import BillController
 from Home.SlidePanel import SlidePanel
 from Table_Order.table_controller import TableController
 from WareHouse.ware_house_controller import WareHouseController
-from admin.login.login_controller import LoginController
-from admin.logout.logout_controller import LogoutController
-from employee_view import EmployeeView
-from share.common_config import TabType, UserType
-import os
+from employee.employee_view import EmployeeView
+from logout.logout_controller import LogoutController
+from share.common_config import TabType
 from share.utils import Utils
 
 
@@ -50,7 +48,7 @@ class HomeView:
                                             hover_color=HomeView.hover_color_tab,
                                             font=ctk.CTkFont("Roboto", 16))
         change_password_btn.pack(expand=False, fill=tk.X, pady=(10, 0), padx=2)
-        ic_logout_default = ctk.CTkImage(Image.open("../../assets/logout.png"), size=(25, 25))
+        ic_logout_default = ctk.CTkImage(Image.open("../assets/logout.png"), size=(25, 25))
         logout_btn = ctk.CTkButton(animated_panel, text='Logout', corner_radius=0, fg_color="white",
                                    hover_color=HomeView.hover_color_tab,
                                    font=ctk.CTkFont("Roboto", 16),
@@ -65,7 +63,7 @@ class HomeView:
         self.tab_bar_view = ctk.CTkFrame(header_view)
         self.tab_bar_view.pack(side="left")
 
-        avt_default = ctk.CTkImage(self.get_image_file("../../assets/avatar_default_man.png"), size=(30, 30))
+        avt_default = ctk.CTkImage(Image.open("../assets/avatar_default_man.png"), size=(30, 30))
         profile_btn = ctk.CTkButton(header_view, text="Admin director",
                                     image=avt_default, corner_radius=0,
                                     width=200,
@@ -201,23 +199,23 @@ class HomeView:
             self.report_page(self.__main_fr)
 
     def __set_ui_default_emp_tab(self):
-        ic_emp_default = ctk.CTkImage(Image.open("../../assets/ic_tab_employees.png"), size=HomeView.size_icon_tab)
+        ic_emp_default = ctk.CTkImage(Image.open("../assets/ic_tab_employees.png"), size=HomeView.size_icon_tab)
         self.empl_btn.configure(image=ic_emp_default, text_color="black", fg_color=HomeView.fg_color_tab_normal)
 
     def __set_ui_default_table_tab(self):
-        ic_table_default = ctk.CTkImage(Image.open("../../assets/restaurant.ico"), size=HomeView.size_icon_tab)
+        ic_table_default = ctk.CTkImage(Image.open("../assets/restaurant.ico"), size=HomeView.size_icon_tab)
         self.table_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_table_default)
 
     def __set_ui_default_bill_tab(self):
-        ic_bill_default = ctk.CTkImage(Image.open("../../assets/invoice.png"), size=HomeView.size_icon_tab)
+        ic_bill_default = ctk.CTkImage(Image.open("../assets/invoice.png"), size=HomeView.size_icon_tab)
         self.bill_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_bill_default)
         self.bill_btn.image = ic_bill_default
 
     def __set_ui_default_ware_house_tab(self):
-        ic_ware_house_default = ctk.CTkImage(Image.open("../../assets/delivery.png"), size=HomeView.size_icon_tab)
+        ic_ware_house_default = ctk.CTkImage(Image.open("../assets/delivery.png"), size=HomeView.size_icon_tab)
         self.ware_house_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal,
                                       image=ic_ware_house_default)
 
     def __set_ui_default_report_tab(self):
-        ic_report_default = ctk.CTkImage(Image.open("../../assets/pie-chart.png"), size=HomeView.size_icon_tab)
+        ic_report_default = ctk.CTkImage(Image.open("../assets/pie-chart.png"), size=HomeView.size_icon_tab)
         self.report_btn.configure(text_color="black", fg_color=HomeView.fg_color_tab_normal, image=ic_report_default)

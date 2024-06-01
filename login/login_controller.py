@@ -1,7 +1,7 @@
 import tkinter.messagebox as msgBox
 import bcrypt
 
-from admin.login.login_model import LoginModel
+from login.login_model import LoginModel
 from share.common_config import UserStatus, UserType
 from share.utils import Utils
 
