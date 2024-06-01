@@ -1,8 +1,6 @@
 import datetime
 from tkinter import messagebox
-
 import peewee
-
 from WareHouse.discount_controller import DiscountController
 from WareHouse.product_model import Product
 from WareHouse.ware_house_view import WareHouseView

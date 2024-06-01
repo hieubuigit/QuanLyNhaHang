@@ -8,7 +8,6 @@ from Bill.bill_model import Billing
 from Table_Order.menu_food_controller import MenuFoodController
 from Table_Order.table_model import *
 from Table_Order.table_view import TableView
-from WareHouse.product_model import Product
 from database.connection import Connection
 from share.common_config import UserType
 
@@ -25,8 +24,6 @@ class TableController:
     def tables(self):
         return self.__data_table
 
-
-
     def __get_table_data(self):
         self.__data_table = []
         try:
@@ -34,14 +31,15 @@ class TableController:
             results = Table.select()
             if len(results) > 0:
                 self.__data_table.extend(results)
-                print(len(results))
             if self.__user_type == UserType.ADMIN:
                 self.__data_table.insert(0, Table(tableNum="+", table_type=TableType.Add))
             print(f"get data: {len(self.__data_table)}")
         except peewee.InternalError as px:
             print(str(px))
         finally:
+
             Connection.db_handle.close()
+            print("db is close table when get sucess", Connection.db_handle.is_closed())
 
     def add_new_table_to_db(self, table_num, seat_num, status):
         try:
@@ -137,5 +135,6 @@ class TableController:
             Connection.db_handle.close()
 
     def show_menu_food(self, view_master):
+        print("db is close table at show menu", Connection.db_handle.is_closed())
         menu = MenuFoodController(view_master)
 
