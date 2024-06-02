@@ -1,17 +1,14 @@
 import math
 import tkinter as tk
 from enum import Enum
+from tkinter import messagebox
+
 import customtkinter as ctk
 from PIL import Image
 
-from Table_Order.menu_food import MenuFood
-from Table_Order.table_model import TableType, Table
-from share.common_config import Action, UserType
-
-
-class StatusTable(Enum):
-    DISABLED = "Đã đặt"
-    AVAILABLE = "Trống"
+from entities.models import Table
+from share.common_config import Action, UserType, StatusTable, TableType
+from share.utils import Utils
 
 
 class TableView:
@@ -19,12 +16,13 @@ class TableView:
 
     def __init__(self, window, controller, user_type):
         # property
+        self._window = window
         self.__controller = controller
         self.__user_type = user_type
         self.table_num_value = tk.StringVar()
         self.seat_num_value = tk.StringVar()
         self.status_value = tk.StringVar()
-        self.__table_selected = Table()
+        self.__table_selected = None
         self.__screen_width = window.winfo_width()
         self.__screen_height = window.winfo_height()
         self.status_cbb_var = tk.StringVar()
@@ -32,9 +30,11 @@ class TableView:
         # Utils.set_appearance_mode(ctk)
         # Setup UI
         self.create_ui(window)
+        # Thêm ds bàn vào grid content
+        self._add_content(self.__controller.tables)
 
     def create_ui(self, master):
-        global grid_frame, grid_content, canvas
+        global grid_content
         grid_frame = ctk.CTkFrame(master, fg_color="white")
         grid_frame.pack(fill="both", expand=True)
 
@@ -59,14 +59,11 @@ class TableView:
         grid_content = ctk.CTkFrame(canvas, fg_color="white")
         canvas.create_window((0, 0), window=grid_content, anchor="nw")
 
-        # Thêm ds bàn vào grid content
-        self._add_content(master, self.__controller.tables)
-
         # Đặt sự kiện để cập nhật kích thước của canvas
-        grid_content.bind("<Configure>", self.on_frame_configure)
+        grid_content.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
         self.create_menu_option_right(master)
 
-    def _add_content(self, window, tables):
+    def _add_content(self, tables):
         """Thêm nội dung vào Frame (trong trường hợp này là một grid)"""
         num_columns = 6
         column_width = self.__screen_width // 8
@@ -77,37 +74,55 @@ class TableView:
             for j in range(num_columns):
                 index = i * num_columns + j
                 if index < len(tables):
-                    print(tables[index])
                     num_table = tables[index].tableNum
                     grid_content.grid_columnconfigure(j, weight=1)
                     table_fr = ctk.CTkFrame(grid_content)
                     table_fr.grid(row=i, column=j, sticky="nsew", padx=5, pady=5,
                                   ipadx=column_width // 4,
                                   ipady=row_height // 4)
+
                     img_table = ctk.CTkImage(Image.open("../assets/ic_table_visible.png"),
                                              size=(image_size, image_size))
-                    btn = ctk.CTkLabel(table_fr, text=num_table, image=img_table, font=ctk.CTkFont("TkDefaultFont", 18))
-                    btn.bind("<Button-1>", lambda e, t=tables[index]: self.selected_table(window, t))
+                    btn = ctk.CTkLabel(table_fr, text=num_table, image=img_table,
+                                       font=ctk.CTkFont("TkDefaultFont", 18), fg_color="#EEEEEE")
+                    if tables[index].status == StatusTable.DISABLED.value[0]:
+                        img_table_disable = ctk.CTkImage(Image.open("../assets/ic_table_disable.png"),
+                                                         size=(image_size, image_size))
+                        btn.configure(image=img_table_disable)
+                    btn.bind("<Button-1>", lambda e, t=tables[index]: self.selected_table(t))
                     btn.bind("<Button-2>",
                              lambda e, t=tables[index]: self.__show_context_popup(event=e, tableSelected=t))
                     btn.pack(fill=tk.BOTH, expand=1)
 
-    def selected_table(self, window, table):
-        if self.__user_type == UserType.ADMIN:
+    def selected_table(self, table):
+        self.__table_selected = table
+        if self.__user_type == UserType.ADMIN.value:
             if table.table_type == TableType.Add:
-                print("win", window)
-                self.create_ui_add_toplevel(window, Action.ADD)
-                print("add table")
+                self.create_ui_add_toplevel(self._window, Action.ADD)
         else:
             # order
-            print("selected table")
-            self.__controller.show_menu_food(view_master=window)
-            # self.create_ui_menu_toplevel(window)
+            if table.status == StatusTable.AVAILABLE.value[0]:
+                if messagebox.askokcancel("Thông báo", "Xác nhận đặt bàn và bắt đầu chọn món"):
+                    self.__controller.create_bill(id_table=table.id, id_user=1)
+                    self.reload_ui_table(table_id=table.id, status=StatusTable.DISABLED.value[0])
+                    self.__controller.show_menu_food(view_master=self._window,
+                                                     reload_table_page=self.reload_table_page,
+                                                     table=table)
+            else:
+                self.__controller.show_menu_food(view_master=self._window,
+                                                 reload_table_page=self.reload_table_page,
+                                                 table=table)
 
-    def on_frame_configure(self, event):
-        # Cập nhật kích thước của canvas khi nội dung thay đổi
-        canvas.configure(scrollregion=canvas.bbox("all"))
+    def reload_table_page(self):
+       self.reload_ui_table(self.__table_selected.id, status=StatusTable.AVAILABLE.value[0])
 
+    def reload_ui_table(self, table_id, status):
+        if self.__controller.update_table_status(id_table=table_id,
+                                                 status=status):
+            print("reload page")
+            for item in grid_content.winfo_children():
+                item.destroy()
+            self._add_content(self.__controller.tables)
     def create_ui_add_toplevel(self, window, action_type):
         global toplevel, entry_table_num, entry_seat_num, status_combox, lb_validate_table_info
 
@@ -138,7 +153,7 @@ class TableView:
         lb_table_status.place(x=10, y=100)
         status_combox = ctk.CTkComboBox(table_popup_frame,
                                         border_width=1,
-                                        values=[StatusTable.AVAILABLE.value, StatusTable.DISABLED.value],
+                                        values=[StatusTable.AVAILABLE.value[1], StatusTable.DISABLED.value[1]],
                                         state="readonly", variable=self.status_cbb_var)
         status_combox.place(x=80, y=100)
         lb_validate_table_info = ctk.CTkLabel(table_popup_frame, text="", text_color="red")
@@ -174,7 +189,7 @@ class TableView:
 
     def __show_context_popup(self, event, tableSelected: Table):
         self.__table_selected = tableSelected
-        if self.__user_type == UserType.ADMIN and tableSelected.table_type == TableType.Normal:
+        if self.__user_type == UserType.ADMIN.value and tableSelected.table_type == TableType.Normal:
             try:
                 context_menu.tk_popup(event.x_root, event.y_root)
                 print(f"ss {self.__table_selected.tableNum}")
@@ -185,11 +200,10 @@ class TableView:
         self.create_ui_add_toplevel(window, Action.UPDATE)
 
     def delete_table(self, window):
-        print(f"dd {self.__table_selected.tableNum}")
         self.__controller.delete_and_reload(table_id=self.__table_selected.id)
         for item in grid_content.winfo_children():
             item.destroy()
-        self._add_content(window, self.__controller.tables)
+        self._add_content(self.__controller.tables)
         self.__table_selected = None
 
     def validate_input(self, new_value):
@@ -224,8 +238,6 @@ class TableView:
 
             toplevel.destroy()
         # Thực hiện reload lại UI danh sách bàn
-        self._add_content(window=window, tables=self.__controller.tables)
+        self._add_content(tables=self.__controller.tables)
 
-    def format_money(self, str_money, unit="đ"):
-        pass
-        # for i in len(str):
+

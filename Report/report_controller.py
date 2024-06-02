@@ -1,10 +1,9 @@
 from Report.report_view import ReportView
 from datetime import datetime, timedelta
 import peewee
-from Bill.bill_model import Billing
-from Bill.bill_view import BillView, BillType
-from database.connection import Connection
-from entities.models import User
+# from database.connection import Connection
+from entities.models import User, Billing
+from share.common_config import BillType
 
 
 class ReportController:
@@ -32,6 +31,7 @@ class ReportController:
     @total_revenue.setter
     def total_revenue(self, value):
         self.__total_revenue = value
+
     @property
     def bills(self):
         return self.__bills
@@ -43,29 +43,23 @@ class ReportController:
     def __get_bills(self, quarter=1):
         self.__bills = []
         try:
-            # Connection.db_handle.connect()
-            # b = Billing.table_exists()
-            # if not b:
-            #     Billing.create_table()
             current_quarter = quarter
-            # print(current_quarter)
             start_date = self.get_first_date_by_quarter(current_quarter)
             end_date = self.get_last_date_by_quarter(current_quarter, start_date)
             self.__months_of_the_quarter = [x for x in range(start_date.month, end_date.month + 1)]
-            print(self.__months_of_the_quarter)
             end_date = end_date + timedelta(days=1)
-            print(f"{start_date} -{end_date}")
-            results = Billing.select().where(Billing.createdDate.between(start_date, end_date)).order_by(Billing.createdDate.asc())
+            # b = Billing.table_exists()
+            # if not b:
+            # Billing.create_table()
+            results = Billing.select().where(Billing.createdDate.between(start_date, end_date)).order_by(
+                Billing.createdDate.asc())
             self.__bills.extend(results)
-
         except peewee.InternalError as px:
             print(str(px))
-        finally:
-            Connection.db_handle.close()
-            # tính giá trị tổng thu, tổng chi theo quý
-            self.total_revenue = sum(i.totalMoney for i in self.__bills if i.type == BillType.REVENUE.value[0])
-            self.total_expend = sum(i.totalMoney for i in self.__bills if i.type == BillType.EXPANDING.value[0])
-            print("total_expend", self.total_expend)
+
+        # tính giá trị tổng thu, tổng chi theo quý
+        self.total_revenue = sum(i.totalMoney for i in self.__bills if i.type == BillType.REVENUE.value[0])
+        self.total_expend = sum(i.totalMoney for i in self.__bills if i.type == BillType.EXPANDING.value[0])
 
     def get_first_date_by_quarter(self, current_quarter):
         return datetime(datetime.now().year, current_quarter * 3 - 2, 1)
@@ -79,6 +73,7 @@ class ReportController:
             if end_of_quarter > end_date:
                 break
         return end_of_quarter
+
     def get_bills_and_reload_view(self, quarter):
         self.__get_bills(quarter)
         self.view.reload_treeview()
@@ -99,6 +94,6 @@ class ReportController:
         except peewee.InternalError as px:
             print(str(px))
         finally:
-            Connection.db_handle.close()
+            pass
+            # Connection.db_handle.close()
         return user_name
-

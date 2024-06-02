@@ -1,23 +1,59 @@
+from datetime import datetime
 from peewee import *
-from WareHouse.discount_model import Discount
-from entities.models import User
-from share.base_model import BaseModel
-from Table_Order.table_model import Table
+from entities.models import User, Discount
 
-class Billing(BaseModel):
-    id = AutoField(primary_key=True, null=False)
-    tableId = ForeignKeyField(null=True, column_name="TableId", field='id', model=Table)
-    userId = ForeignKeyField(null=True, column_name="UserId",  field='id', model=User)
-    creatorName = CharField(null=True, column_name="CreatorName")
-    discountId = ForeignKeyField(null=True, column_name="DiscountId", field='id', model=Discount)
-    customerName = CharField(null=True, column_name="CustomerName")
-    customerPhoneNumber = CharField(null=True, column_name="CustomerPhone")
-    totalMoney = DecimalField(null=False, column_name="TotalMoney", max_digits=15, decimal_places=3)
-    type = IntegerField(null=False, column_name="Type")
-    createdDate = DateTimeField(column_name="CreateDate", formats=["%Y-%m-%d"])
-    updatedDate = DateTimeField(column_name="UpdateDate", null=True, formats=["%Y-%m-%d"])
-    class Meta:
-        db_table = "Billing"
 
-    def __str__(self):
-        return str([id, self.tableId, self.userId, self.creatorName, self.customerName, self.totalMoney, self.type])
+class BillModel(Model):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_bills_by_date(self, by_date):
+        pass
+        # b = Billing.table_exists()
+        # if not b:
+        #     Billing.create_table()
+        # results = Billing.select().where(Billing.createdDate.year == by_date.year
+        #                                  and Billing.createdDate.month == by_date.month
+        #                                  and Billing.createdDate.day == by_date.day)
+        # return results
+
+    def save_bill(self, bill):
+        pass
+        # b = Billing.table_exists()
+        # if not b:
+        #     Billing.create_table()
+        # bill = bill
+        # bill.save()
+
+    def delete_by_id(self, id):
+        pass
+        # product = Billing.get_or_none(Billing.id == id)
+        # if product:
+        #     product.delete_instance()
+        #     return True
+        return False
+
+    def update_by_id(self, id, creator_name, create_date, customer_name, customer_phone, money, bill_type):
+        # b = Billing.get(Billing.id == id)
+        # b.creatorName = creator_name
+        # b.customerName = customer_name
+        # b.customerPhoneNumber = customer_phone
+        # b.money = money
+        # b.type = bill_type
+        # b.createdDate = create_date
+        # b.updatedDate = datetime.now()
+        # b.save()
+        pass
+
+    def get_user_by_id(self, _id):
+        u = User.table_exists()
+        if not u:
+            User.create_table()
+        row = User.select().where(User.id == _id)
+        return row
+    def get_discount(self):
+        d = Discount.table_exists()
+        if not d:
+            Discount.create_table()
+        results = Discount.select()
+        return results

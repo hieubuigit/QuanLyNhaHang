@@ -1,3 +1,4 @@
+import re
 import customtkinter as ctk
 import tkinter as tk
 import datetime
@@ -64,7 +65,7 @@ class Utils:
         label.pack(**Utils.pack_style_2)
         value = ctk.CTkLabel(item_frm, text=data['value'])
         value.pack(**Utils.pack_style_2)
-        return {'frm': item_frm, 'value_lbl': value}
+        return {'frm': item_frm, 'value': value}
 
     @staticmethod
     def format_date(date_str):
@@ -115,3 +116,12 @@ class Utils:
     def set_appearance_mode(ctk):
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
+
+    @staticmethod
+    def is_number(value):
+        # Define the regular expression pattern for a number
+        pattern = re.compile(r"^-?\d+(\.\d+)?$")
+        # Check if the value matches the pattern
+        if isinstance(value, str) and pattern.match(value):
+            return True
+        return False

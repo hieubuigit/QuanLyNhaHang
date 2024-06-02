@@ -36,3 +36,12 @@ class PayGradeController:
         except Exception as e:
             print(e)
             return 0
+
+    def get_by_id(self, id):
+        try:
+            data = self.__pay_grade_model.get_by_id(id)
+            return data
+        except Exception as ex:
+            print(ex)
+
+

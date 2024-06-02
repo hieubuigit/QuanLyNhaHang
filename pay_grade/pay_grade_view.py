@@ -1,4 +1,5 @@
 import tkinter as tk
+from datetime import datetime
 from tkinter import ttk
 import customtkinter as ctk
 from pay_grade.pay_grade_controller import PayGradeController
@@ -89,7 +90,7 @@ class PayGradeView:
         self.load_tree_data()
 
         # Bind event when row selected
-        self.__tree.bind("<<TreeviewSelect>>", self.row_clicked())
+        self.__tree.bind("<<TreeviewSelect>>", self.row_clicked)
 
     def load_tree_data(self):
         # Get all record and show in page
@@ -104,7 +105,7 @@ class PayGradeView:
             self.__tree.delete(record)
         self.load_tree_data()
 
-    def row_clicked(self):
+    def row_clicked(self, event):
         # Catch event that user click on grid to choose what employee can update information
         for item in self.__tree.selection():
             record = self.__tree.item(item)['values']
@@ -130,7 +131,7 @@ class PayGradeView:
 
     def init_add_or_update_popup(self, parent: ctk.CTkFrame, action: Action):
         # Init popup data
-        common_pack = {'side': tk.TOP, 'expand': True, 'padx': 5, 'pady': 5, 'anchor': tk.W, 'fill': tk.X}
+        common_pack = {'side': tk.TOP, 'expand': True, 'padx': 2, 'pady': 2, 'anchor': tk.W, 'fill': tk.X}
         btn_pack = {'side': tk.LEFT, 'padx': 10, 'pady': 10, 'expand': False}
 
         if action == Action.UPDATE and self.__id_selected < 1:
@@ -139,32 +140,34 @@ class PayGradeView:
         # Create add new or update employee information popup
         self.__popup = ctk.CTkToplevel(parent)
 
-        self.__popup.geometry("500x600")
+        self.__popup.geometry("300x350")
         self.__popup.title("Thông tin bậc lương")
         self.__popup.resizable(False, False)
-        form = ctk.CTkFrame(self.__popup, width=500)
+        form = ctk.CTkFrame(self.__popup, fg_color=Utils.WHITE)
 
         # Account Type
         type_lbl = ctk.CTkLabel(form, text="Loại tài khoản: ")
         type_lbl.pack(**Utils.label_pack_style)
         self.__form_controls['type_cbo'] = ctk.CTkComboBox(form, values=["Admin", "Bình thường"])
-        self.__form_controls['type_cbo'].pack(common_pack)
+        self.__form_controls['type_cbo'].pack(**common_pack)
 
         # Allowance
         self.__form_controls['allowance_ent'] = Utils.input_component(form, {'lbl': "Trợ cấp: "})
-        self.__form_controls['allowance_ent'].pack(common_pack)
+        self.__form_controls['allowance_ent'].pack(**common_pack)
 
         # Pay per hours
         self.__form_controls['pay_per_hours_ent'] = Utils.input_component(form, {'lbl': "Tiền lương theo giờ: "})
-        self.__form_controls['pay_per_hours_ent'].pack(common_pack)
+        self.__form_controls['pay_per_hours_ent'].pack(**common_pack)
 
         # Add or Update button
         if action == Action.UPDATE:
             save_or_update_txt = "Cập nhật"
+            pay_grade_by_id = self.__pay_grade_controller.get_by_id(self.__id_selected)
+            self.set_value_for_widget(pay_grade_by_id)
         else:
             save_or_update_txt = "Thêm"
 
-        button_container = ctk.CTkFrame(master=self.__popup, fg_color=Utils.WHITE)
+        button_container = ctk.CTkFrame(master=form, fg_color=Utils.WHITE)
         button_grp = ctk.CTkFrame(button_container, fg_color=Utils.WHITE)
         save_or_update_btn = ctk.CTkButton(button_grp,
                                            text=save_or_update_txt,
@@ -181,17 +184,31 @@ class PayGradeView:
                                   command=lambda: self.clear_clicked())
         clear_btn.pack(**btn_pack)
 
+        form.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, anchor='nw', padx=10, pady=10)
         button_grp.pack(side=tk.TOP, padx=10, pady=10, anchor="center", fill=tk.NONE, expand=False)
         button_container.pack(side=tk.TOP, fill=tk.BOTH, expand=False)
 
     def save_or_update_btn_clicked(self, action: Action):
         # Get data from form to save to database
         type = self.__form_controls['type_cbo'].get()
+        type_value = Utils.get_account_type_value(type)
         allowance = self.__form_controls['allowance_ent'].get()
         pay_per_hours = self.__form_controls['pay_per_hours_ent'].get()
-        data = {'type': type,
-                'allowances': allowance,
-                'pay_per_hours': pay_per_hours}
+
+        if not Utils.is_number(allowance):
+            tkMsgBox.showwarning(title='Thông báo', message="Trợ cấp không phải là số và định dạng không đúng!")
+            return
+        if not Utils.is_number(pay_per_hours):
+            tkMsgBox.showwarning(title='Thông báo', message="Lương theo giờ không phải là số và định dạng không đúng!")
+            return
+
+        data = {'type': type_value,
+                'allowance': allowance,
+                'pay_per_hours': pay_per_hours,
+                'created_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+
+        if action == Action.UPDATE:
+            data['updated_date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         result = None
         result_msg = ""
@@ -225,6 +242,17 @@ class PayGradeView:
         if is_disabled:
             self.__form_controls[widget_name].configure(state='disabled')
 
+    def set_value_for_widget(self, data):
+        print("===")
+        print(data.type)
+        print(data.allowance)
+        print(data.pay_per_hours)
+
+        # Set data for update page grade popup
+        if data:
+            self.__form_controls['type_cbo'].set(Utils.get_account_type_str(data.type))
+            self.set_value_for_entry('allowance_ent', data.allowance)
+            self.set_value_for_entry('pay_per_hours_ent', data.pay_per_hours)
 
 if __name__ == '__main__':
     root = ctk.CTk()

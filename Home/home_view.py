@@ -8,7 +8,6 @@ from Report.report_controller import ReportController
 from Table_Order.table_controller import TableController
 from WareHouse.ware_house_controller import WareHouseController
 from employee.employee_view import EmployeeView
-from logout.logout_controller import LogoutController
 from share.common_config import TabType
 from share.utils import Utils
 
@@ -160,6 +159,7 @@ class HomeView:
         report_p = ReportController(root=main_fr)
 
     def on_logout_click(self):
+        self.__root.destroy()
         logout_controller = LogoutController()
         logout_controller.logout()
 
@@ -177,7 +177,6 @@ class HomeView:
             self.__set_ui_default_report_tab()
 
     def __action_tab(self, button_type: TabType):
-        print(button_type)
         self.__update_tab_clicked()
         HomeView.button_type_clicked = button_type
         # Hủy đi màn hinh load tab cũ

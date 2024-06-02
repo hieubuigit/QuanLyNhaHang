@@ -1,4 +1,5 @@
 import tkinter as tk
+from datetime import datetime
 from tkinter import ttk
 import customtkinter as ctk
 from payslip.pay_slip_controller import PaySlipController
@@ -12,12 +13,14 @@ class PaySlipView:
         self.__pay_slip_controller = PaySlipController()
         self.__main_frame = parent
         self.__id_selected = 0  # To save row id where will update, delete or remove database
+        self.__user_code_selected = ''
         self.__popup = None
         self.__form_controls = dict()
         self.__tree = None
         self.__pay_slip_popup = None
         self.__cols = ["no", "user_code", "full_name", 'user_name', "gender", 'birth_date', 'identity', 'type', 'id',
                        'hours', 'total_salary', "created_date", "updated_date", 'user_id']
+        self.__emp_data = None     # Store data when calculate salary
         self.init_view(parent)
 
     def init_view(self, parent):
@@ -142,13 +145,13 @@ class PaySlipView:
             record = self.__tree.item(item)['values']
             if record[len(record) - 1]:
                 self.__id_selected = record[len(record) - 1]
+                self.__user_code_selected = record[0]
 
     def delete_clicked(self):
         # Delete on item from grid
         if self.__id_selected == 0:
             tkMsgBox.showinfo("Thông báo", f"Chọn 1 dòng muốn xoá!")
             return
-
         answer = tkMsgBox.askyesno("Thông báo", "Bạn có chắc muốn xoá không?")
         if answer:
             result = self.__pay_slip_controller.delete_by_id(self.__id_selected)
@@ -193,36 +196,43 @@ class PaySlipView:
         choose_emp.pack(**common_pack)
 
         # Hours: input here to calculate data
-        self.__form_controls['hour_ent'] = Utils.input_component(left_frm, {'lbl': "Nhập số giờ làm việc: "})
-        self.__form_controls['hour_ent'].pack(**common_pack)
+        self.__form_controls['hours_ent'] = Utils.input_component(left_frm, {'lbl': "Nhập số giờ làm việc: "})
+        self.__form_controls['hours_ent'].pack(**common_pack)
 
         # User code
         user_code_frm = Utils.init_label_and_value(parent=left_frm, data={'lbl': 'Mã nhân viên: ', 'value': ''})
         user_code_frm['frm'].pack(**common_pack)
+        self.__form_controls["user_code_lbl"] = user_code_frm['value']
 
         # User name
         user_name_frm = Utils.init_label_and_value(parent=left_frm, data={'lbl': 'Tên tài khoản: ', 'value': ''})
         user_name_frm['frm'].pack(**common_pack)
+        self.__form_controls["user_name_lbl"] = user_name_frm['value']
 
         # Full name
         full_name_frm = Utils.init_label_and_value(parent=left_frm, data={'lbl': 'Tên nhân viên: ', 'value': ''})
         full_name_frm['frm'].pack(**common_pack)
+        self.__form_controls["full_name_lbl"] = full_name_frm['value']
 
         # Gender
         gender_frm = Utils.init_label_and_value(parent=left_frm, data={'lbl': 'Giới tính: ', 'value': ''})
         gender_frm['frm'].pack(**common_pack)
+        self.__form_controls["gender_lbl"] = gender_frm['value']
 
         # Birthday
         birthday_frm = Utils.init_label_and_value(parent=left_frm, data={'lbl': 'Ngày sinh: ', 'value': ''})
         birthday_frm['frm'].pack(**common_pack)
+        self.__form_controls["birthday_lbl"] = birthday_frm['value']
 
         # Identity
         identity_frm = Utils.init_label_and_value(parent=left_frm, data={'lbl': 'CMND/CCCD: ', 'value': ''})
         identity_frm['frm'].pack(**common_pack)
+        self.__form_controls["identity_lbl"] = identity_frm['value']
 
         # Employee type (Account type)
         user_type_frm = Utils.init_label_and_value(parent=left_frm, data={'lbl': 'Loại nhân viên: ', 'value': ''})
         user_type_frm['frm'].pack(**common_pack)
+        self.__form_controls["user_type_lbl"] = user_type_frm['value']
 
         left_frm.pack(side=tk.LEFT, anchor='nw', padx=5, pady=5, expand=True, fill=tk.X)
 
@@ -243,20 +253,24 @@ class PaySlipView:
         # Payslip id
         psl_id_frm = Utils.init_label_and_value(parent=right_frm, data={'lbl': 'Mã số: ', 'value': ''})
         psl_id_frm['frm'].pack(**common_pack)
+        self.__form_controls["payslip_id_lbl"] = psl_id_frm['value']
 
         # Payslip hours
         hours_frm = Utils.init_label_and_value(parent=right_frm, data={'lbl': 'Giờ làm việc: ', 'value': ''})
         hours_frm['frm'].pack(**common_pack)
+        self.__form_controls["hours_lbl"] = hours_frm['value']
 
         # Payslip total salary
         total_salary_frm = Utils.init_label_and_value(parent=right_frm,
                                                       data={'lbl': 'Tiền lương: ', 'value': ''})
         total_salary_frm['frm'].pack(**common_pack)
+        self.__form_controls["total_salary_lbl"] = total_salary_frm['value']
 
         # Payslip the date created payslip
         salary_pay_date_frm = Utils.init_label_and_value(parent=right_frm,
                                                          data={'lbl': 'Ngày tạo: ', 'value': ''})
         salary_pay_date_frm['frm'].pack(**common_pack)
+        self.__form_controls["create_payslip_lbl"] = salary_pay_date_frm['value']
 
         right_frm.pack(side=tk.LEFT, anchor='nw', padx=5, pady=5, expand=True, fill=tk.X)
         main_frm.pack(side=ctk.TOP, fill=tk.BOTH, expand=True)
@@ -264,6 +278,10 @@ class PaySlipView:
         # Add or Update button
         if action == Action.UPDATE:
             save_or_update_txt = "Cập nhật"
+            # Load data here
+            emp_id = self.__form_controls['emp_id_ent'].get()
+            if emp_id == '' or emp_id is None:
+                self.__form_controls['emp_id_ent'].set(self.__user_code_selected)
         else:
             save_or_update_txt = "Thêm"
 
@@ -287,37 +305,79 @@ class PaySlipView:
         button_container.pack(side=tk.TOP, fill=tk.BOTH, expand=False)
 
     def cal_salary(self):
-        pass
+        hours = self.__form_controls['hours_ent'].get()
+        if hours is None:
+            tkMsgBox.showinfo(title='Thông báo', message="Nhập số giờ không đúng!")
+            return
+        if not Utils.is_number(hours):
+            tkMsgBox.showinfo(title='Thông báo', message="Số giờ phải là số!")
+            return
+        data = {
+            'hours': int(self.__form_controls['hours_ent'].get()),
+            'type': self.__emp_data['type']
+        }
+        salary = self.__pay_slip_controller.calculate_salary(data)
+        if salary == 0:
+            tkMsgBox.showinfo(title='Thông báo', message="Lương tính ra bằng 0, Vui lòng kiểm tra lại bậc lương của nhân viên!")
+            return
+        self.__form_controls['total_salary_lbl'].configure(text=salary)
+        self.__form_controls["create_payslip_lbl"].configure(text=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        self.__emp_data['total_salary'] = salary
 
     def get_emp_info_clicked(self):
         # Call all employee who will calculate salary
         employeeId = self.__form_controls['emp_id_ent'].get()
-        print(employeeId)
-
         data = self.__pay_slip_controller.get_pay_slip_by_user_id(employeeId)
-        print('^^:', data)
-
+        if data is None:
+            tkMsgBox.showinfo(title='Thông báo', message='Mã nhân viên không tồn tại hoặc không đúng, vui lòng chọn lại!')
+            return
+        self.__emp_data = data
+        self.__form_controls['user_code_lbl'].configure(text=data['user_code'])
+        self.__form_controls['full_name_lbl'].configure(text=data['full_name'])
+        self.__form_controls['gender_lbl'].configure(text=data['gender'])
+        self.__form_controls['user_name_lbl'].configure(text=data['user_name'])
+        self.__form_controls['birthday_lbl'].configure(text=data['birth_date'])
+        self.__form_controls['identity_lbl'].configure(text=data['identity'])
+        self.__form_controls['user_type_lbl'].configure(text=data['type_name'])
+        self.__form_controls['payslip_id_lbl'].configure(text=data['id'])
+        self.__form_controls['hours_lbl'].configure(text=data['hours'])
+        self.__form_controls['total_salary_lbl'].configure(text=data['total_salary'])
 
     def save_or_update_btn_clicked(self, action: Action):
         # Get data from form to save to database
-        type = self.__form_controls['type_cbo'].get()
-        allowance = self.__form_controls['allowance_ent'].get()
-        pay_per_hours = self.__form_controls['pay_per_hours_ent'].get()
-        data = {'type': type,
-                'allowances': allowance,
-                'pay_per_hours': pay_per_hours}
+        hours = self.__form_controls['hours_ent'].get()
+        total_salary = self.__emp_data['total_salary']
+        month = self.__form_controls['month'].get()
 
+        if hours is None:
+            tkMsgBox.showinfo(title='Thông báo', message="Nhập số giờ không đúng!")
+            return
+        if not Utils.is_number(hours):
+            tkMsgBox.showinfo(title='Thông báo', message="Số giờ phải là số!")
+            return
+        if total_salary == 0:
+            tkMsgBox.showinfo(title='Thông báo', message="Cần lấy thông tin và tính lương trước khi lưu!")
+            return
+
+        data = {
+                # 'user_id': self.__emp_data['user_id'],
+                'total_salary': total_salary,
+                'hours': float(hours),
+                'created_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
         result = None
         result_msg = ""
         if action == Action.ADD:
             result_msg = "Thêm"
-            result = self.__pay_slip_controller.add_new(**data)
+            result = self.__pay_slip_controller.add_new(int(month), **data)
         elif action == Action.UPDATE:
             result_msg = "Cập nhật"
             result = self.__pay_slip_controller.update_by_id(self.__id_selected, data)
-        if result == 1:
+        if result == -1:
+            tkMsgBox.showinfo(title='Thông báo', message="Nhân viên này đã tính lương trong tháng này!")
+            return
+        elif result == 1:
             self.reload_tree_data()
-            self.__popup.destroy()
             tkMsgBox.showinfo("Thông báo", f"{result_msg} thành công!")
         else:
             self.reload_tree_data()

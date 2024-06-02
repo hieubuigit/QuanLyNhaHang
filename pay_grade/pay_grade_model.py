@@ -30,8 +30,14 @@ class PayGradeModel:
                 pay_grade_item.append(pg.allowance)
                 pay_grade_item.append(pg.pay_per_hours)
                 pay_grade_item.append(pg.created_date.strftime("%Y-%m-%d %H:%M:%S"))
-                pay_grade_item.append(pg.updated_date.strftime("%Y-%m-%d %H:%M:%S"))
+                if pg.updated_date is not None:
+                    pay_grade_item.append(pg.updated_date.strftime("%Y-%m-%d %H:%M:%S"))
+                else:
+                    pay_grade_item.append('')
                 pay_grade_item.append(pg.id)
                 data.append(pay_grade_item)
         return data
 
+    def get_by_id(self, id):
+        pay_grade: Paygrade = Paygrade.select().where(Paygrade.id == id).first()
+        return pay_grade

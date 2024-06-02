@@ -1,4 +1,4 @@
-from peewee import JOIN
+from peewee import JOIN, fn
 
 from entities.models import Payslip, User, Paygrade
 from pay_grade.pay_grade_model import PayGradeModel
@@ -9,11 +9,13 @@ class PaySlipModel:
     def __init__(self):
         self.__pay_grade = PayGradeModel()
 
-    def save(self, **data):
+    def save(self, month, **data):
         # Save new payslip (Phiếu lương) into database
-        if 'user_code' in data:
-            total_salary = self.calculate_salary(**data)
-            data['total_salary'] = total_salary
+        if self.is_already_calculate_salary_this_month(month):
+            return -1
+        # if 'user_id' in data:
+            # total_salary = self.calculate_salary(**data)
+            # data['total_salary'] = total_salary
         query = Payslip(**data)
         return query.save()
 
@@ -68,21 +70,34 @@ class PaySlipModel:
         query = (Payslip.select(User.user_code, User.first_name, User.last_name, User.gender, User.user_name,
                                 User.birth_date, User.identity, User.type,
                                 Payslip.id, Payslip.hours, Payslip.total_salary, Payslip.created_date,
-                                Payslip.updated_date, User.id.alias('user_id'))
+                                Payslip.updated_date, User.id)
                  .where(User.user_code.contains(conditions['user_id']) if conditions['user_id'] is not None else True)
-                 .join(User, JOIN.LEFT_OUTER, on=(User.id == Payslip.user))
+                 .join(User, JOIN.RIGHT_OUTER, on=(Payslip.user == User.id))
                  .first())
         if query:
-            print(
-            f"User Code: {query.user_code}, First Name: {query.first_name}, Last Name: {query.last_name}, Gender: {query.gender}, "
-            f"Username: {query.user_name}, Birth Date: {query.birth_date}, Identity: {query.identity}, Type: {query.type}, "
-            f"Payslip ID: {query.id}, Hours: {query.hours}, Total Salary: {query.total_salary}, Created Date: {query.created_date}, "
-            f"Updated Date: {query.updated_date}, User ID: {query.user_id}")
+            return {
+                'user_code': query.user.user_code,
+                'full_name': f"{query.user.first_name} {query.user.last_name}",
+                'gender': Utils.get_gender(query.user.gender),
+                'user_name': query.user.user_name,
+                'birth_date': query.user.birth_date,
+                'identity': query.user.identity,
+                'type_name': Utils.get_account_type_str(query.user.type),
+                'type': query.user.type,
+                'id': query.id,
+                'hours': query.hours,
+                'total_salary': query.total_salary,
+                'created_date': query.created_date,
+                'updated_date': query.updated_date,
+                'user_id': query.user.id,
+            }
         else:
-            print("No data")
+            return None
 
-        return query
-
-    def is_already_calculate_salary_this_month(self):
-        # query = Payslip.select().where(Payslip.created_date)
-        pass
+    def is_already_calculate_salary_this_month(self, month: int):
+        if 1 <= month <= 13:
+            query = Payslip.select().where(Payslip.created_date.month == month)
+            print(">>", query)
+            if query is None:
+                return True
+        return False

@@ -4,9 +4,9 @@ class PaySlipController:
     def __init__(self):
         self.__pay_slip_model = PaySlipModel()
 
-    def add_new(self, **new_data):
+    def add_new(self, month, **new_data):
         try:
-            save_result = self.__pay_slip_model.save(**new_data)
+            save_result = self.__pay_slip_model.save(month, **new_data)
             return save_result
         except Exception as ex:
             print(ex)
@@ -44,4 +44,10 @@ class PaySlipController:
             print("[!Exc:", e)
             return 0
 
-
+    def calculate_salary(self, data: dict):
+        try:
+            result = self.__pay_slip_model.calculate_salary(**data)
+            return result
+        except Exception as e:
+            print("[!Exc:", e)
+            return 0

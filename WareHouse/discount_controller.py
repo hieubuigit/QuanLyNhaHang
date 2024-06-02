@@ -2,9 +2,8 @@ from datetime import datetime
 from tkinter import messagebox
 
 import peewee
-from WareHouse.discount_model import Discount
 from WareHouse.discount_view import DiscountView
-from database.connection import Connection
+from entities.models import Discount
 
 
 class DiscountController:
@@ -20,22 +19,17 @@ class DiscountController:
     def get_data(self):
         self.__discounts = []
         try:
-            Connection.db_handle.connect()
             pr = Discount.table_exists()
             if not pr:
                 Discount.create_table()
             rows = Discount.select()
             self.__discounts.extend(rows)
-            print("Get product success")
         except peewee.InternalError as px:
-            print("Get product failure")
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
 
     def save_data_to_db(self, desc, percent, start_date, end_date, quantity):
         try:
-            Connection.db_handle.connect()
             pr = Discount.table_exists()
             if not pr:
                 Discount.create_table()
@@ -46,12 +40,9 @@ class DiscountController:
         except peewee.InternalError as px:
             messagebox.showinfo("Thông báo", "Thêm sản phẩm thất bại. Vui lòng thử lại.")
             print(str(px))
-        finally:
-            Connection.db_handle.close()
 
     def __delete_product(self, _id):
         try:
-            Connection.db_handle.connect()
             product = Discount.get_or_none(Discount.id == _id)
             if product:
                 product.delete_instance()
@@ -61,12 +52,10 @@ class DiscountController:
                 messagebox.showinfo("Thông báo", "Xóa bàn thất bại")
         except peewee.InternalError as px:
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
 
     def __update_product_to_db(self, _id, percent, desc, quantity, start_date, end_date):
         try:
-            Connection.db_handle.connect()
             discount = Discount.get(Discount.id == _id)
             discount.percent = percent
             discount.description = desc
@@ -79,8 +68,7 @@ class DiscountController:
         except peewee.InternalError as px:
             print("Update failure")
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
 
     def add_new_and_reload(self):
         values = self.view.get_detail_values()

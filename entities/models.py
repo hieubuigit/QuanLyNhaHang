@@ -1,68 +1,50 @@
 from peewee import *
+from share.common_config import TableType
 
-database = MySQLDatabase('quanlynhahang', **{'charset': 'utf8', 'sql_mode': 'PIPES_AS_CONCAT', 'use_unicode': True, 'user': 'root', 'password': '123456789'})
+database = MySQLDatabase('quanlynhahang',
+                         **{'charset': 'utf8', 'sql_mode': 'PIPES_AS_CONCAT', 'use_unicode': True, 'user': 'root',
+                            'password': '123456789'})
+
 
 class UnknownField(object):
     def __init__(self, *_, **__): pass
+
 
 class BaseModel(Model):
     class Meta:
         database = database
 
-class Billing(BaseModel):
-    created_date = DateTimeField(column_name='CreatedDate', null=True)
-    customer_name = CharField(column_name='CustomerName')
-    customer_phone_number = CharField(column_name='CustomerPhoneNumber')
-    discount_id = IntegerField(column_name='DiscountId')
-    id = AutoField(column_name='Id')
-    table_id = IntegerField(column_name='TableId')
-    total_money = DecimalField(column_name='TotalMoney')
-    updated_date = DateTimeField(column_name='UpdatedDate', null=True)
-    user_id = IntegerField(column_name='UserId')
-
-    class Meta:
-        table_name = 'billing'
 
 class Discount(BaseModel):
-    created_date = DateTimeField(column_name='CreatedDate')
+    id = AutoField(primary_key=True, null=True, column_name='Id')
     description = CharField(column_name='Description', null=True)
-    end_date = DateField(column_name='EndDate')
-    id = AutoField(column_name='Id')
     percent = FloatField(column_name='Percent')
+    end_date = DateField(column_name='EndDate', formats=["%Y/%m/%d"])
     quantity = IntegerField(column_name='Quantity')
     start_date = DateField(column_name='StartDate')
-    updated_date = DateTimeField(column_name='UpdatedDate', null=True)
+    created_date = DateTimeField(column_name='CreatedDate')
+    updated_date = DateTimeField(column_name='UpdateDate', null=False)
 
     class Meta:
-        table_name = 'discount'
+        db_table = "Discount"
+
 
 class Product(BaseModel):
-    alcohol = FloatField(column_name='Alcohol')
-    capacity = FloatField(column_name='Capacity')
-    created_date = DateTimeField(column_name='CreatedDate')
-    id = AutoField(column_name='Id')
-    image = CharField(column_name='Image')
-    name = CharField(column_name='Name')
-    price = DecimalField(column_name='Price')
-    product_type = IntegerField(column_name='ProductType')
-    quantity = FloatField(column_name='Quantity')
-    unit = IntegerField(column_name='Unit')
-    updated_date = DateTimeField(column_name='UpdatedDate', null=True)
+    id = AutoField(primary_key=True, null=True, column_name="Id")
+    name = CharField(null=True, column_name="Name")
+    price = DecimalField(null=False, column_name="Price", max_digits=10, decimal_places=0)
+    unit = CharField(column_name="Unit")
+    quantity = IntegerField(column_name="Quantity")
+    capacity = FloatField(null=False, column_name="Capacity")
+    alcohol = FloatField(null=False, column_name="Alcohol")
+    productType = IntegerField(column_name="Type")
+    image = BlobField(column_name="Image")
+    createdDate = DateTimeField(column_name="CreatedDate")
+    updatedDate = DateTimeField(null=False, column_name="UpdatedDate")
 
     class Meta:
-        table_name = 'product'
+        db_table = "Product"
 
-class Orderlist(BaseModel):
-    billing = ForeignKeyField(column_name='BillingId', field='id', model=Billing)
-    created_date = DateTimeField(column_name='CreatedDate', null=True)
-    cur_price = DecimalField(column_name='CurPrice')
-    id = AutoField(column_name='Id')
-    product = ForeignKeyField(column_name='ProductId', field='id', model=Product)
-    quantity = IntegerField(column_name='Quantity')
-    updated_date = DateTimeField(column_name='UpdatedDate', null=True)
-
-    class Meta:
-        table_name = 'orderlist'
 
 class Paygrade(BaseModel):
     allowance = FloatField(column_name='Allowance', null=True)
@@ -74,6 +56,7 @@ class Paygrade(BaseModel):
 
     class Meta:
         table_name = 'paygrade'
+
 
 class User(BaseModel):
     address = CharField(column_name='Address', null=True)
@@ -97,6 +80,51 @@ class User(BaseModel):
     class Meta:
         table_name = 'user'
 
+
+class Table(BaseModel):
+    id = AutoField(column_name='Id', primary_key=True, null=True)
+    tableNum = CharField(column_name='TableNum', null=True)
+    seatNum = IntegerField(column_name='SeatNum', null=True)
+    status = IntegerField(column_name='Status', null=True)
+    createdDate = DateTimeField(column_name='CreatedDate')
+    updatedDate = DateTimeField(column_name='UpdatedDate', null=False)
+    table_type = TableType.Normal
+
+    class Meta:
+        table_name = "Table"
+
+
+class Billing(BaseModel):
+    id = AutoField(primary_key=True, null=False)
+    tableId = ForeignKeyField(null=True, column_name="TableId", field='id', model=Table)
+    userId = ForeignKeyField(null=True, column_name="UserId", field='id', model=User)
+    # creatorName = CharField(null=True, column_name="CreatorName")
+    discountId = ForeignKeyField(null=True, column_name="DiscountId", field='id', model=Discount)
+    customerName = CharField(null=True, column_name="CustomerName")
+    customerPhoneNumber = CharField(null=True, column_name="CustomerPhoneNumber")
+    totalMoney = DecimalField(null=False, column_name="TotalMoney", max_digits=10, decimal_places=0)
+    type = IntegerField(null=False, column_name="Type")
+    status = IntegerField(column_name="Status", null=False)
+    createdDate = DateTimeField(column_name="CreatedDate", formats=["%Y-%m-%d"])
+    updatedDate = DateTimeField(column_name="UpdatedDate", null=True, formats=["%Y-%m-%d"])
+
+    class Meta:
+        table_name = "Billing"
+
+
+class OrderList(BaseModel):
+    billing_id = ForeignKeyField(column_name='BillingId', field='id', model=Billing)
+    created_date = DateTimeField(column_name='CreatedDate', null=True)
+    cur_price = DecimalField(column_name='CurPrice', decimal_places=0, max_digits=10)
+    id = AutoField(column_name='Id')
+    product_id = ForeignKeyField(column_name='ProductId', field='id', model=Product)
+    quantity = IntegerField(column_name='Quantity')
+    updated_date = DateTimeField(column_name='UpdatedDate', null=True)
+
+    class Meta:
+        table_name = 'OrderList'
+
+
 class Payslip(BaseModel):
     created_date = DateTimeField(column_name='CreatedDate', null=True)
     hours = FloatField(column_name='Hours', null=True)
@@ -108,16 +136,6 @@ class Payslip(BaseModel):
     class Meta:
         table_name = 'payslip'
 
-class Table(BaseModel):
-    created_date = DateTimeField(column_name='CreatedDate', null=True)
-    id = AutoField(column_name='Id')
-    seat_num = IntegerField(column_name='SeatNum')
-    status = IntegerField(column_name='Status', null=True)
-    table_num = IntegerField(column_name='TableNum')
-    updated_date = DateTimeField(column_name='UpdatedDate', null=True)
-
-    class Meta:
-        table_name = 'table'
 
 class Warehouse(BaseModel):
     created_date = DateTimeField(column_name='CreatedDate', null=True)
@@ -129,4 +147,3 @@ class Warehouse(BaseModel):
 
     class Meta:
         table_name = 'warehouse'
-
