@@ -76,7 +76,7 @@ class HomeView:
                                     command=lambda: animated_panel.animate())
         profile_btn.pack(fill=tk.Y, side="right", anchor="ne", pady=(0, 6))
 
-        # # Tạo các button trong thanh tab bar
+        # Tạo các button trong thanh tab bar
         self.empl_btn = ctk.CTkButton(self.tab_bar_view, text="Nhân viên", compound='top',
                                       corner_radius=HomeView.radius_tab,
                                       fg_color=HomeView.fg_color_tab_click,
@@ -177,7 +177,6 @@ class HomeView:
             self.__set_ui_default_report_tab()
 
     def __action_tab(self, button_type: TabType):
-        print(button_type)
         self.__update_tab_clicked()
         HomeView.button_type_clicked = button_type
         # Hủy đi màn hinh load tab cũ

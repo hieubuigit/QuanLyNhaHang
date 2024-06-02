@@ -16,18 +16,22 @@ class Gender(Enum):
     MALE = 1
     OTHER = 2
 
+
 class UserStatus(Enum):
     INACTIVE = 0
     ACTIVE = 1
+
 
 class UserType(Enum):
     ADMIN = 0
     NORMAL = 1
 
+
 class Action(Enum):
     ADD = 0
     UPDATE = 1
     DELETE = 2
+
 
 class Tab(Enum):
     EMPLOYEE = 0
@@ -37,6 +41,7 @@ class Tab(Enum):
     REPORT = 4
     LOG_OUT = 5
 
+
 class TabType(Enum):
     EMPLOYEE = "EMPLOYEE"
     TABLE = "TABLE"
@@ -44,21 +49,35 @@ class TabType(Enum):
     REPORT = "REPORT"
     WARE_HOUSE = "WARE_HOUSE"
 
+
 class StatusTable(Enum):
     DISABLED = (1, "Đã đặt")
     AVAILABLE = (0, "Trống")
+
 
 class TableType(Enum):
     Add = "ADD"
     Normal = "NORMAL"
 
+
 class ProductType(Enum):
     Food = 0
     Drink = 1
+
+
 class BillType(Enum):
     REVENUE = (0, "Thu")
     EXPANDING = (1, "Chi")
+
+
 class BillStatus(Enum):
     """Đã thanh toán - 1, chưa thanh toán - 0"""
     PAID = 1
     UNPAID = 0
+
+
+class ReportTab(Enum):
+    # User on report tab
+    REVENUE = 'REVENUE',
+    SALARY = 'SALARY',
+    SALARY_GRADE = 'SALARY_GRADE',

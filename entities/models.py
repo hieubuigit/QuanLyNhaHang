@@ -1,9 +1,14 @@
 from peewee import *
 from share.common_config import TableType
-database = MySQLDatabase('quanlynhahang', **{'charset': 'utf8', 'sql_mode': 'PIPES_AS_CONCAT', 'use_unicode': True, 'user': 'root', 'password': '123456789'})
+
+database = MySQLDatabase('quanlynhahang',
+                         **{'charset': 'utf8', 'sql_mode': 'PIPES_AS_CONCAT', 'use_unicode': True, 'user': 'root',
+                            'password': '123456789'})
+
 
 class UnknownField(object):
     def __init__(self, *_, **__): pass
+
 
 class BaseModel(Model):
     class Meta:
@@ -19,8 +24,10 @@ class Discount(BaseModel):
     start_date = DateField(column_name='StartDate')
     created_date = DateTimeField(column_name='CreatedDate')
     updated_date = DateTimeField(column_name='UpdateDate', null=False)
+
     class Meta:
         db_table = "Discount"
+
 
 class Product(BaseModel):
     id = AutoField(primary_key=True, null=True, column_name="Id")
@@ -39,7 +46,6 @@ class Product(BaseModel):
         db_table = "Product"
 
 
-
 class Paygrade(BaseModel):
     allowance = FloatField(column_name='Allowance', null=True)
     created_date = DateTimeField(column_name='CreatedDate', null=True)
@@ -50,6 +56,7 @@ class Paygrade(BaseModel):
 
     class Meta:
         table_name = 'paygrade'
+
 
 class User(BaseModel):
     address = CharField(column_name='Address', null=True)
@@ -73,6 +80,7 @@ class User(BaseModel):
     class Meta:
         table_name = 'user'
 
+
 class Table(BaseModel):
     id = AutoField(column_name='Id', primary_key=True, null=True)
     tableNum = CharField(column_name='TableNum', null=True)
@@ -81,24 +89,29 @@ class Table(BaseModel):
     createdDate = DateTimeField(column_name='CreatedDate')
     updatedDate = DateTimeField(column_name='UpdatedDate', null=False)
     table_type = TableType.Normal
+
     class Meta:
         table_name = "Table"
+
 
 class Billing(BaseModel):
     id = AutoField(primary_key=True, null=False)
     tableId = ForeignKeyField(null=True, column_name="TableId", field='id', model=Table)
-    userId = ForeignKeyField(null=True, column_name="UserId",  field='id', model=User)
-    creatorName = CharField(null=True, column_name="CreatorName")
+    userId = ForeignKeyField(null=True, column_name="UserId", field='id', model=User)
+    # creatorName = CharField(null=True, column_name="CreatorName")
     discountId = ForeignKeyField(null=True, column_name="DiscountId", field='id', model=Discount)
     customerName = CharField(null=True, column_name="CustomerName")
-    customerPhoneNumber = CharField(null=True, column_name="CustomerPhone")
-    totalMoney = DecimalField(null=False, column_name="TotalMoney", max_digits=15, decimal_places=0)
+    customerPhoneNumber = CharField(null=True, column_name="CustomerPhoneNumber")
+    totalMoney = DecimalField(null=False, column_name="TotalMoney", max_digits=10, decimal_places=0)
     type = IntegerField(null=False, column_name="Type")
     status = IntegerField(column_name="Status", null=False)
     createdDate = DateTimeField(column_name="CreatedDate", formats=["%Y-%m-%d"])
     updatedDate = DateTimeField(column_name="UpdatedDate", null=True, formats=["%Y-%m-%d"])
+
     class Meta:
         table_name = "Billing"
+
+
 class OrderList(BaseModel):
     billing_id = ForeignKeyField(column_name='BillingId', field='id', model=Billing)
     created_date = DateTimeField(column_name='CreatedDate', null=True)
@@ -110,6 +123,8 @@ class OrderList(BaseModel):
 
     class Meta:
         table_name = 'OrderList'
+
+
 class Payslip(BaseModel):
     created_date = DateTimeField(column_name='CreatedDate', null=True)
     hours = FloatField(column_name='Hours', null=True)
@@ -120,5 +135,4 @@ class Payslip(BaseModel):
 
     class Meta:
         table_name = 'payslip'
-
 

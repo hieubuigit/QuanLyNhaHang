@@ -1,18 +1,19 @@
 import tkinter as tk
-from datetime import datetime
 from tkinter import ttk
-
 import customtkinter as ctk
 import numpy as np
-from PIL import Image, ImageTk
+from PIL import Image
 from customtkinter import *
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
-from share.common_config import BillType
+from pay_grade.pay_grade_view import PayGradeView
+from payslip.pay_slip_view import PaySlipView
+from share.common_config import BillType, ReportTab
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
+
+
 class ReportView:
     def __init__(self, window, controller):
         self.__controller = controller
@@ -21,7 +22,6 @@ class ReportView:
         self.__ui_main_content(window)
 
     def __ui_main_content(self, root):
-
         main_fr = CTkFrame(root)
         main_fr.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.__ui_left_view(root, main_fr)
@@ -37,6 +37,8 @@ class ReportView:
 
         btn_gr = CTkFrame(left_fr)
         btn_gr.pack(pady=3)
+
+        # Revenue tab
         ic_revenue = CTkImage(Image.open("../assets/profits.png"), size=(25, 25))
         self.revenue_btn = CTkButton(btn_gr,
                                      text="Doanh thu",
@@ -49,12 +51,13 @@ class ReportView:
                                      text_color="DodgerBlue1",
                                      hover_color="#63B8FF",
                                      anchor=tk.W,
-                                     command=lambda: self.__switch_page(root, main_fr, page="REVENUE"))
+                                     command=lambda: self.__switch_page(root, main_fr, page=ReportTab.REVENUE))
         self.revenue_btn.grid(row=0, column=0)
         self.revenue_line = CTkFrame(btn_gr, fg_color="DodgerBlue1", height=30, width=2, corner_radius=0,
                                      border_width=0)
         self.revenue_line.grid(row=0, column=1)
 
+        # Employee salary tab
         ic_salary = CTkImage(Image.open("../assets/revenue.png"), size=(25, 25))
         self.salary_btn = CTkButton(btn_gr,
                                     text="Lương nhân viên",
@@ -67,11 +70,30 @@ class ReportView:
                                     text_color="black",
                                     hover_color="#63B8FF",
                                     anchor=tk.W,
-                                    command=lambda: self.__switch_page(root, main_fr, page="SALARY"))
+                                    command=lambda: self.__switch_page(root, main_fr, page=ReportTab.SALARY))
         self.salary_btn.grid(row=1, column=0)
         self.salary_line = CTkFrame(btn_gr, fg_color="white", height=30, width=2, corner_radius=0,
                                     border_width=0)
         self.salary_line.grid(row=1, column=1)
+
+        # Employee salary tab
+        salary_grade_img = CTkImage(Image.open("../assets/star.png"), size=(25, 25))
+        self.salary_grade_btn = CTkButton(btn_gr,
+                                          text="Bậc lương",
+                                          width=150,
+                                          height=30,
+                                          corner_radius=1,
+                                          image=salary_grade_img,
+                                          compound=tk.LEFT,
+                                          fg_color="white",
+                                          text_color="black",
+                                          hover_color="#63B8FF",
+                                          anchor=tk.W,
+                                          command=lambda: self.__switch_page(root, main_fr,
+                                                                             page=ReportTab.SALARY_GRADE))
+        self.salary_grade_btn.grid(row=2, column=0)
+        self.salary_grade_line = CTkFrame(btn_gr, fg_color="white", height=30, width=2, corner_radius=0, border_width=0)
+        self.salary_grade_line.grid(row=1, column=1)
 
     def ui_right_content_view(self):
         padding = 2
@@ -151,22 +173,28 @@ class ReportView:
         # Fill data vào treeview
         self.__insert_column_values()
 
-    def __switch_page(self, root, main_fr, page):
+    def __switch_page(self, root, main_fr, page: ReportTab):
         for fr in self.sub_fr.winfo_children():
             fr.destroy()
             root.update()
-        if page == "SALARY":
-            self.salary_page(main_fr)
+        if page == ReportTab.REVENUE:
+            self.__report_page()
             self.salary_line.configure(fg_color="DodgerBlue1")
             self.salary_btn.configure(text_color="DodgerBlue1")
             self.revenue_line.configure(fg_color="white")
             self.revenue_btn.configure(text_color="black")
-        else:
-            self.__report_page()
+        elif page == ReportTab.SALARY:
+            self.salary_page(main_fr)
             self.revenue_line.configure(fg_color="DodgerBlue1")
             self.revenue_btn.configure(text_color="DodgerBlue1")
             self.salary_line.configure(fg_color="white")
             self.salary_btn.configure(text_color="black")
+        elif page == ReportTab.SALARY_GRADE:
+            self.salary_grade_page(main_fr)
+            self.salary_btn.configure(text_color="DodgerBlue1")
+            self.salary_grade_btn.configure(text_color="black")
+            self.salary_grade_line.configure(fg_color="DodgerBlue1")
+            self.revenue_line.configure(fg_color="white")
 
     def open_pie_chart(self, main_fr):
         input_text = [self.__controller.total_revenue, self.__controller.total_expend]
@@ -197,7 +225,6 @@ class ReportView:
             empty_fr = FigureCanvasTkAgg(fig, main_fr)
             empty_fr.draw()
             empty_fr.get_tk_widget().pack(side="top", fill='both', expand=True, padx=1, pady=1)
-
 
     def open_bar_chart(self, main_fr):
         f = plt.Figure(figsize=(6, 4), dpi=100)
@@ -237,17 +264,19 @@ class ReportView:
     def __report_page(self):
         self.ui_right_content_view()
 
+    def salary_grade_page(self, main_fr):
+        salary_grade_fr = ctk.CTkFrame(self.sub_fr)
+        pay_grade = PayGradeView(salary_grade_fr)
+        salary_grade_fr.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, anchor='nw')
+
     def salary_page(self, main_fr):
-        # add employee frame
-        salary_fr = ttk.Frame(self.sub_fr)
-        lb = ttk.Label(salary_fr, text="Salary Page")
-        lb.pack()
-        salary_fr.pack()
+        salary_fr = ctk.CTkFrame(self.sub_fr)
+        payslip = PaySlipView(salary_fr)
+        salary_fr.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, anchor='nw')
 
     def quarter_button_callback(self):
         value_key_dict = {value: key for key, value in self.__quarters.items()}
         searched_key = value_key_dict[self.__quarter_var.get()]
-        print("search key", searched_key)
         self.__controller.get_bills_and_reload_view(searched_key)
         self.reload_pie_chart_view(self.left_fr)
         self.reload_bar_chart_view(self.right_fr)

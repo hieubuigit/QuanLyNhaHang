@@ -92,7 +92,7 @@ class EmployeeView:
 
         self.__popup.geometry("900x600")
         self.__popup.title("Thông tin nhân viên")
-        self.__popup.resizable(True, False)
+        self.__popup.resizable(False, False)
 
         emp_frame = ctk.CTkFrame(self.__popup, width=700)
         column1 = ctk.CTkFrame(emp_frame, fg_color=Utils.WHITE)
@@ -476,7 +476,7 @@ if __name__ == '__main__':
     root.state("zoomed")  # full screen
     root.resizable(True, True)
     root.focus_set()
-    root.iconbitmap('../../assets/restaurant.ico')
+    # root.iconbitmap('../assets/restaurant.ico')
     root.title("Restaurant Information")
     exFrame = ctk.CTkFrame(root)
     exFrame.pack(side='top', fill='both', expand=True)

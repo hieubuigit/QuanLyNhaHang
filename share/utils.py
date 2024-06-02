@@ -1,3 +1,4 @@
+import re
 import customtkinter as ctk
 import tkinter as tk
 import datetime
@@ -11,7 +12,7 @@ class Utils:
     user_profile = dict()
 
     USER_TYPE = ("Admin", "Bình thường")
-    gender = ("Nam", "Nữ", "Khác")
+    GENDER = ("Nam", "Nữ", "Khác")
     ACCOUNT_STATUS = ("Hoạt động", "Không hoạt dộng")
 
     def __init__(self):
@@ -26,6 +27,7 @@ class Utils:
     radio_group_style = {'side': tk.TOP, 'expand': True, 'anchor': tk.W, 'padx': (0, 100), 'pady': 3, 'ipadx': 3,
                          'ipady': 3, 'fill': tk.BOTH}
     pack_style_1 = {'side': tk.LEFT, 'expand': True, 'fill': tk.BOTH}
+    pack_style_2 = {'side': tk.LEFT, 'expand': True, 'fill': tk.NONE, 'anchor': 'nw'}
 
     # Login page
     pack_control_item = {"side": 'left', 'fill': tk.NONE, 'expand': tk.YES, 'pady': '20', 'anchor': "w"}
@@ -55,6 +57,15 @@ class Utils:
         date_picker.pack(**Utils.entry_pack_style)
         frame_item.pack(**Utils.sub_frame_style)
         return date_picker
+
+    @staticmethod
+    def init_label_and_value(parent, data: dict):
+        item_frm = ctk.CTkFrame(master=parent, fg_color=Utils.WHITE)
+        label = ctk.CTkLabel(item_frm, text=data['lbl'])
+        label.pack(**Utils.pack_style_2)
+        value = ctk.CTkLabel(item_frm, text=data['value'])
+        value.pack(**Utils.pack_style_2)
+        return {'frm': item_frm, 'value': value}
 
     @staticmethod
     def format_date(date_str):
@@ -87,11 +98,11 @@ class Utils:
     @staticmethod
     def get_gender(gender_enum):
         if gender_enum == Gender.MALE.value:
-            return Utils.gender[0]
+            return Utils.GENDER[0]
         elif gender_enum == Gender.FEMALE.value:
-            return Utils.gender[1]
+            return Utils.GENDER[1]
         elif gender_enum == Gender.OTHER.value:
-            return Utils.gender[2]
+            return Utils.GENDER[2]
         return None
 
     @staticmethod
@@ -105,3 +116,12 @@ class Utils:
     def set_appearance_mode(ctk):
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
+
+    @staticmethod
+    def is_number(value):
+        # Define the regular expression pattern for a number
+        pattern = re.compile(r"^-?\d+(\.\d+)?$")
+        # Check if the value matches the pattern
+        if isinstance(value, str) and pattern.match(value):
+            return True
+        return False
