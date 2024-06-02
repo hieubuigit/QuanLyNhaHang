@@ -8,6 +8,11 @@ from share.utils import Utils
 class LoginController:
     def __init__(self):
         self.__user_model = LoginModel()
+        self.__login_view = None
+
+    def open_page(self, parent):
+        from login.login_view import LoginView
+        self.__login_view = LoginView(parent)
 
     def login(self, username, password):
         try:

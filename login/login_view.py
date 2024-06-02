@@ -4,9 +4,8 @@ from PIL import Image
 from ctypes import windll
 import customtkinter as ctk
 from Home.home_controller import HomeController
-from Home.home_view import HomeView
 from login.login_controller import LoginController
-from entities.models import User
+from entities.models import User, database
 from share.utils import Utils
 
 
@@ -54,7 +53,6 @@ class LoginView:
         username_lbl = ctk.CTkLabel(group_item, text="Tên người dùng: ", font=('', 14, 'bold'), text_color=Utils.BLUE)
         username_lbl.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
         username_ent = ctk.CTkEntry(master=group_item, placeholder_text="Nhập tên người dùng", width=200, fg_color=Utils.WHITE, text_color=Utils.BLACK)
-
         username_ent.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
         # Password field
@@ -75,6 +73,7 @@ class LoginView:
         parent.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
 
     def on_login_click(self, username, password):
+        # Catch event login button click
         user: User
         if username == "" or password == "":
             tkMessageBox.showinfo("Cảnh báo", "Cập nhật đầy đủ thông tin trước khi đăng nhập!")
@@ -83,6 +82,7 @@ class LoginView:
             if user is None:
                 return
             self.__login_page.pack_forget()
+            database.close()
             homepage = HomeController(self.__parent)
 
 

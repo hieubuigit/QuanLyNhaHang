@@ -1,18 +1,17 @@
 import tkinter as tk
-from datetime import datetime
 from tkinter import ttk
-
 import customtkinter as ctk
 import numpy as np
-from PIL import Image, ImageTk
+from PIL import Image
 from customtkinter import *
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
 from Bill.bill_view import BillType
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
+
+
 class ReportView:
     def __init__(self, window, controller):
         self.__controller = controller
@@ -21,7 +20,6 @@ class ReportView:
         self.__ui_main_content(window)
 
     def __ui_main_content(self, root):
-
         main_fr = CTkFrame(root)
         main_fr.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.__ui_left_view(root, main_fr)
@@ -197,7 +195,6 @@ class ReportView:
             empty_fr = FigureCanvasTkAgg(fig, main_fr)
             empty_fr.draw()
             empty_fr.get_tk_widget().pack(side="top", fill='both', expand=True, padx=1, pady=1)
-
 
     def open_bar_chart(self, main_fr):
         f = plt.Figure(figsize=(6, 4), dpi=100)

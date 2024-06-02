@@ -1,11 +1,8 @@
 from Report.report_view import ReportView
 from datetime import datetime, timedelta
-from tkinter import messagebox
 import peewee
 from Bill.bill_model import Billing
 from Bill.bill_view import BillView, BillType
-from Table_Order.table_model import Table
-from WareHouse.discount_model import Discount
 from database.connection import Connection
 from entities.models import User
 
@@ -46,12 +43,12 @@ class ReportController:
     def __get_bills(self, quarter=1):
         self.__bills = []
         try:
-            Connection.db_handle.connect()
-            b = Billing.table_exists()
-            if not b:
-                Billing.create_table()
+            # Connection.db_handle.connect()
+            # b = Billing.table_exists()
+            # if not b:
+            #     Billing.create_table()
             current_quarter = quarter
-            print(current_quarter)
+            # print(current_quarter)
             start_date = self.get_first_date_by_quarter(current_quarter)
             end_date = self.get_last_date_by_quarter(current_quarter, start_date)
             self.__months_of_the_quarter = [x for x in range(start_date.month, end_date.month + 1)]
@@ -60,6 +57,7 @@ class ReportController:
             print(f"{start_date} -{end_date}")
             results = Billing.select().where(Billing.createdDate.between(start_date, end_date)).order_by(Billing.createdDate.asc())
             self.__bills.extend(results)
+
         except peewee.InternalError as px:
             print(str(px))
         finally:
@@ -88,10 +86,10 @@ class ReportController:
     def get_user_name_by_id(self, _id):
         user_name = None
         try:
-            Connection.db_handle.connect()
-            u = User.table_exists()
-            if not u:
-                User.create_table()
+            # Connection.db_handle.connect()
+            # u = User.table_exists()
+            # if not u:
+            #     User.create_table()
             row = User.select().where(User.id == _id)
             if row:
                 if row.last_name and row.first_name:
