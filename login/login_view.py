@@ -1,10 +1,9 @@
 import tkinter as tk
 import tkinter.messagebox as tkMessageBox
 from PIL import Image
-from ctypes import windll
+# from ctypes import windll
 import customtkinter as ctk
-from Home.home_controller import HomeController
-from Home.home_view import HomeView
+from home.home_controller import HomeController
 from login.login_controller import LoginController
 from entities.models import User
 from share.utils import Utils
@@ -87,7 +86,7 @@ class LoginView:
 
 
 if __name__ == '__main__':
-    windll.shcore.SetProcessDpiAwareness(1)
+    # windll.shcore.SetProcessDpiAwareness(1)
     root = tk.Tk()
     root.state('zoomed')  # full screen
     root.resizable(True, True)

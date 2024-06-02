@@ -1,9 +1,9 @@
 from datetime import datetime
 from tkinter import messagebox
 import peewee
-from Bill.bill_model import BillModel
-from Bill.bill_view import BillView
-from Table_Order.table_model import TableModel
+from bill.bill_model import BillModel
+from bill.bill_view import BillView
+from table_order.table_model import TableModel
 from entities.models import Billing
 from share.common_config import BillType
 

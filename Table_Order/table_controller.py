@@ -1,9 +1,9 @@
 from datetime import datetime
 from tkinter import messagebox
 import peewee
-from Table_Order.menu_food_controller import MenuFoodController
-from Table_Order.table_model import TableModel
-from Table_Order.table_view import TableView
+from table_order.menu_food_controller import MenuFoodController
+from table_order.table_model import TableModel
+from table_order.table_view import TableView
 from entities.models import User, Table, Billing
 from share.common_config import UserType, TableType, BillType, BillStatus
 from share.utils import Utils
@@ -35,9 +35,13 @@ class TableController:
         try:
             if not Table.table_exists():
                 Table.create_table()
+            table = Table.get_or_none(Table.tableNum == table_num)
+            if table:
+                messagebox.showinfo("", "Số bàn này đã tồn tại")
+                return
             row_table = Table(tableNum=table_num, seatNum=seat_num, status=status, createdDate=datetime.now())
             row_table.save()
-            print("Save table success")
+            return 1
         except peewee.InternalError as px:
             print("Save table failure")
             print(str(px))
@@ -47,15 +51,18 @@ class TableController:
         try:
             if not Table.table_exists():
                 Table.create_table()
+            table = Table.get_or_none(Table.tableNum == table_num, Table.id != id)
+            if table:
+                messagebox.showinfo("", "Số bàn này đã tồn tại")
+                return
             table = Table.get(Table.id == id)
             table.tableNum = table_num
             table.seatNum = seat_num
             table.status = status
             table.updatedDate = datetime.now()
             table.save()
-            print("Update table success")
+            return 1
         except peewee.InternalError as px:
-            print("Update table failure")
             print(str(px))
 
 
@@ -82,7 +89,6 @@ class TableController:
                 table.delete_instance()
                 messagebox.showinfo("Thông báo", "Xóa bàn thành công")
             else:
-                print(f"No record found with ID {table_id}")
                 messagebox.showinfo("Thông báo", "Xóa bàn thất bại")
         except peewee.InternalError as px:
             print(str(px))
@@ -100,22 +106,22 @@ class TableController:
             b.status = BillStatus.UNPAID.value
             b.createdDate = datetime.now()
             b.save()
+            return 1
         except peewee.InternalError as px:
             print(str(px))
     def delete_and_reload(self, table_id):
         self.__delete_table(table_id)
         self.__get_table_data()
 
-
     def add_new_and_reload(self, table_num_value, seat_num_value, status_value):
-        self.add_new_table_to_db(table_num_value, seat_num_value, status_value)
-        self.__get_table_data()
+        if self.add_new_table_to_db(table_num_value, seat_num_value, status_value):
+            self.__get_table_data()
+            return 1
 
     def update_and_reload(self, id, table_num_value, seat_num_value, status_value):
-        self.update_table_to_db(id, table_num_value, seat_num_value, status_value)
-        self.__get_table_data()
-
-
+        if self.update_table_to_db(id, table_num_value, seat_num_value, status_value):
+            self.__get_table_data()
+            return 1
 
     def show_menu_food(self, view_master, table, reload_table_page):
         menu = MenuFoodController(view_master, reload_table_page, table=table)

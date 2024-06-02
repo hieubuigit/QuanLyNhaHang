@@ -25,7 +25,7 @@ class Discount(BaseModel):
 class Product(BaseModel):
     id = AutoField(primary_key=True, null=True, column_name="Id")
     name = CharField(null=True, column_name="Name")
-    price = DecimalField(null=False, column_name="Price", max_digits=10, decimal_places=0)
+    price = DecimalField(null=False, column_name="Price", max_digits=15, decimal_places=0)
     unit = CharField(column_name="Unit")
     quantity = IntegerField(column_name="Quantity")
     capacity = FloatField(null=False, column_name="Capacity")
@@ -92,17 +92,17 @@ class Billing(BaseModel):
     discountId = ForeignKeyField(null=True, column_name="DiscountId", field='id', model=Discount)
     customerName = CharField(null=True, column_name="CustomerName")
     customerPhoneNumber = CharField(null=True, column_name="CustomerPhone")
-    totalMoney = DecimalField(null=False, column_name="TotalMoney", max_digits=10, decimal_places=0)
+    totalMoney = DecimalField(null=False, column_name="TotalMoney", max_digits=15, decimal_places=0)
     type = IntegerField(null=False, column_name="Type")
     status = IntegerField(column_name="Status", null=False)
-    createdDate = DateTimeField(column_name="CreateDate", formats=["%Y-%m-%d"])
-    updatedDate = DateTimeField(column_name="UpdateDate", null=True, formats=["%Y-%m-%d"])
+    createdDate = DateTimeField(column_name="CreatedDate", formats=["%Y-%m-%d"])
+    updatedDate = DateTimeField(column_name="UpdatedDate", null=True, formats=["%Y-%m-%d"])
     class Meta:
         table_name = "Billing"
 class OrderList(BaseModel):
     billing_id = ForeignKeyField(column_name='BillingId', field='id', model=Billing)
     created_date = DateTimeField(column_name='CreatedDate', null=True)
-    cur_price = DecimalField(column_name='CurPrice', decimal_places=0, max_digits=10)
+    cur_price = DecimalField(column_name='CurPrice', decimal_places=0, max_digits=15)
     id = AutoField(column_name='Id')
     product_id = ForeignKeyField(column_name='ProductId', field='id', model=Product)
     quantity = IntegerField(column_name='Quantity')
@@ -121,16 +121,4 @@ class Payslip(BaseModel):
     class Meta:
         table_name = 'payslip'
 
-
-
-class Warehouse(BaseModel):
-    created_date = DateTimeField(column_name='CreatedDate', null=True)
-    id = AutoField(column_name='Id')
-    invoice_code = CharField(column_name='InvoiceCode', null=True)
-    total_money = DecimalField(column_name='TotalMoney')
-    updated_date = DateTimeField(column_name='UpdatedDate', null=True)
-    user = ForeignKeyField(column_name='UserId', field='id', model=User)
-
-    class Meta:
-        table_name = 'warehouse'
 

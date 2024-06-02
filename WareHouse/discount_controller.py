@@ -2,7 +2,7 @@ from datetime import datetime
 from tkinter import messagebox
 
 import peewee
-from WareHouse.discount_view import DiscountView
+from warehouse.discount_view import DiscountView
 from entities.models import Discount
 
 

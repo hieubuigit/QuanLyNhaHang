@@ -1,4 +1,4 @@
-from Report.report_view import ReportView
+from report.report_view import ReportView
 from datetime import datetime, timedelta
 import peewee
 from database.connection import Connection

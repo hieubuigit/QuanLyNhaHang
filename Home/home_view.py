@@ -2,11 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
 from PIL import Image
-from Bill.bill_controller import BillController
-from Home.SlidePanel import SlidePanel
-from Report.report_controller import ReportController
-from Table_Order.table_controller import TableController
-from WareHouse.ware_house_controller import WareHouseController
+from bill.bill_controller import BillController
+from home.SlidePanel import SlidePanel
+from logout.logout_controller import LogoutController
+from report.report_controller import ReportController
+from table_order.table_controller import TableController
+from warehouse.ware_house_controller import WareHouseController
 from employee.employee_view import EmployeeView
 from share.common_config import TabType
 from share.utils import Utils
@@ -159,7 +160,6 @@ class HomeView:
         report_p = ReportController(root=main_fr)
 
     def on_logout_click(self):
-        self.__root.destroy()
         logout_controller = LogoutController()
         logout_controller.logout()
 

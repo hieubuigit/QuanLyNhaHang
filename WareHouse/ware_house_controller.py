@@ -1,8 +1,8 @@
 import datetime
 from tkinter import messagebox
 import peewee
-from WareHouse.discount_controller import DiscountController
-from WareHouse.ware_house_view import WareHouseView
+from warehouse.discount_controller import DiscountController
+from warehouse.ware_house_view import WareHouseView
 from database.connection import Connection
 from entities.models import Product
 

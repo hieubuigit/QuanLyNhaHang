@@ -7,8 +7,6 @@ import customtkinter
 from PIL import ImageTk, Image
 from customtkinter import *
 from tkinter import filedialog
-
-from WareHouse.discount_view import DiscountView
 from share.utils import Utils
 
 
