@@ -9,7 +9,7 @@ from customtkinter import *
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from Bill.bill_view import BillType
+from share.common_config import BillType
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
@@ -209,28 +209,28 @@ class ReportView:
         r = np.arange(3)
         expend_value_by_month = []
         revenue_value_by_month = []
-        for m in ind_month:
-            revenue_total = sum(i.totalMoney for i in bills if i.type == BillType.REVENUE.value[0]
-                                and i.createdDate.month == m) / 1000000
-            revenue_value_by_month.append(revenue_total)
-            expend_total = sum(i.totalMoney for i in bills if i.type == BillType.EXPANDING.value[0]
-                               and i.createdDate.month == m) / 1000000
-            expend_value_by_month.append(expend_total)
-        expand_max_value = float(max(expend_value_by_month, key=lambda x: float(x)))
-        revenue_max_value = float(max(revenue_value_by_month, key=lambda x: float(x)))
-        max_value = expand_max_value if expand_max_value > revenue_max_value else revenue_max_value
-        if max_value < 1:
-            max_value = 10
-        step = max_value / 5
-        ticks_loc = np.arange(0, max_value, step=step)
-        print("expend_value_by_month", expend_value_by_month)
-        print("len revenue_value_by_month", len(revenue_value_by_month))
-        ind_str = [f"Tháng {x}" for x in ind_month]
-        ax.bar(r - 0.2, revenue_value_by_month, width, label='Thu')
-        ax.bar(r + 0.2, expend_value_by_month, width, label="Chi")
-        ax.set_xticks(r, ind_str)
-        ax.set_yticks(ticks_loc)
-        ax.legend()
+        max_value = 50
+        if ind_month:
+            for m in ind_month:
+                revenue_total = sum(i.totalMoney for i in bills if i.type == BillType.REVENUE.value[0]
+                                    and i.createdDate.month == m) / 1000000
+                revenue_value_by_month.append(revenue_total)
+                expend_total = sum(i.totalMoney for i in bills if i.type == BillType.EXPANDING.value[0]
+                                   and i.createdDate.month == m) / 1000000
+                expend_value_by_month.append(expend_total)
+            expand_max_value = float(max(expend_value_by_month, key=lambda x: float(x)))
+            revenue_max_value = float(max(revenue_value_by_month, key=lambda x: float(x)))
+            max_value = expand_max_value if expand_max_value > revenue_max_value else revenue_max_value
+            if max_value < 1:
+                max_value = 10
+            step = max_value / 5
+            ticks_loc = np.arange(0, max_value, step=step)
+            ind_str = [f"Tháng {x}" for x in ind_month]
+            ax.bar(r - 0.2, revenue_value_by_month, width, label='Thu')
+            ax.bar(r + 0.2, expend_value_by_month, width, label="Chi")
+            ax.set_xticks(r, ind_str)
+            ax.set_yticks(ticks_loc)
+            ax.legend()
         canvas = FigureCanvasTkAgg(f, master=main_fr)
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=1)
 

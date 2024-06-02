@@ -2,9 +2,9 @@ import datetime
 from tkinter import messagebox
 import peewee
 from WareHouse.discount_controller import DiscountController
-from WareHouse.product_model import Product
 from WareHouse.ware_house_view import WareHouseView
 from database.connection import Connection
+from entities.models import Product
 
 
 class WareHouseController:
@@ -21,15 +21,12 @@ class WareHouseController:
         self.__products = []
         try:
             Connection.db_handle.connect()
-            # Product.drop_table()
             pr = Product.table_exists()
             if not pr:
                 Product.create_table()
             rows = Product.select()
             self.__products.extend(rows)
-            print("Get product success")
         except peewee.InternalError as px:
-            print("Get product failure")
             print(str(px))
         finally:
             Connection.db_handle.close()

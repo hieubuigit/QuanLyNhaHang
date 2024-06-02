@@ -4,14 +4,13 @@ from enum import Enum
 from tkinter import messagebox
 import customtkinter as ctk
 from share.CEntryDate import CEntryDate
+from share.common_config import BillType
 from share.utils import Utils
 from tkinter import ttk
 import tkcalendar as tkc
 from PIL import Image
 
-class BillType(Enum):
-    REVENUE = (0, "Thu")
-    EXPANDING = (1, "Chi")
+
 
 
 class BillView:

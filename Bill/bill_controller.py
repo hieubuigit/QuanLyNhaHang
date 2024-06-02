@@ -1,18 +1,17 @@
 from datetime import datetime
-from decimal import Decimal
 from tkinter import messagebox
 import peewee
-from Bill.bill_model import Billing
-from Bill.bill_view import BillView, BillType
-from Table_Order.table_model import Table
-from WareHouse.discount_model import Discount
-from database.connection import Connection
-from entities.models import User
+from Bill.bill_model import BillModel
+from Bill.bill_view import BillView
+from Table_Order.table_model import TableModel
+from entities.models import Billing
+from share.common_config import BillType
 
 
 class BillController:
     def __init__(self, window):
         self.__bills = []
+        self.__bill_model = BillModel()
         self.__view = BillView(window, self)
 
     @property
@@ -22,28 +21,16 @@ class BillController:
     def get_data(self, by_date):
         self.__bills = []
         try:
-            Connection.db_handle.connect()
-            b = Billing.table_exists()
-            if not b:
-                Billing.create_table()
-            results = Billing.select().where(Billing.createdDate.year == by_date.year
-                                             and Billing.createdDate.month == by_date.month
-                                             and Billing.createdDate.day == by_date.day)
-
-            self.__bills.extend(results)
+            bills = self.__bill_model.get_bills_by_date(by_date)
+            if bills:
+                self.__bills.extend(bills)
         except peewee.InternalError as px:
             print(str(px))
-        finally:
-            Connection.db_handle.close()
         return self.__bills
 
     def save_data_to_db(self, table_id, user_id, creator_name, discount_id,
                         customer_name, customer_phone, money, bill_type, created_date):
         try:
-            Connection.db_handle.connect()
-            pr = Billing.table_exists()
-            if not pr:
-                Billing.create_table()
             row = Billing(tableId=table_id,
                           userId=user_id,
                           discountId=discount_id,
@@ -53,49 +40,33 @@ class BillController:
                           totalMoney=money,
                           type=bill_type,
                           createdDate=created_date)
-            row.save()
-            messagebox.showinfo("Thông báo", "Thêm sản phẩm thành công")
-
+            self.__bill_model.save_bill(row)
+            pass
         except peewee.InternalError as px:
             messagebox.showinfo("Thông báo", "Thêm sản phẩm thất bại. Vui lòng thử lại.")
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
 
     def __delete_bill(self, bill_id):
         try:
-            Connection.db_handle.connect()
-            product = Billing.get_or_none(Billing.id == bill_id)
-            if product:
-                product.delete_instance()
+            if self.__bill_model.delete_by_id(bill_id):
                 messagebox.showinfo("Thông báo", "Xóa bàn thành công")
             else:
                 print(f"No record found with ID {bill_id}")
                 messagebox.showinfo("Thông báo", "Xóa bàn thất bại")
         except peewee.InternalError as px:
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
 
     def __update_bill_to_db(self, id, creator_name, create_date, customer_name, customer_phone, money, bill_type):
         try:
-            Connection.db_handle.connect()
-            b = Billing.get(Billing.id == id)
-            b.creatorName = creator_name
-            b.customerName = customer_name
-            b.customerPhoneNumber = customer_phone
-            b.money = money
-            b.type = bill_type
-            b.createdDate = create_date
-            b.updatedDate = datetime.now()
-            b.save()
-            print(create_date)
-            print("Update table success")
+            self.__bill_model.update_by_id(id, creator_name, create_date,
+                                           customer_name, customer_phone, money, bill_type)
+            print("Update bill success")
         except peewee.InternalError as px:
-            print("Update table failure")
+            print("Update bill failure")
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
     def add_new_bill_and_reload(self):
         detail_form_values = self.__view.get_detail_form_values()
         table_num = detail_form_values.get("table_num")
@@ -129,18 +100,14 @@ class BillController:
         self.get_data(datetime.now())
 
     def get_tables(self):
+        table_model = TableModel()
         tables = []
         try:
-            Connection.db_handle.connect()
-            t = Table.table_exists()
-            if not t:
-                Table.create_table()
-            results = Table.select()
-            tables.extend(results)
+            rows = table_model.get_data()
+            tables.extend(rows)
         except peewee.InternalError as px:
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
         ids = iter([i.id for i in tables])
         tb_nums = iter([i.tableNum for i in tables])
         _dict = dict(zip(ids, tb_nums))
@@ -149,16 +116,11 @@ class BillController:
     def get_discounts(self):
         discounts = []
         try:
-            Connection.db_handle.connect()
-            d = Discount.table_exists()
-            if not d:
-                Discount.create_table()
-            results = Discount.select()
-            discounts.extend(results)
+            rows = self.__bill_model.get_discount()
+            discounts.extend(rows)
         except peewee.InternalError as px:
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
         ids = iter([i.id for i in discounts])
         content = iter([f"{i.description} {i.percent}" for i in discounts])
         _dict = dict(zip(ids, content))
@@ -167,18 +129,13 @@ class BillController:
     def get_user_name_by_id(self, _id):
         user_name = None
         try:
-            Connection.db_handle.connect()
-            u = User.table_exists()
-            if not u:
-                User.create_table()
-            row = User.select().where(User.id == _id)
-            if row:
-                if row.last_name and row.first_name:
-                    user_name = row.user_name
+            user = self.__bill_model.get_user_by_id(_id)
+            if user:
+                if user.last_name and user.first_name:
+                    user_name = user.user_name
                 else:
-                    user_name = f"{row.first_name} {row.last_name}"
+                    user_name = f"{user.first_name} {user.last_name}"
         except peewee.InternalError as px:
             print(str(px))
-        finally:
-            Connection.db_handle.close()
+
         return user_name

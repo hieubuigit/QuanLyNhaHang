@@ -45,8 +45,8 @@ class TabType(Enum):
     WARE_HOUSE = "WARE_HOUSE"
 
 class StatusTable(Enum):
-    DISABLED = "Đã đặt"
-    AVAILABLE = "Trống"
+    DISABLED = (1, "Đã đặt")
+    AVAILABLE = (0, "Trống")
 
 class TableType(Enum):
     Add = "ADD"
@@ -55,3 +55,10 @@ class TableType(Enum):
 class ProductType(Enum):
     Food = 0
     Drink = 1
+class BillType(Enum):
+    REVENUE = (0, "Thu")
+    EXPANDING = (1, "Chi")
+class BillStatus(Enum):
+    """Đã thanh toán - 1, chưa thanh toán - 0"""
+    PAID = 1
+    UNPAID = 0
