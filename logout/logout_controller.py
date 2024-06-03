@@ -1,11 +1,13 @@
 import tkinter.messagebox as tkMsgBox
-# import tkinter as tk
+
+from login.login_controller import LoginController
+from share.utils import Utils
 
 
 class LogoutController:
-    def logout(self):
-        response = tkMsgBox.askyesno("Thông báo", "Bạn có muốn đăng xuất?")
-        if response:
-            print("Đăng xuất thành công! Chuyển về page login")
-        else:
-            print("Hide confirm")
+    def __init__(self):
+        self.__login_controller = LoginController()
+
+    def logout(self, parent):
+        Utils.user_profile = {}
+        self.__login_controller.open_page(parent)

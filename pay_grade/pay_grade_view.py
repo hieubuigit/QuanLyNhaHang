@@ -143,6 +143,7 @@ class PayGradeView:
         self.__popup.geometry("300x350")
         self.__popup.title("Thông tin bậc lương")
         self.__popup.resizable(False, False)
+        self.__popup.wm_attributes("-topmost", True)
         form = ctk.CTkFrame(self.__popup, fg_color=Utils.WHITE)
 
         # Account Type

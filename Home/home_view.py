@@ -7,9 +7,12 @@ from Home.SlidePanel import SlidePanel
 from Report.report_controller import ReportController
 from Table_Order.table_controller import TableController
 from WareHouse.ware_house_controller import WareHouseController
+from change_password.change_password_view import ChangePasswordView
 from employee.employee_view import EmployeeView
+from logout.logout_controller import LogoutController
 from share.common_config import TabType
 from share.utils import Utils
+import tkinter.messagebox as tkMsgBox
 
 
 class HomeView:
@@ -26,13 +29,13 @@ class HomeView:
         style = ttk.Style()
         style.theme_use("default")
         Utils.set_appearance_mode(ctk)
-        home_fr = ctk.CTkFrame(master=window, fg_color="white", corner_radius=0)
-        home_fr.pack(fill=tk.BOTH, expand=1)
+        self.home_fr = ctk.CTkFrame(master=window, fg_color="white", corner_radius=0)
+        self.home_fr.pack(fill=tk.BOTH, expand=1)
         # Tạo UI thanh tab bar
-        self.__generate_ui_header(window=home_fr)
+        self.__generate_ui_header(window=self.home_fr)
 
         # Tạo một frame chính để chuyển đổi nhiều page
-        self.__main_fr = ctk.CTkFrame(master=home_fr, fg_color="white")
+        self.__main_fr = ctk.CTkFrame(master=self.home_fr, fg_color="white")
         self.__main_fr.pack(fill="both", expand=1)
 
         # Mặc định chọn tab 1: Hiển thị nhân viên page
@@ -46,7 +49,8 @@ class HomeView:
         change_password_btn = ctk.CTkButton(animated_panel, text='Đổi mật khẩu',
                                             corner_radius=0, fg_color="white", text_color="black",
                                             hover_color=HomeView.hover_color_tab,
-                                            font=ctk.CTkFont("Roboto", 16))
+                                            font=ctk.CTkFont("Roboto", 16),
+                                            command=lambda: self.on_change_pass())
         change_password_btn.pack(expand=False, fill=tk.X, pady=(10, 0), padx=2)
         ic_logout_default = ctk.CTkImage(Image.open("../assets/logout.png"), size=(25, 25))
         logout_btn = ctk.CTkButton(animated_panel, text='Logout', corner_radius=0, fg_color="white",
@@ -159,9 +163,26 @@ class HomeView:
         report_p = ReportController(root=main_fr)
 
     def on_logout_click(self):
-        self.__root.destroy()
-        logout_controller = LogoutController()
-        logout_controller.logout()
+        response = tkMsgBox.askyesno("Thông báo", "Bạn có muốn đăng xuất?")
+        if response:
+            self.__main_fr.destroy()
+            self.home_fr.destroy()
+
+            # Recreate frame
+            self.home_fr = ctk.CTkFrame(master=self.__root, fg_color="white", corner_radius=0)
+            self.home_fr.pack(fill=tk.BOTH, expand=1)
+
+            self.__main_fr = ctk.CTkFrame(master=self.home_fr, fg_color="white")
+            self.__main_fr.pack(fill="both", expand=True, side=tk.LEFT)
+
+            logout_controller = LogoutController()
+            logout_controller.logout(self.__main_fr)
+
+    def on_change_pass(self):
+        # User can change own password
+        frame = ctk.CTkFrame(self.__main_fr)
+        change_password = ChangePasswordView()
+        change_password.init_change_password_popup(frame)
 
     # Cập nhật ui tab đã chọn trước đó
     def __update_tab_clicked(self):

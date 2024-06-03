@@ -28,6 +28,7 @@ class Utils:
                          'ipady': 3, 'fill': tk.BOTH}
     pack_style_1 = {'side': tk.LEFT, 'expand': True, 'fill': tk.BOTH}
     pack_style_2 = {'side': tk.LEFT, 'expand': True, 'fill': tk.NONE, 'anchor': 'nw'}
+    value_pack = {'side': tk.LEFT, 'expand': True, 'fill': tk.NONE, 'anchor': 'ne'}
 
     # Login page
     pack_control_item = {"side": 'left', 'fill': tk.NONE, 'expand': tk.YES, 'pady': '20', 'anchor': "w"}
@@ -64,7 +65,7 @@ class Utils:
         label = ctk.CTkLabel(item_frm, text=data['lbl'])
         label.pack(**Utils.pack_style_2)
         value = ctk.CTkLabel(item_frm, text=data['value'])
-        value.pack(**Utils.pack_style_2)
+        value.pack(**Utils.value_pack)
         return {'frm': item_frm, 'value': value}
 
     @staticmethod
@@ -125,3 +126,10 @@ class Utils:
         if isinstance(value, str) and pattern.match(value):
             return True
         return False
+
+    @staticmethod
+    def format_currency(money):
+        if money is None:
+            return ''
+        formatted_value = "{:,.0f} vnd".format(money)
+        return formatted_value

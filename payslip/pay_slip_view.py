@@ -12,7 +12,7 @@ class PaySlipView:
     def __init__(self, parent: ctk.CTkFrame):
         self.__pay_slip_controller = PaySlipController()
         self.__main_frame = parent
-        self.__id_selected = 0  # To save row id where will update, delete or remove database
+        self.__id_selected: int = 0  # This is payslip id. It use to save row id where will update, delete or remove database
         self.__user_code_selected = ''
         self.__popup = None
         self.__form_controls = dict()
@@ -21,6 +21,7 @@ class PaySlipView:
         self.__cols = ["no", "user_code", "full_name", 'user_name', "gender", 'birth_date', 'identity', 'type', 'id',
                        'hours', 'total_salary', "created_date", "updated_date", 'user_id']
         self.__emp_data = None     # Store data when calculate salary
+        self.__tree_data = []
         self.init_view(parent)
 
     def init_view(self, parent):
@@ -124,13 +125,13 @@ class PaySlipView:
         self.load_tree_data()
 
         # Bind event when row selected
-        self.__tree.bind("<<TreeviewSelect>>", self.row_clicked())
+        self.__tree.bind("<<TreeviewSelect>>", self.row_clicked)
 
     def load_tree_data(self):
         # Get all record and show in page
-        pay_slip_list = self.__pay_slip_controller.get_all()
-        if pay_slip_list is not None and len(pay_slip_list) > 0:
-            for psl in pay_slip_list:
+        self.__tree_data = self.__pay_slip_controller.get_all()
+        if self.__tree_data is not None and len(self.__tree_data) > 0:
+            for psl in self.__tree_data:
                 self.__tree.insert('', tk.END, values=psl)
 
     def reload_tree_data(self):
@@ -139,13 +140,14 @@ class PaySlipView:
             self.__tree.delete(record)
         self.load_tree_data()
 
-    def row_clicked(self):
+    def row_clicked(self, event):
         # Catch event that user click on grid to choose what employee can update information
         for item in self.__tree.selection():
             record = self.__tree.item(item)['values']
+            print('row-->', record)
             if record[len(record) - 1]:
                 self.__id_selected = record[len(record) - 1]
-                self.__user_code_selected = record[0]
+                self.__user_code_selected = record[len(record) - 2]
 
     def delete_clicked(self):
         # Delete on item from grid
@@ -169,7 +171,8 @@ class PaySlipView:
         btn_pack = {'side': tk.LEFT, 'padx': 10, 'pady': 10, 'expand': False}
         text_pack = {'side': tk.TOP, 'anchor': 'w'}
 
-        if action == Action.UPDATE and self.__id_selected < 1:
+        if (action == Action.UPDATE) and (self.__id_selected < 1):
+            tkMsgBox.showwarning("Thông báo", f"Chọn 1 dòng bên dưới trước khi cập nhật!")
             return
 
         # Create add new or update payslip information popup
@@ -177,6 +180,7 @@ class PaySlipView:
         self.__popup.geometry("500x600")
         self.__popup.title("Thực hiện tính lương")
         self.__popup.resizable(False, False)
+        self.__popup.wm_attributes("-topmost", True)
 
         main_frm = ctk.CTkFrame(self.__popup, fg_color=Utils.WHITE)
 
@@ -279,9 +283,9 @@ class PaySlipView:
         if action == Action.UPDATE:
             save_or_update_txt = "Cập nhật"
             # Load data here
-            emp_id = self.__form_controls['emp_id_ent'].get()
-            if emp_id == '' or emp_id is None:
-                self.__form_controls['emp_id_ent'].set(self.__user_code_selected)
+            if self.__id_selected > 0:
+                self.set_value_for_entry('emp_id_ent', self.__user_code_selected)
+                self.get_emp_info_clicked()
         else:
             save_or_update_txt = "Thêm"
 
@@ -316,11 +320,12 @@ class PaySlipView:
             'hours': int(self.__form_controls['hours_ent'].get()),
             'type': self.__emp_data['type']
         }
+        self.__form_controls['hours_lbl'].configure(text="{:,.0f}".format(data['hours']))
         salary = self.__pay_slip_controller.calculate_salary(data)
         if salary == 0:
             tkMsgBox.showinfo(title='Thông báo', message="Lương tính ra bằng 0, Vui lòng kiểm tra lại bậc lương của nhân viên!")
             return
-        self.__form_controls['total_salary_lbl'].configure(text=salary)
+        self.__form_controls['total_salary_lbl'].configure(text=Utils.format_currency(salary))
         self.__form_controls["create_payslip_lbl"].configure(text=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         self.__emp_data['total_salary'] = salary
 
@@ -332,16 +337,17 @@ class PaySlipView:
             tkMsgBox.showinfo(title='Thông báo', message='Mã nhân viên không tồn tại hoặc không đúng, vui lòng chọn lại!')
             return
         self.__emp_data = data
-        self.__form_controls['user_code_lbl'].configure(text=data['user_code'])
-        self.__form_controls['full_name_lbl'].configure(text=data['full_name'])
-        self.__form_controls['gender_lbl'].configure(text=data['gender'])
-        self.__form_controls['user_name_lbl'].configure(text=data['user_name'])
-        self.__form_controls['birthday_lbl'].configure(text=data['birth_date'])
-        self.__form_controls['identity_lbl'].configure(text=data['identity'])
-        self.__form_controls['user_type_lbl'].configure(text=data['type_name'])
-        self.__form_controls['payslip_id_lbl'].configure(text=data['id'])
-        self.__form_controls['hours_lbl'].configure(text=data['hours'])
-        self.__form_controls['total_salary_lbl'].configure(text=data['total_salary'])
+        self.__form_controls['user_code_lbl'].configure(text=self.__emp_data['user_code'])
+        self.__form_controls['full_name_lbl'].configure(text=self.__emp_data['full_name'])
+        self.__form_controls['gender_lbl'].configure(text=self.__emp_data['gender'])
+        self.__form_controls['user_name_lbl'].configure(text=self.__emp_data['user_name'])
+        self.__form_controls['birthday_lbl'].configure(text=self.__emp_data['birth_date'])
+        self.__form_controls['identity_lbl'].configure(text=self.__emp_data['identity'])
+        self.__form_controls['user_type_lbl'].configure(text=self.__emp_data['type_name'])
+        self.__form_controls['payslip_id_lbl'].configure(text=self.__emp_data['id'])
+        self.__form_controls['hours_lbl'].configure(text=self.__emp_data['hours'])
+        self.__form_controls['total_salary_lbl'].configure(text=Utils.format_currency(self.__emp_data['total_salary']))
+
 
     def save_or_update_btn_clicked(self, action: Action):
         # Get data from form to save to database
@@ -358,9 +364,8 @@ class PaySlipView:
         if total_salary == 0:
             tkMsgBox.showinfo(title='Thông báo', message="Cần lấy thông tin và tính lương trước khi lưu!")
             return
-
         data = {
-                # 'user_id': self.__emp_data['user_id'],
+                'user_id': self.__emp_data['user_id'],
                 'total_salary': total_salary,
                 'hours': float(hours),
                 'created_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -378,6 +383,7 @@ class PaySlipView:
             return
         elif result == 1:
             self.reload_tree_data()
+            self.__popup.destroy()
             tkMsgBox.showinfo("Thông báo", f"{result_msg} thành công!")
         else:
             self.reload_tree_data()
