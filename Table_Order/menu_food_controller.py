@@ -117,11 +117,12 @@ class MenuFoodController:
         except peewee.InternalError as px:
             print(str(px))
 
-    def update_bill(self, total_money):
-        print("bill id", self.__bill_id)
+    def update_bill(self, total_money, customer_name, customer_phone):
         try:
-            bill = Billing.get_or_none(Billing.id == self.__bill_id)
+            bill: Billing = Billing.get_or_none(Billing.id == self.__bill_id)
             if bill:
+                bill.customerName = customer_name
+                bill.customerPhoneNumber = customer_phone
                 bill.totalMoney = total_money
                 bill.type = BillType.REVENUE.value[0]
                 bill.status = BillStatus.PAID.value

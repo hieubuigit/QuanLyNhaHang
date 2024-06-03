@@ -3,6 +3,7 @@ from PIL import Image
 import customtkinter as ctk
 import tkcalendar as tkc
 from tkinter import ttk
+import tkinter as tk
 
 class CEntryDate(ctk.CTkFrame):
     def __init__(self, parent,
@@ -38,20 +39,30 @@ class CEntryDate(ctk.CTkFrame):
         self._textvariable.set(datetime.now().strftime("%Y-%m-%d"))
         self.after_idle(self.update_height_button)
 
+
     @property
-    def text(self):
+    def date_text(self):
         return self._textvariable.get()
+    @date_text.setter
+    def date_text(self, value):
+        self._textvariable.set(value)
 
     def create_ui_calendar(self):
         global cal, top
-        style = ttk.Style(self)
-        style.theme_use('clam')
-        top = ctk.CTkToplevel(master=self)
+        # style = ttk.Style(self)
+        # style.theme_use('default')
+        top = tk.Toplevel(master=self)
         top.title("Lịch")
         top.geometry("250x220")
-        cal = tkc.Calendar(master=top, date_pattern="y-mm-dd")
+        main_fr = ctk.CTkFrame(top)
+        main_fr.pack(fill="both", expand=1)
+        cal = tkc.Calendar(master=main_fr, date_pattern="y-mm-dd", selectmode='day', selectbackground="DodgerBlue1")
         cal.bind("<<CalendarSelected>>", lambda e: self.calendar_selected())
         cal.pack(fill="both", expand=True, padx=10, pady=10)
+        date_obj = datetime.strptime(self._textvariable.get(), "%Y-%m-%d")
+        cal.selection_set(date_obj)
+        self.update_idletasks()
+
 
     def onclick_button(self):
         self.create_ui_calendar()
@@ -61,6 +72,7 @@ class CEntryDate(ctk.CTkFrame):
         top.destroy()
 
     def update_height_button(self):
+
         self.update_idletasks()
         self.__btn.configure(height=self.__entry.winfo_height())
 

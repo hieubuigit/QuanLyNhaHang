@@ -119,7 +119,6 @@ class TableView:
     def reload_ui_table(self, table_id, status):
         if self.__controller.update_table_status(id_table=table_id,
                                                  status=status):
-            print("reload page")
             for item in grid_content.winfo_children():
                 item.destroy()
             self._add_content(self.__controller.tables)
@@ -203,13 +202,6 @@ class TableView:
         self._add_content(self.__controller.tables)
         self.__table_selected = None
 
-    def validate_input(self, text):
-        # Chỉ cho phép chữ số
-        if text.isdigit():
-            return True
-        else:
-            return False
-
     def click_button_add_or_edit_popup(self, action_type):
         table_status = 0
         if self.status_cbb_var.get() == StatusTable.DISABLED.value[1]:
@@ -241,4 +233,9 @@ class TableView:
         # Thực hiện reload lại UI danh sách bàn
         self._add_content(tables=self.__controller.tables)
 
-
+    def validate_input(self, text):
+        # Chỉ cho phép chữ số
+        if text.isdigit():
+            return True
+        else:
+            return False

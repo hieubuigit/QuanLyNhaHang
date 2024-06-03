@@ -31,14 +31,14 @@ class Discount(BaseModel):
 
 class Product(BaseModel):
     id = AutoField(primary_key=True, null=True, column_name="Id")
-    name = CharField(null=True, column_name="Name")
+    name = CharField(null=False, column_name="Name")
     price = DecimalField(null=False, column_name="Price", max_digits=15, decimal_places=0)
     unit = CharField(column_name="Unit")
     quantity = IntegerField(column_name="Quantity")
-    capacity = FloatField(null=False, column_name="Capacity")
-    alcohol = FloatField(null=False, column_name="Alcohol")
+    capacity = FloatField(null=True, column_name="Capacity")
+    alcohol = FloatField(null=True, column_name="Alcohol")
     productType = IntegerField(column_name="Type")
-    image = BlobField(column_name="Image")
+    image = BlobField(column_name="Image", null=True)
     createdDate = DateTimeField(column_name="CreatedDate")
     updatedDate = DateTimeField(null=False, column_name="UpdatedDate")
 
@@ -98,7 +98,6 @@ class Billing(BaseModel):
     id = AutoField(primary_key=True, null=False)
     tableId = ForeignKeyField(null=True, column_name="TableId", field='id', model=Table)
     userId = ForeignKeyField(null=True, column_name="UserId", field='id', model=User)
-    # creatorName = CharField(null=True, column_name="CreatorName")
     discountId = ForeignKeyField(null=True, column_name="DiscountId", field='id', model=Discount)
     customerName = CharField(null=True, column_name="CustomerName")
     customerPhoneNumber = CharField(null=True, column_name="CustomerPhoneNumber")
@@ -113,11 +112,11 @@ class Billing(BaseModel):
 
 
 class OrderList(BaseModel):
-    billing_id = ForeignKeyField(column_name='BillingId', field='id', model=Billing)
+    billing_id = ForeignKeyField(column_name='BillingId', field='id', model=Billing, on_delete='CASCADE')
     created_date = DateTimeField(column_name='CreatedDate', null=True)
     cur_price = DecimalField(column_name='CurPrice', decimal_places=0, max_digits=15)
     id = AutoField(column_name='Id')
-    product_id = ForeignKeyField(column_name='ProductId', field='id', model=Product)
+    product_id = ForeignKeyField(column_name='ProductId', field='id', model=Product, on_delete='CASCADE')
     quantity = IntegerField(column_name='Quantity')
     updated_date = DateTimeField(column_name='UpdatedDate', null=True)
 

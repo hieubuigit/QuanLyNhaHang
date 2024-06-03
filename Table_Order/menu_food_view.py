@@ -21,7 +21,8 @@ class MenuFoodView:
         self.__service__charge_rate = 10
         self.__table_info = table_info
         self.__discount_percent_var = tk.StringVar()
-
+        self.__customer_phone_var = tk.StringVar()
+        self.__customer_name_var = tk.StringVar()
 
         # Setup UI
         global toplevel, font_title1, half_width
@@ -33,6 +34,8 @@ class MenuFoodView:
         toplevel.title("Thực đơn nhà hàng")
         half_width = 669
         print(half_width)
+        self.validation = toplevel.register(self.validate_input)
+
         self.create_ui_bill(toplevel)
         self.create_ui_menu(toplevel)
 
@@ -44,6 +47,14 @@ class MenuFoodView:
         percents = self.__controller.get_discount_percents()
         discount_cbb.configure(values=percents)
 
+
+
+    def validate_input(self, text):
+        # Chỉ cho phép chữ số
+        if text.isdigit():
+            return True
+        else:
+            return False
     def create_ui_bill(self, parent):
         global order_fr, bill_num, orders_canvas, discount_cbb
         bill_fr = ctk.CTkFrame(parent)
@@ -54,12 +65,14 @@ class MenuFoodView:
         customer_info_fr.pack(fill=tk.X, expand=0, side="left", padx=10)
         customer_name_lb = ctk.CTkLabel(customer_info_fr, text="Họ tên KH", font=font_title1)
         customer_name_lb.grid(row=0, column=0, sticky="w", padx=5)
-        customer_name_entry = ctk.CTkEntry(customer_info_fr, placeholder_text="Nhập họ tên khách hàng", width=250)
+        customer_name_entry = ctk.CTkEntry(customer_info_fr, placeholder_text="Nhập họ tên khách hàng",
+                                           width=250, textvariable=self.__customer_name_var)
         customer_name_entry.grid(row=0, column=1)
         customer_phone = ctk.CTkLabel(customer_info_fr, text="Số điện thoại KH", font=font_title1)
         customer_phone.grid(row=1, column=0, padx=5, sticky="w")
-        customer_phone_entry = ctk.CTkEntry(customer_info_fr,
-                                            placeholder_text="Nhập số điện thoại khách hàng", width=250)
+        customer_phone_entry = ctk.CTkEntry(customer_info_fr, textvariable=self.__customer_phone_var,
+                                            placeholder_text="Nhập số điện thoại khách hàng", width=250,
+                                            validatecommand=(self.validation, '%S'), validate="key")
         customer_phone_entry.grid(row=1, column=1, pady=5)
         right_fr = ctk.CTkFrame(header_bill_fr)
         right_fr.pack()
@@ -312,7 +325,8 @@ class MenuFoodView:
             self.setup_data_bill()
     def payment_onclick(self):
         total = self._money_to_pay_var.get().replace(",", "")
-        if self.__controller.update_bill(total_money=total):
+        if self.__controller.update_bill(total_money=total, customer_name=self.__customer_name_var.get(),
+                                         customer_phone=self.__customer_phone_var.get()):
             self.reload_table_page()
             toplevel.destroy()
 

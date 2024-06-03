@@ -7,6 +7,8 @@ import customtkinter
 from PIL import ImageTk, Image
 from customtkinter import *
 from tkinter import filedialog
+
+from share.common_config import ProductType
 from share.utils import Utils
 
 
@@ -17,8 +19,8 @@ class StatePage(Enum):
 
 class WareHouseView:
     def __init__(self, root, controller):
+        # Property
         self.__controller = controller
-        self.__ui_main_content(root=root)
         self.product_name_var = tk.StringVar()
         self.product_unit_var = tk.StringVar()
         self.product_price_var = tk.StringVar()
@@ -26,10 +28,16 @@ class WareHouseView:
         self.product_capacity_var = tk.StringVar()
         self.product_alcohol_var = tk.StringVar()
         self.product_type_var = tk.StringVar()
-
+        self.__search_var = tk.StringVar()
+        self.__img_thumbnail_bytes = None
+        self.dict_product_type = {ProductType.Food.value[0]: ProductType.Food.value[1],
+                                  ProductType.Drink.value[0]: ProductType.Drink.value[1]}
+        self.__product_id_selected = None
+        # UI
         style = ttk.Style()
         style.theme_use("default")
         Utils.set_appearance_mode(customtkinter)
+        self.__ui_main_content(root=root)
         # default right content
         self.product_page()
         self.__current_page = StatePage.Product
@@ -89,7 +97,8 @@ class WareHouseView:
                                 width=370,
                                 height=35,
                                 corner_radius=6,
-                                fg_color="white")
+                                fg_color="white",
+                                textvariable=self.__search_var)
         search_entry.grid(row=0, column=3, padx=5)
         search_btn = CTkButton(search_group_fr,
                                text="Tìm kiếm",
@@ -98,9 +107,10 @@ class WareHouseView:
                                height=36,
                                width=100,
                                fg_color="DodgerBlue1",
-                               hover_color="#FFC0CB",
+                               hover_color="#63B8FF",
                                text_color="black",
-                               font=CTkFont("TkDefaultFont", 16))
+                               font=CTkFont("TkDefaultFont", 16),
+                               command=lambda: self.search_onclick())
         search_btn.grid(row=0, column=4)
 
         self.__ui_left_view(root, main_fr)
@@ -153,7 +163,7 @@ class WareHouseView:
 
         style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = ("id", "name", "unit", "price", "quantity", "capacity",
-                              "alcohol", "type", "create_date", "update_date")
+                              "alcohol", "type", "create_date")
         self.tv["show"] = "headings"
         self.tv.heading("#0", anchor="center")
         self.tv.column("id", anchor="center", width=80)
@@ -165,7 +175,6 @@ class WareHouseView:
         self.tv.column("alcohol", anchor="center", width=140)
         self.tv.column("type", anchor="center", width=100)
         self.tv.column("create_date", anchor="center", width=100)
-        self.tv.column("update_date", anchor="center", width=140)
 
         self.tv.heading("#0", text="Product")
         self.tv.heading("id", text="ID")
@@ -177,7 +186,6 @@ class WareHouseView:
         self.tv.heading("alcohol", text="Nồng độ cồn")
         self.tv.heading("type", text="Loại")
         self.tv.heading("create_date", text="Ngày tạo")
-        self.tv.heading("update_date", text="Ngày Cập nhật")
         self.tv.tag_configure("normal", background="white")
         self.tv.tag_configure("blue", background="lightblue")
         self.insert_row_treeview()
@@ -233,7 +241,7 @@ class WareHouseView:
         product_type_lb = CTkLabel(self.sub_fr, text="Loại")
         product_type_lb.grid(row=4, column=0, sticky=(tk.N, tk.W), pady=entry_padding, padx=entry_padding)
 
-        product_type_cbb = CTkComboBox(self.sub_fr, entry_width, values=["Food", "Drink"],
+        product_type_cbb = CTkComboBox(self.sub_fr, entry_width, values=list(self.dict_product_type.values()),
                                        variable=self.product_type_var)
         product_type_cbb.grid(row=4, column=1, pady=entry_padding, padx=entry_padding)
 
@@ -259,22 +267,22 @@ class WareHouseView:
         self.add_img_btn.grid(row=5, column=1, pady=entry_padding)
 
     def show_file_dialog(self):
-        self.file_path = filedialog.askopenfilename(title="Chọn hình",
-                                                    filetypes=(("jpeg", "*.jpg"), ("png", "*.png")))
-        if self.file_path:
+        file_path = filedialog.askopenfilename(title="Chọn hình",
+                                               filetypes=(("jpeg", "*.jpg"), ("png", "*.png")))
+        if file_path:
             try:
                 # Mở hình ảnh
-                with Image.open(self.file_path) as img:
+                with Image.open(file_path) as img:
                     if img.mode == "RGBA":
                         img = img.convert("RGB")
                     # Tạo thumbnail
                     thumbnail = img.copy()
-                    thumbnail.thumbnail((100, 100))
+                    thumbnail.thumbnail((80, 80))
                     # Chuyển đổi thumbnail thành dạng bytes
                     with io.BytesIO() as output:
                         thumbnail.save(output, format="JPEG")  # Chọn định dạng hình ảnh tuỳ thích
-                        self.thumbnail_bytes = output.getvalue()
-                        image = CTkImage(img, size=(100, 100))
+                        self.__img_thumbnail_bytes = output.getvalue()
+                        image = CTkImage(img, size=(80, 80))
                         self.add_img_btn.configure(image=image)
             except IOError as e:
                 print("Error:", e)
@@ -304,38 +312,63 @@ class WareHouseView:
     def item_treeview_selected(self):
         selected_items = self.tv.selection()
         for item in selected_items:
-            item = self.tv.item(item)
-            self.product_name_var.set(item.get("values")[1])
-            self.product_unit_var.set(item.get("values")[2])
-            self.product_price_var.set(item.get("values")[3])
-            self.product_quantity_var.set(item.get("values")[4])
-            self.product_capacity_var.set(item.get("values")[5])
-            self.product_alcohol_var.set(item.get("values")[6])
-            self.product_type_var.set(item.get("values")[7])
-            get_product_by_id = lambda id: next((item for item in self.__controller.products if item.id == id), None)
-            produc_item = get_product_by_id(item.get("values")[0])
-            if produc_item:
-                image_decode = produc_item.image + b'=' * (-len(produc_item.image) % 4)
-                de = base64.b64decode(image_decode)
-                image = Image.open(io.BytesIO(de))
-                photo = ImageTk.PhotoImage(image.resize((100, 100)))
-                self.add_img_btn.configure(image=photo)
-            print(item)
+            cols = self.tv.item(item, "values")
+            self.__product_id_selected = cols[0]
+            self.product_name_var.set(cols[1])
+            self.product_unit_var.set(cols[2])
+            self.product_price_var.set(cols[3])
+            self.product_quantity_var.set(cols[4])
+            self.product_capacity_var.set(cols[5])
+            self.product_alcohol_var.set(cols[6])
+            self.product_type_var.set(self.dict_product_type.get(int(cols[7])))
+            product = next((item for item in self.__controller.products if item.id == int(cols[0])), None)
+            if product:
+                if product.image:
+                    image_decode = product.image + b'=' * (-len(product.image) % 4)
+                    de = base64.b64decode(image_decode)
+                    image = Image.open(io.BytesIO(de))
+                    photo = CTkImage(image, size=(80, 80))
+                    self.add_img_btn.configure(image=photo)
+                    return
 
+            img_add = CTkImage(Image.open("../assets/add.png"), size=(50, 50))
+            self.add_img_btn.configure(image=img_add)
+
+    def search_onclick(self):
+        if self.__current_page == StatePage.Product:
+            self.__controller.search_product(self.__search_var.get())
+            self.reload_treeview()
+            self.clear_form_detail()
+        else:
+            self.__controller.search_discount(self.__search_var.get())
     def add_click(self):
         if self.__current_page == StatePage.Product:
-            img = base64.b64encode(self.thumbnail_bytes)
-            self.__controller.add_new_and_reload(name=self.product_name_var.get(),
-                                                 price=self.product_price_var.get(),
-                                                 unit=self.product_unit_var.get(),
-                                                 quantity=self.product_quantity_var.get(),
-                                                 capacity=self.product_capacity_var.get(),
-                                                 alcohol=self.product_alcohol_var.get(),
-                                                 productType=self.product_type_var.get(),
-                                                 image=img)
-            self.reload_treeview()
+            image_encode = None
+            if self.__img_thumbnail_bytes:
+                image_encode = base64.b64encode(self.__img_thumbnail_bytes)
+            if not self.is_validate_form_detail():
+                self.__controller.add_new_and_reload(id=self.__product_id_selected,
+                                                     name=self.product_name_var.get(),
+                                                     price=self.product_price_var.get(),
+                                                     unit=self.product_unit_var.get(),
+                                                     quantity=self.product_quantity_var.get(),
+                                                     capacity=self.product_capacity_var.get(),
+                                                     alcohol=self.product_alcohol_var.get(),
+                                                     productType=self.product_type_var.get(),
+                                                     image=image_encode)
+                self.reload_treeview()
+                self.clear_form_detail()
         else:
             self.__controller.add_discount()
+
+    def is_validate_form_detail(self):
+        mess = None
+        if not self.product_name_var.get() or not self.product_price_var.get() or not self.product_type_var.get():
+            mess = "Vui lòng nhập Tên, Giá, Loại"
+        if mess:
+            messagebox.showinfo(message=mess)
+        print(mess)
+        return mess
 
     def update_click(self):
         if self.__current_page == StatePage.Product:
@@ -343,9 +376,14 @@ class WareHouseView:
             if not selected_items:
                 messagebox.showwarning("Thông báo", "Vui lòng chọn dòng muốn chỉnh sửa.")
                 return
-            img = base64.b64encode(self.thumbnail_bytes)
+            image_encode = None
+            if self.__img_thumbnail_bytes:
+                image_encode = base64.b64encode(self.__img_thumbnail_bytes)
             for item in selected_items:
                 item_id = self.tv.item(item, "values")[0]
+                product_type = ProductType.Drink.value[0] if self.product_type_var.get() == ProductType.Drink.value[
+                    1] else ProductType.Food.value[0]
+
                 self.__controller.update_and_reload(id=item_id,
                                                     name=self.product_name_var.get(),
                                                     price=self.product_price_var.get(),
@@ -353,9 +391,11 @@ class WareHouseView:
                                                     quantity=self.product_quantity_var.get(),
                                                     capacity=self.product_capacity_var.get(),
                                                     alcohol=self.product_alcohol_var.get(),
-                                                    product_type=self.product_type_var.get(),
-                                                    image=img)
+                                                    product_type=product_type,
+                                                    image=image_encode)
             self.reload_treeview()
+            self.clear_form_detail()
+
         else:
             self.__controller.update_row_discount()
 
@@ -371,6 +411,8 @@ class WareHouseView:
                     self.tv.delete(item)
                     self.__controller.delete_and_reload(id=item_id)
                 self.reload_treeview()
+                self.clear_form_detail()
+
         else:
             self.__controller.delete_row_discount()
 
@@ -387,4 +429,17 @@ class WareHouseView:
                 #  "alcohol", "type", "create_date", "update_date")
                 self.tv.insert("", "end", iid=p.id, text=p.id,
                                values=(p.id, p.name, p.unit, p.price, p.quantity,
-                                       p.capacity, p.alcohol, p.productType, p.createdDate, p.updatedDate))
+                                       p.capacity, p.alcohol, p.productType, f"{p.createdDate:%Y-%m-%d}"))
+
+    def clear_form_detail(self):
+        self.product_name_var.set("")
+        self.product_unit_var.set("")
+        self.product_price_var.set("")
+        self.product_quantity_var.set("")
+        self.product_type_var.set("")
+        self.product_alcohol_var.set("")
+        self.product_capacity_var.set("")
+        img_add = CTkImage(Image.open("../assets/add.png"), size=(50, 50))
+        self.add_img_btn.configure(image=img_add)
+        self.__img_thumbnail_bytes = None
+        self.__product_id_selected = None

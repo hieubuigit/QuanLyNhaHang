@@ -61,8 +61,8 @@ class TableType(Enum):
 
 
 class ProductType(Enum):
-    Food = 0
-    Drink = 1
+    Food = (0, "Đồ ăn")
+    Drink = (1, "Đồ uống")
 
 
 class BillType(Enum):
@@ -81,3 +81,5 @@ class ReportTab(Enum):
     REVENUE = 'REVENUE',
     SALARY = 'SALARY',
     SALARY_GRADE = 'SALARY_GRADE',
+
+

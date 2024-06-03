@@ -3,20 +3,27 @@ from datetime import datetime
 from tkinter import ttk
 import customtkinter
 from customtkinter import *
+from share.CEntryDate import CEntryDate
 
 
 class DiscountView:
     def __init__(self, root, controller):
-        self.__controller = controller
-        self.description_var = tk.StringVar()
-        self.percent_var = tk.StringVar()
-        self.quantity_var = tk.StringVar()
-        self.start_date_var = tk.StringVar()
-        self.start_date_var.set(f"{datetime.now():%Y-%m-%d}")
-        self.end_date_var = tk.StringVar()
-        self.end_date_var.set(f"{datetime.now():%Y-%m-%d}")
+        self._controller = controller
+        self._description_var = tk.StringVar()
+        self._percent_var = tk.StringVar()
+        self._quantity_var = tk.StringVar()
+        self._start_date_var = tk.StringVar()
+        self._end_date_var = tk.StringVar()
+        self._id_selected = None
         self.create_ui_view(root)
 
+    @property
+    def id_selected(self):
+        return self._id_selected
+
+    @id_selected.setter
+    def id_selected(self, value):
+        self._id_selected = value
     def create_ui_view(self, root):
         customtkinter.set_appearance_mode("light")
         style = ttk.Style()
@@ -28,7 +35,7 @@ class DiscountView:
 
         style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = ("id", "description", "percent", "start_date", "end_date", "quantity",
-                              "create_date", "update_date")
+                              "create_date")
         self.tv["show"] = "headings"
         self.tv.column("id", anchor="center", width=50)
         self.tv.column("description", anchor="center")
@@ -37,7 +44,6 @@ class DiscountView:
         self.tv.column("end_date", anchor="center", width=100)
         self.tv.column("quantity", anchor="center", width=100)
         self.tv.column("create_date", anchor="center", width=100)
-        self.tv.column("update_date", anchor="center", width=140)
 
         self.tv.heading("id", text="ID")
         self.tv.heading("description", text="Nội dung")
@@ -46,7 +52,6 @@ class DiscountView:
         self.tv.heading("end_date", text="Ngày kết thúc")
         self.tv.heading("quantity", text="Số lượng")
         self.tv.heading("create_date", text="Ngày tạo")
-        self.tv.heading("update_date", text="Ngày Cập nhật")
         self.tv.tag_configure("normal", background="white")
         self.tv.tag_configure("blue", background="lightblue")
         self.insert_row_treeview()
@@ -56,9 +61,10 @@ class DiscountView:
         self.ui_detail_form(main_fr)
 
     def ui_detail_form(self, main_fr):
+        global start_date_entry, end_date_entry
         padding_x = 25
         padding_y = 5
-        entry_width = 300
+        entry_width = 200
 
         line = CTkFrame(main_fr, height=2, corner_radius=0, border_width=0)
         line.pack(fill=tk.X, expand=0)
@@ -79,17 +85,15 @@ class DiscountView:
         desc_lb = CTkLabel(self.sub_fr, text="Nội dung")
         desc_lb.grid(row=0, column=0, sticky=tk.NW + tk.S)
 
-        desc_entry = CTkTextbox(self.sub_fr,
-                                wrap="word",
-                                width=400,
-                                height=100, activate_scrollbars=False)
+        desc_entry = CTkEntry(self.sub_fr, width=entry_width, textvariable=self._description_var,
+                              corner_radius=0, border_width=1)
         desc_entry.grid(row=0, column=1, sticky=tk.NW)
 
         quantity_lb = CTkLabel(self.sub_fr, text="Số lượng")
         quantity_lb.grid(row=1, column=0, sticky=tk.NW + tk.S)
 
         quantity_entry = CTkEntry(self.sub_fr, entry_width,
-                                  textvariable=self.quantity_var,
+                                  textvariable=self._quantity_var,
                                   corner_radius=0,
                                   border_width=1)
         quantity_entry.grid(row=1, column=1, sticky=tk.NW + tk.S, pady=padding_y)
@@ -102,43 +106,42 @@ class DiscountView:
                                   button_color="DodgerBlue2",
                                   values=["5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"],
                                   state="readonly",
-                                  variable=self.percent_var)
+                                  variable=self._percent_var)
         percent_cbb.grid(row=2, column=1, sticky=tk.NW + tk.S, pady=3)
 
         start_date_lb = CTkLabel(self.sub_fr, text="Ngày bắt đầu")
         start_date_lb.grid(row=3, column=0, sticky=tk.NW + tk.S, pady=padding_y)
 
-        # start_date_entry = bt.DateEntry(self.sub_fr,
-        #                                 dateformat="%Y-%m-%d",
-        #                                 bootstyle="success",
-        #                                 firstweekday=0,
-        #                                 borderwidth=1)
-        # start_date_entry.entry.configure(textvariable=self.start_date_var)
-        # start_date_entry.grid(row=3, column=1, sticky=tk.NW + tk.S)
-        #
-        # end_date_lb = CTkLabel(self.sub_fr, text="Ngày kết thúc")
-        # end_date_lb.grid(row=4, column=0, sticky=tk.NW + tk.S)
-        #
-        # end_date_entry = bt.DateEntry(self.sub_fr, dateformat="%Y-%m-%d", bootstyle="danger", firstweekday=0)
-        # end_date_entry.entry.configure(textvariable=self.end_date_var)
-        # end_date_entry.grid(row=4, column=1, sticky=tk.NW + tk.S)
+        start_date_entry = CEntryDate(self.sub_fr, style="success")
+        start_date_entry.grid(row=3, column=1, sticky=tk.W)
+
+        end_date_lb = CTkLabel(self.sub_fr, text="Ngày kết thúc")
+        end_date_lb.grid(row=4, column=0, sticky=tk.NW + tk.S)
+
+        end_date_entry = CEntryDate(self.sub_fr, style="danger")
+        end_date_entry.grid(row=4, column=1, sticky=tk.W)
 
     def insert_row_treeview(self):
         pass
-        discounts = self.__controller.discounts
+        discounts = self._controller.discounts
         if discounts:
             for d in discounts:
                 # ("id", "description", "percent", "start_date", "end_date", "quantity",
                 # "create_date", "update_date")
                 self.tv.insert("", "end", iid=d.id, text=d.id,
-                               values=(d.id, d.description, d.percent, d.start_date, d.end_date,
-                                       d.quantity, d.created_date, d.updated_date))
+                               values=(d.id, d.description, f"{d.percent:.0f}", d.start_date, d.end_date,
+                                       d.quantity, f"{d.created_date:%Y-%m-%d}"))
 
     def item_treeview_selected(self):
         selected_items = self.tv.selection()
         for item in selected_items:
-            item_id = self.tv.item(item, "values")[0]
-            return item_id
+            cols = self.tv.item(item, "values")
+            self.id_selected = cols[0]
+            self._description_var.set(cols[1])
+            self._percent_var.set(cols[2])
+            start_date_entry.date_text = cols[3]
+            end_date_entry.date_text = cols[4]
+            self._quantity_var.set(cols[5])
 
     def reload_treeview(self):
         for item in self.tv.get_children():
@@ -146,6 +149,6 @@ class DiscountView:
         self.insert_row_treeview()
 
     def get_detail_values(self):
-        return {"description": self.description_var.get(), "percent": self.percent_var.get(),
-                "quantity": self.quantity_var.get(), "start_date": self.start_date_var.get(),
-                "end_date": self.end_date_var.get()}
+        return {"description": self._description_var.get(), "percent": self._percent_var.get(),
+                "quantity": self._quantity_var.get(), "start_date": start_date_entry.date_text,
+                "end_date": end_date_entry.date_text}
