@@ -13,9 +13,6 @@ class PaySlipModel:
         # Save new payslip (Phiếu lương) into database
         if self.is_already_calculate_salary_this_month(month):
             return -1
-        # if 'user_id' in data:
-            # total_salary = self.calculate_salary(**data)
-            # data['total_salary'] = total_salary
         query = Payslip(**data)
         return query.save()
 
@@ -32,7 +29,7 @@ class PaySlipModel:
         query = (Payslip.select(User.user_code, User.first_name, User.last_name, User.gender, User.user_name,
                                 User.birth_date, User.identity, User.type,
                                 Payslip.id, Payslip.hours, Payslip.total_salary, Payslip.created_date,
-                                Payslip.updated_date, User.id.alias('user_id'))
+                                Payslip.updated_date, User.id)
                  .join(User)
                  .order_by(Payslip.created_date))
         data = list()
@@ -40,19 +37,26 @@ class PaySlipModel:
             for idx, psl in enumerate(query):
                 pay_slip_item = list()
                 pay_slip_item.append(idx + 1)
-                pay_slip_item.append(psl.user_code)
-                pay_slip_item.append(f"{psl.first_name} {psl.last_name}")
-                pay_slip_item.append(psl.user_name)
-                pay_slip_item.append(Utils.get_gender(psl.gender))
-                pay_slip_item.append(psl.birth_date)
-                pay_slip_item.append(psl.identity)
-                pay_slip_item.append(Utils.get_account_type_str(psl.type))
+                pay_slip_item.append(psl.user.user_code)
+                pay_slip_item.append(f"{psl.user.first_name} {psl.user.last_name}")
+                pay_slip_item.append(Utils.get_gender(psl.user.gender))
+                pay_slip_item.append(psl.user.birth_date)
+                pay_slip_item.append(psl.user.identity)
+                # pay_slip_item.append(psl.user.user_name)
+                pay_slip_item.append(Utils.get_account_type_str(psl.user.type))
                 pay_slip_item.append(psl.id)
                 pay_slip_item.append(psl.hours)
                 pay_slip_item.append(psl.total_salary)
-                pay_slip_item.append(psl.created_date.strftime("%Y-%m-%d %H:%M:%S"))
-                pay_slip_item.append(psl.updated_date.strftime("%Y-%m-%d %H:%M:%S"))
-                pay_slip_item.append(psl.user_id)
+                if psl.created_date is not None:
+                    pay_slip_item.append(psl.created_date.strftime("%Y-%m-%d %H:%M:%S"))
+                else:
+                    pay_slip_item.append('')
+                if psl.updated_date is not None:
+                    pay_slip_item.append(psl.updated_date.strftime("%Y-%m-%d %H:%M:%S"))
+                else:
+                    pay_slip_item.append('')
+                pay_slip_item.append(psl.user.user_code)
+                pay_slip_item.append(psl.id)
 
                 data.append(pay_slip_item)
         return data
@@ -84,12 +88,12 @@ class PaySlipModel:
                 'identity': query.user.identity,
                 'type_name': Utils.get_account_type_str(query.user.type),
                 'type': query.user.type,
-                'id': query.id,
                 'hours': query.hours,
                 'total_salary': query.total_salary,
                 'created_date': query.created_date,
                 'updated_date': query.updated_date,
                 'user_id': query.user.id,
+                'id': query.id,
             }
         else:
             return None

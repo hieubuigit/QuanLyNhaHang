@@ -1,11 +1,18 @@
+from employee.employee_model import EmployeeModel
 from payslip.pay_slip_model import PaySlipModel
 
 class PaySlipController:
     def __init__(self):
         self.__pay_slip_model = PaySlipModel()
+        self.__user_model = EmployeeModel()
 
     def add_new(self, month, **new_data):
         try:
+            # Get employee info by use id
+            user = self.__user_model.get_emp_by_id(new_data['user_id'])
+            if user is not None:
+                new_data.pop('user_id')
+                new_data['user'] = user
             save_result = self.__pay_slip_model.save(month, **new_data)
             return save_result
         except Exception as ex:
@@ -27,6 +34,8 @@ class PaySlipController:
 
     def update_by_id(self, id, new_data):
         try:
+            if 'user_id' in new_data:
+                new_data.pop('user_id')
             save_result = self.__pay_slip_model.update(id, new_data)
             if save_result > 0:
                 return 1
