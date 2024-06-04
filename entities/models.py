@@ -129,6 +129,7 @@ class Payslip(BaseModel):
     created_date = DateTimeField(column_name='CreatedDate', null=True)
     hours = FloatField(column_name='Hours', null=True)
     id = AutoField(column_name='Id')
+    pay_on_month = CharField(column_name='PayOnMonth')
     total_salary = DecimalField(column_name='TotalSalary', null=True)
     updated_date = DateTimeField(column_name='UpdatedDate', null=True)
     user = ForeignKeyField(column_name='UserId', field='id', model=User)

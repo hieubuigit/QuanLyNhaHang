@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 import tkinter.messagebox as tkMessageBox
 from PIL import Image
 from ctypes import windll
@@ -11,6 +12,10 @@ from share.utils import Utils
 
 class LoginView:
     def __init__(self, container):
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 12))
+
         self.__parent = container
         self.__controller = LoginController()
         self.__login_page = ctk.CTkFrame(container)

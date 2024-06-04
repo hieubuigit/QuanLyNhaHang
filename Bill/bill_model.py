@@ -1,6 +1,5 @@
-from datetime import datetime
 from peewee import *
-from entities.models import User, Discount
+from entities.models import User
 
 
 class BillModel(Model):

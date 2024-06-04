@@ -93,7 +93,7 @@ class ReportView:
                                                                              page=ReportTab.SALARY_GRADE))
         self.salary_grade_btn.grid(row=2, column=0)
         self.salary_grade_line = CTkFrame(btn_gr, fg_color="white", height=30, width=2, corner_radius=0, border_width=0)
-        self.salary_grade_line.grid(row=1, column=1)
+        self.salary_grade_line.grid(row=2, column=1)
 
     def ui_right_content_view(self):
         padding = 2
@@ -129,7 +129,6 @@ class ReportView:
         self.open_bar_chart(self.right_fr)
         chart_fr.grid_columnconfigure(1, weight=1)
 
-        # Tạo UI Treeview load thông tin hóa đơn
         self.create_ui_buttom()
 
     def create_ui_buttom(self):
@@ -179,22 +178,28 @@ class ReportView:
             root.update()
         if page == ReportTab.REVENUE:
             self.__report_page()
-            self.salary_line.configure(fg_color="DodgerBlue1")
-            self.salary_btn.configure(text_color="DodgerBlue1")
-            self.revenue_line.configure(fg_color="white")
-            self.revenue_btn.configure(text_color="black")
-        elif page == ReportTab.SALARY:
-            self.salary_page(main_fr)
-            self.revenue_line.configure(fg_color="DodgerBlue1")
-            self.revenue_btn.configure(text_color="DodgerBlue1")
             self.salary_line.configure(fg_color="white")
             self.salary_btn.configure(text_color="black")
+            self.revenue_line.configure(fg_color="DodgerBlue1")
+            self.revenue_btn.configure(text_color="DodgerBlue1")
+            self.salary_grade_btn.configure(text_color="black")
+            self.salary_grade_line.configure(fg_color="white")
+        elif page == ReportTab.SALARY:
+            self.salary_page(main_fr)
+            self.revenue_btn.configure(text_color="black")
+            self.revenue_line.configure(fg_color="white")
+            self.salary_btn.configure(text_color="DodgerBlue1")
+            self.salary_line.configure(fg_color="DodgerBlue1")
+            self.salary_grade_btn.configure(text_color="black")
+            self.salary_grade_line.configure(fg_color="white")
         elif page == ReportTab.SALARY_GRADE:
             self.salary_grade_page(main_fr)
-            self.salary_btn.configure(text_color="DodgerBlue1")
-            self.salary_grade_btn.configure(text_color="black")
-            self.salary_grade_line.configure(fg_color="DodgerBlue1")
+            self.revenue_btn.configure(text_color="black")
             self.revenue_line.configure(fg_color="white")
+            self.salary_btn.configure(text_color="black")
+            self.salary_line.configure(fg_color="white")
+            self.salary_grade_btn.configure(text_color="DodgerBlue1")
+            self.salary_grade_line.configure(fg_color="DodgerBlue1")
 
     def open_pie_chart(self, main_fr):
         input_text = [self.__controller.total_revenue, self.__controller.total_expend]
@@ -272,7 +277,7 @@ class ReportView:
     def salary_page(self, main_fr):
         salary_fr = ctk.CTkFrame(self.sub_fr)
         payslip = PaySlipView(salary_fr)
-        salary_fr.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, anchor='nw')
+        salary_fr.pack(side=tk.TOP, fill=tk.BOTH, expand=True, anchor='nw')
 
     def quarter_button_callback(self):
         value_key_dict = {value: key for key, value in self.__quarters.items()}

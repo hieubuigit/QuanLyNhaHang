@@ -10,7 +10,8 @@ class LoginModel(Model):
         return query
 
     def is_exist(self, user_name):
-        return User.select().where(User.user_name == user_name).exists()
+        query = User.select().where(User.user_name == user_name).exists()
+        return query
 
     def change_password(self, user_id, new_password):
         query = User.update(password=new_password).where(User.id == user_id)

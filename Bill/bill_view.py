@@ -1,6 +1,5 @@
 from datetime import datetime
 import tkinter as tk
-from enum import Enum
 from tkinter import messagebox
 import customtkinter as ctk
 from share.CEntryDate import CEntryDate
@@ -9,8 +8,6 @@ from share.utils import Utils
 from tkinter import ttk
 import tkcalendar as tkc
 from PIL import Image
-
-
 
 
 class BillView:
@@ -36,8 +33,6 @@ class BillView:
         self.__generate_ui_content(window)
 
     def __generate_ui_content(self, window):
-        style = ttk.Style()
-        style.theme_use("default")
         main_fr = ctk.CTkFrame(window)
         main_fr.pack(fill=tk.BOTH, expand=1)
 
@@ -47,7 +42,6 @@ class BillView:
         self.tv = ttk.Treeview(main_fr)
         self.tv.pack(fill=tk.X, expand=0, padx=10, pady=10)
 
-        style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = (
             "id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
             "total_money", "update_date")
@@ -97,7 +91,7 @@ class BillView:
         ic_filter = ctk.CTkImage(Image.open("../assets/funnel.png"), size=(20, 20))
         filter_btn = ctk.CTkButton(date_group_fr, text="", image=ic_filter, width=50, height=28, fg_color="white",
                                    border_width=1, border_color="gray",
-                                   command=lambda:self.change_date_reload_view())
+                                   command=lambda: self.change_date_reload_view())
         filter_btn.pack(expand=0, padx=5)
         group_option = ctk.CTkFrame(option_fr)
         group_option.pack(side="right", ipadx=5)
@@ -160,8 +154,8 @@ class BillView:
                                             anchor=tk.W)
         self.creator_name_lb.grid(row=0, column=0, sticky=tk.NW)
         creator_name_entry = ctk.CTkEntry(self.sub_fr,
-                                   textvariable=self.__creator_name_var,
-                                   width=entry_width)
+                                          textvariable=self.__creator_name_var,
+                                          width=entry_width)
         creator_name_entry.grid(row=0, column=1, sticky=tk.NW, pady=entry_padding_y)
 
         self.customer_name_lb = ctk.CTkLabel(self.sub_fr, text="Họ tên khách hàng", anchor=tk.W,
