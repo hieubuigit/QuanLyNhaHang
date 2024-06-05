@@ -37,13 +37,11 @@ class DiscountController:
         except InternalError as px:
             print(str(px))
 
-    def __delete_product(self, _id):
+    def _delete_diccount(self, _id):
         try:
             d = Discount.get_or_none(Discount.id == _id)
             if d:
                 d.delete_instance()
-            else:
-                print(f"No record found with ID {_id}")
         except InternalError as px:
             print(str(px))
 
@@ -84,8 +82,8 @@ class DiscountController:
             self.view.reload_treeview()
 
     def delete_and_reload(self):
-        _id = self.view.item_treeview_selected()
-        self.__delete_product(_id)
+        _id = self.view.id_selected
+        self._delete_diccount(_id)
         self.get_data()
         self.view.reload_treeview()
 

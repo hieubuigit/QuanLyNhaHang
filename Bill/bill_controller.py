@@ -2,6 +2,7 @@ from datetime import datetime
 from tkinter import messagebox
 import peewee
 from bill.bill_view import BillView
+from share.utils import Utils
 from table_order.table_model import TableModel
 from entities.models import Billing, User, Discount, Table, OrderList
 from share.common_config import BillType, BillStatus
@@ -40,14 +41,10 @@ class BillController:
         except peewee.InternalError as px:
             print(str(px))
 
-
-    def save_data_to_db(self, table_id, user_id, discount_id,
-                        customer_name, customer_phone, money, bill_type, created_date, status_bill):
+    def save_data_to_db(self, user_id, customer_name, customer_phone, money, bill_type, created_date, status_bill):
         try:
             self.table_exits()
-            row = Billing(tableId=table_id,
-                          userId=user_id,
-                          discountId=discount_id,
+            row = Billing(userId=user_id,
                           customerName=customer_name,
                           customerPhoneNumber=customer_phone,
                           totalMoney=money,
@@ -62,7 +59,6 @@ class BillController:
             messagebox.showinfo("Thông báo", "Thêm sản phẩm thất bại. Vui lòng thử lại.")
             print(str(px))
 
-
     def __delete_bill(self, bill_id):
         try:
             self.table_exits()
@@ -73,8 +69,7 @@ class BillController:
         except peewee.InternalError as px:
             print(str(px))
 
-
-    def __update_bill_to_db(self, id, create_date, customer_name, customer_phone, money, bill_type, status_bill, table_num):
+    def __update_bill_to_db(self, id, create_date, customer_name, customer_phone, money, bill_type, status_bill):
         try:
             self.table_exits()
             b: Billing = Billing.get(Billing.id == id)
@@ -95,25 +90,20 @@ class BillController:
             messagebox.showinfo(message=f"Hóa đơn ID ({b.id}) đã tồn tại")
             return
         detail_form_values = self.__view.get_detail_form_values()
-        table_num = detail_form_values.get("table_num")
-        table_id = None
-        user_id = None
-        discount_id = None
+        user_id = Utils.user_profile["id"]
         customer_name = detail_form_values.get("customerName")
         customer_phone = detail_form_values.get("customerPhoneNumber")
         money = detail_form_values.get("totalMoney")
         created_date = detail_form_values.get('created_date')
         status_bill = detail_form_values.get("status_bill")
         bill_type = 0 if detail_form_values.get("bill_type") == BillType.REVENUE.value[1] else 1
-        self.save_data_to_db(table_id, user_id, discount_id, customer_name,
+        self.save_data_to_db(user_id, customer_name,
                              customer_phone, money, bill_type, created_date, status_bill)
         self.get_all_bill()
-
 
     def delete_and_reload(self, _id):
         self.__delete_bill(_id)
         self.get_all_bill()
-
 
     def update_and_reload(self, _id):
         detail_form_values = self.__view.get_detail_form_values()
@@ -161,6 +151,7 @@ class BillController:
                 return t.tableNum
         except peewee.InternalError as px:
             print(str(px))
+
     def table_exits(self):
         b = Billing.table_exists()
         if not b:

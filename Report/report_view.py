@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pay_grade.pay_grade_view import PayGradeView
 from payslip.pay_slip_view import PaySlipView
-from share.common_config import BillType, ReportTab
+from share.common_config import BillType, ReportTab, BillStatus
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
@@ -19,6 +19,8 @@ class ReportView:
         self.__controller = controller
         self.__quarters = {1: "Quý 1", 2: "Quý 2", 3: "Quý 3", 4: "Quý 4"}
         self.__quarter_var = tk.StringVar()
+        self._status_values = {BillStatus.PAID.value: "Đã thanh toán", BillStatus.UNPAID.value: "Chưa thanh toán"}
+
         self.__ui_main_content(window)
 
     def __ui_main_content(self, root):
@@ -146,7 +148,7 @@ class ReportView:
         style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = (
             "id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
-            "total_money", "update_date")
+            "total_money", "status")
         self.tv["show"] = "headings"
         self.tv.column("id", anchor="center", width=50)
         self.tv.column("user_create", anchor="center", width=140)
@@ -156,7 +158,7 @@ class ReportView:
         self.tv.column("create_date", anchor="center", width=100)
         self.tv.column("bill_type", anchor="center", width=60)
         self.tv.column("total_money", anchor="center", width=160)
-        self.tv.column("update_date", anchor="center", width=100)
+        self.tv.column("status", anchor="center", width=100)
 
         self.tv.heading("id", text="ID")
         self.tv.heading("user_create", text="Tên người Tạo")
@@ -166,7 +168,7 @@ class ReportView:
         self.tv.heading("create_date", text="Ngày Tạo")
         self.tv.heading("bill_type", text="Loại")
         self.tv.heading("total_money", text="Tổng Tền")
-        self.tv.heading("update_date", text="Ngày cập nhật")
+        self.tv.heading("status", text="Trạng thái")
         self.tv.tag_configure("normal", background="white")
         self.tv.tag_configure("blue", background="lightblue")
 
@@ -292,14 +294,12 @@ class ReportView:
             # ("id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
             #     "total_money", "update_date")
             user_name = self.__controller.get_user_name_by_id(b.userId)
-            if user_name or user_name == "":
-                user_name = b.creatorName
-            table_num = ""
+            table_num = self.__controller.get_table_num_by_id(b.tableId)
             bill_type = BillType.REVENUE.value[1] if b.type == 0 else BillType.EXPANDING.value[1]
             self.tv.insert("", "end", iid=b.id, text=b.id,
                            values=(b.id, user_name, b.customerName, b.customerPhoneNumber,
                                    table_num, b.createdDate, bill_type, f"{b.totalMoney:0,.0f}",
-                                   b.updatedDate),
+                                   self._status_values.get(b.status)),
                            tags=my_tag)
 
     def reload_treeview(self):

@@ -29,7 +29,8 @@ class BillView:
         self.__bill_id_selected = None
         # Setup UI
         Utils.set_appearance_mode(ctk)
-        self.phone_validation = window.register(self.validate_phone_number_input)
+        self._phone_validation = window.register(self.validate_phone_number_input)
+        self._money_validation = window.register(self.validation_money_input)
         self.__generate_ui_content(window)
 
     def __generate_ui_content(self, window):
@@ -173,7 +174,7 @@ class BillView:
                                             placeholder_text="Nhập số điện thoại",
                                             width=entry_width,
                                             validate="key",
-                                            validatecommand=(self.phone_validation, '%P'))
+                                            validatecommand=(self._phone_validation, '%S'))
         customer_phone_entry.grid(row=1, column=1, sticky=tk.NW, pady=entry_padding_y)
 
         created_date_lb = ctk.CTkLabel(self.sub_fr, text="Ngày tạo", anchor=tk.W,
@@ -226,7 +227,7 @@ class BillView:
                                    placeholder_text="Nhập tổng tiền",
                                    placeholder_text_color="gray",
                                    validate="key",
-                                   validatecommand=(self.phone_validation, '%P'))
+                                   validatecommand=(self._money_validation, '%S'))
         money_entry.grid(row=6, column=1, sticky=tk.NW, pady=entry_padding_y)
         self.valid_lb = ctk.CTkLabel(master=detail_fr,
                                      text="Vui lòng nhập tổng tiền",
@@ -273,7 +274,7 @@ class BillView:
                            values=(b.id, user_name, b.customerName, b.customerPhoneNumber,
                                    table_num, f"{b.createdDate:%Y-%m-%d}",
                                    self.__bill_type_dict.get(b.type), f"{b.totalMoney:0,.0f}",
-                                   b.status),
+                                   self.__status_values.get(b.status)),
                            tags=my_tag)
 
     def add_click(self):
@@ -347,7 +348,14 @@ class BillView:
                 return False
         except ValueError:
             return False
-
+    def validation_money_input(self, text):
+        try:
+            if text.isdigit():
+                return True
+            else:
+                return False
+        except ValueError:
+            return False
     def set_values_table_cbb(self, table_cbb: ctk.CTkComboBox):
         dict_tables = self.__controller.get_tables()
         if len(dict_tables.values()) > 0:
@@ -355,17 +363,17 @@ class BillView:
 
     def item_treeview_selected(self):
         self.table_cbb.configure(state="disable")
+        self.status_cbb.configure(state="disable")
         selected_items = self.tv.selection()
         for item in selected_items:
-            rows = self.tv.item(item, "values")
-            self.__bill_id_selected = rows[0]
-            self.__customer_name_var.set(rows[2])
-            self.__phone_var.set(rows[3])
-            self.__table_num_var.set(rows[4])
-            self.__bill_created_date_var.set(rows[5])
-            self.__bill_type_var.set(rows[6])
-            self.__money_var.set(rows[7].replace(",", ""))
-            status_bill = self.__status_values.get(int(rows[8]))
-            self.__bill_status_var.set(status_bill)
+            cols = self.tv.item(item, "values")
+            self.__bill_id_selected = cols[0]
+            self.__customer_name_var.set(cols[2])
+            self.__phone_var.set(cols[3])
+            self.__table_num_var.set(cols[4])
+            self.__bill_created_date_var.set(cols[5])
+            self.__bill_type_var.set(cols[6])
+            self.__money_var.set(cols[7].replace(",", ""))
+            self.__bill_status_var.set(cols[8])
 
 
