@@ -315,7 +315,6 @@ class MenuFoodView:
 
 
     def apply_onclick(self):
-        print("apply")
         discount_percent = Decimal(self.__discount_percent_var.get())
         self.calculate_bill(discount_percent)
     def update_quantity_and_reload(self, order_list, quantity, cur_price):
@@ -329,10 +328,6 @@ class MenuFoodView:
                                          customer_phone=self.__customer_phone_var.get()):
             self.reload_table_page()
             toplevel.destroy()
-
-    def __on_mouse_wheel(self, event):
-        menu_canvas.yview("scroll", event.delta, "units")
-        return "break"
 
     def calculate_bill(self, discount_percent=Decimal()):
         order_list = self.__controller.get_order_list_by_id()
