@@ -8,7 +8,7 @@ from PIL import ImageTk, Image
 from customtkinter import *
 from tkinter import filedialog
 
-from share.common_config import ProductType
+from share.common_config import ProductType, UserType
 from share.utils import Utils
 
 
@@ -33,10 +33,11 @@ class WareHouseView:
         self.dict_product_type = {ProductType.Food.value[0]: ProductType.Food.value[1],
                                   ProductType.Drink.value[0]: ProductType.Drink.value[1]}
         self.__product_id_selected = None
+        self._user_type = Utils.user_profile["type"]
         # UI
-        style = ttk.Style()
-        style.theme_use("default")
-        Utils.set_appearance_mode(customtkinter)
+        # style = ttk.Style()
+        # style.theme_use("default")
+        # Utils.set_appearance_mode(customtkinter)
         self.__ui_main_content(root=root)
         # default right content
         self.product_page()
@@ -49,45 +50,45 @@ class WareHouseView:
 
         header_fr = CTkFrame(main_fr, fg_color="transparent")
         header_fr.pack(fill=tk.X, expand=0, padx=10, pady=10)
+        if self._user_type == UserType.ADMIN.value:
+            option_group_fr = CTkFrame(header_fr, border_width=0)
+            option_group_fr.pack(fill=tk.X, expand=0, side="left", anchor="nw")
 
-        option_group_fr = CTkFrame(header_fr, border_width=0)
-        option_group_fr.pack(fill=tk.X, expand=0, side="left", anchor="nw")
+            add_btn = CTkButton(option_group_fr,
+                                text="Thêm mới",
+                                corner_radius=18,
+                                border_width=0,
+                                height=36,
+                                fg_color="DodgerBlue1",
+                                hover_color="#63B8FF",
+                                text_color="black",
+                                font=CTkFont("TkDefaultFont", 16),
+                                command=lambda: self.add_click())
+            add_btn.grid(row=0, column=0)
 
-        add_btn = CTkButton(option_group_fr,
-                            text="Thêm mới",
-                            corner_radius=18,
-                            border_width=0,
-                            height=36,
-                            fg_color="DodgerBlue1",
-                            hover_color="#63B8FF",
-                            text_color="black",
-                            font=CTkFont("TkDefaultFont", 16),
-                            command=lambda: self.add_click())
-        add_btn.grid(row=0, column=0)
+            update_btn = CTkButton(option_group_fr,
+                                   text="Chỉnh sửa",
+                                   corner_radius=18,
+                                   border_width=0,
+                                   height=36,
+                                   fg_color="LimeGreen",
+                                   hover_color="#54FF9F",
+                                   text_color="black",
+                                   font=CTkFont("TkDefaultFont", 16),
+                                   command=lambda: self.update_click())
+            update_btn.grid(row=0, column=1, padx=5)
 
-        update_btn = CTkButton(option_group_fr,
-                               text="Chỉnh sửa",
-                               corner_radius=18,
-                               border_width=0,
-                               height=36,
-                               fg_color="LimeGreen",
-                               hover_color="#54FF9F",
-                               text_color="black",
-                               font=CTkFont("TkDefaultFont", 16),
-                               command=lambda: self.update_click())
-        update_btn.grid(row=0, column=1, padx=5)
-
-        delete_btn = CTkButton(option_group_fr,
-                               text="Xóa",
-                               corner_radius=18,
-                               border_width=0,
-                               height=36,
-                               fg_color="Firebrick1",
-                               hover_color="#FFC0CB",
-                               text_color="black",
-                               font=CTkFont("TkDefaultFont", 16),
-                               command=lambda: self.delete_click())
-        delete_btn.grid(row=0, column=2)
+            delete_btn = CTkButton(option_group_fr,
+                                   text="Xóa",
+                                   corner_radius=18,
+                                   border_width=0,
+                                   height=36,
+                                   fg_color="Firebrick1",
+                                   hover_color="#FFC0CB",
+                                   text_color="black",
+                                   font=CTkFont("TkDefaultFont", 16),
+                                   command=lambda: self.delete_click())
+            delete_btn.grid(row=0, column=2)
 
         search_group_fr = CTkFrame(header_fr)
         search_group_fr.pack(fill=tk.X, expand=0, side="right", anchor="ne")
@@ -189,10 +190,10 @@ class WareHouseView:
         self.tv.tag_configure("normal", background="white")
         self.tv.tag_configure("blue", background="lightblue")
         self.insert_row_treeview()
-        self.tv.bind("<<TreeviewSelect>>", lambda e: self.item_treeview_selected())
-
-        # Setup UI Detail form
-        self.ui_detail_form()
+        if self._user_type == UserType.ADMIN.value:
+            self.tv.bind("<<TreeviewSelect>>", lambda e: self.item_treeview_selected())
+            # Setup UI Detail form
+            self.ui_detail_form()
 
     def ui_detail_form(self):
         padding_x = 25

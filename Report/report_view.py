@@ -298,7 +298,7 @@ class ReportView:
             bill_type = BillType.REVENUE.value[1] if b.type == 0 else BillType.EXPANDING.value[1]
             self.tv.insert("", "end", iid=b.id, text=b.id,
                            values=(b.id, user_name, b.customerName, b.customerPhoneNumber,
-                                   table_num, b.createdDate, bill_type, f"{b.totalMoney:0,.0f}",
+                                   table_num, f"{b.createdDate:%Y-%m-%d}", bill_type, f"{b.totalMoney:0,.0f}",
                                    self._status_values.get(b.status)),
                            tags=my_tag)
 

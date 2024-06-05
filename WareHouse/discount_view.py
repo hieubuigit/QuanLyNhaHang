@@ -4,6 +4,8 @@ from tkinter import ttk
 import customtkinter
 from customtkinter import *
 from share.CEntryDate import CEntryDate
+from share.common_config import UserType
+from share.utils import Utils
 
 
 class DiscountView:
@@ -15,6 +17,7 @@ class DiscountView:
         self._start_date_var = tk.StringVar()
         self._end_date_var = tk.StringVar()
         self._id_selected = None
+        self._user_type = Utils.user_profile["type"]
         self.create_ui_view(root)
 
     @property
@@ -55,10 +58,10 @@ class DiscountView:
         self.tv.tag_configure("normal", background="white")
         self.tv.tag_configure("blue", background="lightblue")
         self.insert_row_treeview()
-        self.tv.bind("<<TreeviewSelect>>", lambda e: self.item_treeview_selected())
-
-        # setup ui detail form
-        self.ui_detail_form(main_fr)
+        if self._user_type == UserType.ADMIN.value:
+            self.tv.bind("<<TreeviewSelect>>", lambda e: self.item_treeview_selected())
+            # setup ui detail form
+            self.ui_detail_form(main_fr)
 
     def ui_detail_form(self, main_fr):
         global start_date_entry, end_date_entry

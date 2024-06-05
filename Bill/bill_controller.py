@@ -96,7 +96,7 @@ class BillController:
         money = detail_form_values.get("totalMoney")
         created_date = detail_form_values.get('created_date')
         status_bill = detail_form_values.get("status_bill")
-        bill_type = 0 if detail_form_values.get("bill_type") == BillType.REVENUE.value[1] else 1
+        bill_type = detail_form_values.get("bill_type")
         self.save_data_to_db(user_id, customer_name,
                              customer_phone, money, bill_type, created_date, status_bill)
         self.get_all_bill()

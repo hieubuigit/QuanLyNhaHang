@@ -17,7 +17,7 @@ class TableView:
     def __init__(self, window, controller, user_type):
         # property
         self._window = window
-        self.__controller = controller
+        self._controller = controller
         self.__user_type = user_type
         self.table_num_value = tk.StringVar()
         self.seat_num_value = tk.StringVar()
@@ -31,7 +31,7 @@ class TableView:
         # Setup UI
         self.create_ui(window)
         # Thêm ds bàn vào grid content
-        self._add_content(self.__controller.tables)
+        self._add_content(self._controller.tables)
 
     def create_ui(self, master):
         global grid_content
@@ -103,13 +103,13 @@ class TableView:
             # order
             if table.status == StatusTable.AVAILABLE.value[0]:
                 if messagebox.askokcancel("Thông báo", "Xác nhận đặt bàn và bắt đầu chọn món"):
-                    if self.__controller.create_bill(id_table=table.id, id_user=1):
+                    if self._controller.create_bill(id_table=table.id, id_user=1):
                         self.reload_ui_table(table_id=table.id, status=StatusTable.DISABLED.value[0])
-                        self.__controller.show_menu_food(view_master=self._window,
+                        self._controller.show_menu_food(view_master=self._window,
                                                          reload_table_page=self.reload_table_page,
                                                          table=table)
             else:
-                self.__controller.show_menu_food(view_master=self._window,
+                self._controller.show_menu_food(view_master=self._window,
                                                  reload_table_page=self.reload_table_page,
                                                  table=table)
 
@@ -117,11 +117,11 @@ class TableView:
        self.reload_ui_table(self.__table_selected.id, status=StatusTable.AVAILABLE.value[0])
 
     def reload_ui_table(self, table_id, status):
-        if self.__controller.update_table_status(id_table=table_id,
+        if self._controller.update_table_status(id_table=table_id,
                                                  status=status):
             for item in grid_content.winfo_children():
                 item.destroy()
-            self._add_content(self.__controller.tables)
+            self._add_content(self._controller.tables)
     def create_ui_add_toplevel(self, window, action_type):
         global toplevel
 
@@ -185,21 +185,22 @@ class TableView:
         context_menu.add_separator()
 
     def __show_context_popup(self, event, tableSelected: Table):
-        self.__table_selected = tableSelected
-        if self.__user_type == UserType.ADMIN.value and tableSelected.table_type == TableType.Normal:
-            try:
-                context_menu.tk_popup(event.x_root, event.y_root)
-            finally:
-                context_menu.grab_release()
+        if tableSelected.status == StatusTable.AVAILABLE.value[0]:
+            self.__table_selected = tableSelected
+            if self.__user_type == UserType.ADMIN.value and tableSelected.table_type == TableType.Normal:
+                try:
+                    context_menu.tk_popup(event.x_root, event.y_root)
+                finally:
+                    context_menu.grab_release()
 
     def edit_table(self, window):
         self.create_ui_add_toplevel(window, Action.UPDATE)
 
     def delete_table(self, window):
-        self.__controller.delete_and_reload(table_id=self.__table_selected.id)
+        self._controller.delete_and_reload(table_id=self.__table_selected.id)
         for item in grid_content.winfo_children():
             item.destroy()
-        self._add_content(self.__controller.tables)
+        self._add_content(self._controller.tables)
         self.__table_selected = None
 
     def click_button_add_or_edit_popup(self, action_type):
@@ -217,21 +218,21 @@ class TableView:
         else:
             if action_type == Action.ADD:
                 # Thực hiện thêm vào database
-                if self.__controller.add_new_and_reload(table_num_value=self.table_num_value.get(),
+                if self._controller.add_new_and_reload(table_num_value=self.table_num_value.get(),
                                                      seat_num_value=self.seat_num_value.get(),
                                                      status_value=table_status):
                     toplevel.destroy()
             else:
                 # Thực hiện cập nhật lại database
                 print("status table", table_status)
-                if self.__controller.update_and_reload(id=self.__table_selected.id,
+                if self._controller.update_and_reload(id=self.__table_selected.id,
                                                     table_num_value=self.table_num_value.get(),
                                                     seat_num_value=self.seat_num_value.get(),
                                                     status_value=table_status):
 
                     toplevel.destroy()
         # Thực hiện reload lại UI danh sách bàn
-        self._add_content(tables=self.__controller.tables)
+        self._add_content(tables=self._controller.tables)
 
     def validate_input(self, text):
         # Chỉ cho phép chữ số

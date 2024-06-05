@@ -13,7 +13,6 @@ class TableController:
     def __init__(self, window):
         self.__data_table = []
         self.__user_type = Utils.user_profile["type"]
-        print(self.__user_type)
         self.root = window
         self.__get_table_data()
         self.view = TableView(window, self, self.__user_type)

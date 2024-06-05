@@ -49,7 +49,6 @@ class ReportController:
     def __get_bills(self, quarter=1):
         self.__bills = []
         try:
-            print(quarter)
             cur_quarter = quarter
             start_date = self.get_first_date_by_quarter(cur_quarter)
             end_date = self.get_last_date_by_quarter(cur_quarter, start_date)
