@@ -181,7 +181,7 @@ class MenuFoodView:
         global quantity_selected_var, into_money_var
         quantity_selected_var = tk.StringVar()
         into_money_var = tk.StringVar()
-        obi_food = self.__controller.get_product_by_id(item_order.product_id)
+        obi_food = self.__controller.get_products_by_id(item_order.product_id)
         row_fr = ctk.CTkFrame(parent)
         row_fr.pack(fill=tk.BOTH, expand=1)
         product_name_value = ctk.CTkButton(row_fr, text=obi_food.name, corner_radius=0,

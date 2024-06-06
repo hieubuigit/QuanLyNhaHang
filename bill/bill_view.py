@@ -348,11 +348,6 @@ class BillView:
         except ValueError:
             return False
 
-    def set_values_table_cbb(self, table_cbb: ctk.CTkComboBox):
-        dict_tables = self.__controller.get_tables()
-        if len(dict_tables.values()) > 0:
-            table_cbb.configure(values=dict_tables.values())
-
     def item_treeview_selected(self):
         # self.status_cbb.configure(state="disable")
         selected_items = self.tv.selection()

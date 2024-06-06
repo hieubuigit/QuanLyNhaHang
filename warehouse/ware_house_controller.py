@@ -2,6 +2,7 @@ import datetime
 from tkinter import messagebox
 from peewee import fn, InternalError
 from warehouse.discount_controller import DiscountController
+from warehouse.product_model import ProductModel
 from warehouse.ware_house_view import WareHouseView
 from database.connection import Connection
 from entities.models import Product
@@ -11,6 +12,7 @@ class WareHouseController:
 
     def __init__(self, root):
         self.__products = []
+        self._product_model = ProductModel()
         self.get_data()
         view = WareHouseView(root, self)
         self.__discount_page = None
@@ -21,57 +23,9 @@ class WareHouseController:
 
     def get_data(self):
         self.__products = []
-        try:
-            pr = Product.table_exists()
-            if not pr:
-                Product.create_table()
-            rows = Product.select()
+        rows = self._product_model.get_products()
+        if rows:
             self.__products.extend(rows)
-        except InternalError as px:
-            print(str(px))
-
-    def save_data_to_db(self,id,  name, price, unit, quantity, capacity, alcohol, product_type, image):
-        try:
-            p = Product.get_or_none(Product.id == id)
-            if p:
-                messagebox.showinfo(message="Sản phẩm đã tồn tại")
-                return
-            row = Product(name=name, price=price, unit=unit, quantity=quantity, capacity=capacity, alcohol=alcohol,
-
-                          productType=product_type, image=image, createdDate=datetime.datetime.now())
-            row.save()
-        except InternalError as px:
-            print(str(px))
-
-
-    def __delete_product(self, product_id):
-        try:
-            product = Product.get_or_none(Product.id == product_id)
-            if product:
-                product.delete_instance()
-            else:
-                print(f"No record found with ID {product_id}")
-        except InternalError as px:
-            print(str(px))
-
-
-    def __update_product_to_db(self, id, name, price, unit, quantity, capacity, alcohol, product_type, image):
-        try:
-            product = Product.get(Product.id == id)
-            product.name = name
-            product.price = price
-            product.unit = unit
-            product.quantity = quantity
-            product.capacity = capacity
-            product.alcohol = alcohol
-            product.productType = product_type
-            product.image = image
-            product.updatedDate = datetime.datetime.now()
-            product.save()
-            print("Update table success")
-        except InternalError as px:
-            print("Update table failure")
-            print(str(px))
 
     def search_product(self, key):
         self.__products = []
@@ -80,16 +34,20 @@ class WareHouseController:
             self.__products.extend(rows)
         except InternalError as px:
             print(str(px))
-    def add_new_and_reload(self,id, name, price, unit, quantity, capacity, alcohol, productType, image):
-        self.save_data_to_db(id, name, price, unit, quantity, capacity, alcohol, productType, image)
+
+    def add_new_and_reload(self, id, name, price, unit, quantity, capacity, alcohol, productType, image):
+        if self._product_model.get_product_by_id(id):
+            messagebox.showinfo(message="Sản phẩm đã tồn tại")
+            return
+        self._product_model.save_product(name, price, unit, quantity, capacity, alcohol, productType, image)
         self.get_data()
 
     def delete_and_reload(self, id):
-        self.__delete_product(id)
+        self._product_model.delete_product(id)
         self.get_data()
 
     def update_and_reload(self, id, name, price, unit, quantity, capacity, alcohol, product_type, image):
-        self.__update_product_to_db(id, name, price, unit, quantity, capacity, alcohol, product_type, image)
+        self._product_model.update_product(id, name, price, unit, quantity, capacity, alcohol, product_type, image)
         self.get_data()
 
     def nav_discount_page(self, root):
@@ -106,4 +64,3 @@ class WareHouseController:
 
     def search_discount(self, key):
         self.__discount_page.search_discount(key)
-

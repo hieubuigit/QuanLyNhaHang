@@ -2,6 +2,8 @@ from datetime import datetime
 from tkinter import messagebox
 
 from peewee import fn, InternalError
+
+from warehouse.discount_model import DiscountModel
 from warehouse.discount_view import DiscountView
 from entities.models import Discount
 
@@ -9,6 +11,7 @@ from entities.models import Discount
 class DiscountController:
     def __init__(self, root):
         self.__discounts = []
+        self._discount_model = DiscountModel()
         self.get_data()
         self.view = DiscountView(root=root, controller=self)
 
@@ -18,56 +21,14 @@ class DiscountController:
 
     def get_data(self):
         self.__discounts = []
-        try:
-            pr = Discount.table_exists()
-            if not pr:
-                Discount.create_table()
-            rows = Discount.select()
+        rows = self._discount_model.get_discounts()
+        if rows:
             self.__discounts.extend(rows)
-        except InternalError as px:
-            print(str(px))
-
-
-    def save_data_to_db(self, desc, percent, start_date, end_date, quantity):
-        try:
-
-            row = Discount(description=desc, percent=percent, start_date=start_date, end_date=end_date,
-                           quantity=quantity, created_date=f"{datetime.now():%Y-%m-%d}")
-            row.save()
-        except InternalError as px:
-            print(str(px))
-
-    def _delete_diccount(self, _id):
-        try:
-            d = Discount.get_or_none(Discount.id == _id)
-            if d:
-                d.delete_instance()
-        except InternalError as px:
-            print(str(px))
-
-
-    def __update_product_to_db(self, _id, percent, desc, quantity, start_date, end_date):
-        try:
-            d = Discount.get_or_none(Discount.id == _id)
-            if d:
-                d.percent = percent
-                d.description = desc
-                d.quantity = quantity
-                d.start_date = start_date
-                d.end_date = end_date
-                d.update_date = datetime.now()
-                d.save()
-        except InternalError as px:
-            print(str(px))
 
     def search_discount(self, key):
         self.__discounts = []
-        try:
-            rows = Discount.select().where(fn.Lower(Discount.description).contains(fn.Lower(key)))
-            self.__discounts.extend(rows)
-            self.view.reload_treeview()
-        except InternalError as px:
-            print(str(px))
+        rows = self._discount_model.search_discounts(key)
+        self.view.reload_treeview()
 
     def add_new_and_reload(self):
         values = self.view.get_detail_values()
@@ -77,16 +38,15 @@ class DiscountController:
         end_date = values.get("end_date")
         quantity = values.get("quantity")
         if not self.is_not_validate(desc, percent, quantity):
-            self.save_data_to_db(desc, percent, start_date, end_date, quantity)
+            self._discount_model.save_discount(desc, percent, start_date, end_date, quantity)
             self.get_data()
             self.view.reload_treeview()
 
     def delete_and_reload(self):
         _id = self.view.id_selected
-        self._delete_diccount(_id)
+        self._discount_model.delete_discount(_id)
         self.get_data()
         self.view.reload_treeview()
-
 
     def update_and_reload(self):
         values = self.view.get_detail_values()
@@ -97,7 +57,7 @@ class DiscountController:
         quantity = values.get("quantity")
         _id = self.view.id_selected
         if not self.is_not_validate(desc, percent, quantity):
-            self.__update_product_to_db(_id, percent, desc, quantity, start_date, end_date)
+            self._discount_model.update_discount(_id, percent, desc, quantity, start_date, end_date)
             self.get_data()
             self.view.reload_treeview()
 

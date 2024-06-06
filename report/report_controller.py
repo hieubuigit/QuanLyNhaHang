@@ -1,5 +1,6 @@
 import math
 
+from report.report_model import ReportModel
 from report.report_view import ReportView
 from datetime import datetime, timedelta
 import peewee
@@ -15,6 +16,7 @@ class ReportController:
         self.__bills = []
         self.__months_of_the_quarter = None
         self._current_quarter = math.ceil(datetime.now().month / 3)
+        self._report_model = ReportModel()
         self.__get_bills(self._current_quarter)
         self.view = ReportView(root, self)
 
@@ -48,20 +50,13 @@ class ReportController:
 
     def __get_bills(self, quarter=1):
         self.__bills = []
-        try:
-            cur_quarter = quarter
-            start_date = self.get_first_date_by_quarter(cur_quarter)
-            end_date = self.get_last_date_by_quarter(cur_quarter, start_date)
-            self.__months_of_the_quarter = [x for x in range(start_date.month, end_date.month + 1)]
-            end_date = end_date + timedelta(days=1)
-            b = Billing.table_exists()
-            if not b:
-                Billing.create_table()
-            results = Billing.select().where(Billing.createdDate.between(start_date, end_date)).order_by(
-                Billing.createdDate.asc())
-            self.__bills.extend(results)
-        except peewee.InternalError as px:
-            print(str(px))
+        cur_quarter = quarter
+        start_date = self.get_first_date_by_quarter(cur_quarter)
+        end_date = self.get_last_date_by_quarter(cur_quarter, start_date)
+        self.__months_of_the_quarter = [x for x in range(start_date.month, end_date.month + 1)]
+        end_date = end_date + timedelta(days=1)
+        results = self._report_model.get_bills(start_date, end_date)
+        self.__bills.extend(results)
 
         # tính giá trị tổng thu, tổng chi theo quý
         self.total_revenue = sum(i.totalMoney for i in self.__bills if i.type == BillType.REVENUE.value[0])
@@ -86,20 +81,7 @@ class ReportController:
         self.view.reload_treeview()
 
     def get_user_name_by_id(self, _id):
-        try:
-            user: User = User.get_or_none(User.id == _id)
-            if user:
-                return user.user_name
-        except peewee.InternalError as px:
-            print(str(px))
+        return self._report_model.get_user_name(_id)
 
-    def get_table_num_by_id(selfs, _id):
-        try:
-            t = Table.table_exists()
-            if not t:
-                Table.create_table()
-            t: Table = Table.get_or_none(Table.id == _id)
-            if t:
-                return t.tableNum
-        except peewee.InternalError as px:
-            print(str(px))
+    def get_table_num_by_id(self, _id):
+        return self._report_model.get_table_num(_id)

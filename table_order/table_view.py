@@ -106,23 +106,24 @@ class TableView:
                     if self._controller.create_bill(id_table=table.id, id_user=Utils.user_profile["id"]):
                         self.reload_ui_table(table_id=table.id, status=StatusTable.DISABLED.value[0])
                         self._controller.show_menu_food(view_master=self._window,
-                                                         reload_table_page=self.reload_table_page,
-                                                         table=table)
+                                                        reload_table_page=self.reload_table_page,
+                                                        table=table)
             else:
                 if self._controller.check_my_bill(table_id=table.id):
                     self._controller.show_menu_food(view_master=self._window,
-                                                     reload_table_page=self.reload_table_page,
-                                                     table=table)
+                                                    reload_table_page=self.reload_table_page,
+                                                    table=table)
 
     def reload_table_page(self):
-       self.reload_ui_table(self.__table_selected.id, status=StatusTable.AVAILABLE.value[0])
+        self.reload_ui_table(self.__table_selected.id, status=StatusTable.AVAILABLE.value[0])
 
     def reload_ui_table(self, table_id, status):
         if self._controller.update_table_status(id_table=table_id,
-                                                 status=status):
+                                                status=status):
             for item in grid_content.winfo_children():
                 item.destroy()
             self._add_content(self._controller.tables)
+
     def create_ui_add_toplevel(self, window, action_type):
         global toplevel
 
@@ -220,21 +221,23 @@ class TableView:
             if action_type == Action.ADD:
                 # Thực hiện thêm vào database
                 if self._controller.add_new_and_reload(table_num_value=self.table_num_value.get(),
-                                                     seat_num_value=self.seat_num_value.get(),
-                                                     status_value=table_status):
-                    self.clear_entry_value_toplevel()
+                                                       seat_num_value=self.seat_num_value.get(),
+                                                       status_value=table_status):
+                    if toplevel.winfo_exists():
+                        self.clear_entry_value_toplevel()
                     toplevel.destroy()
             else:
                 # Thực hiện cập nhật lại database
-                print("status table", table_status)
                 if self._controller.update_and_reload(id=self.__table_selected.id,
-                                                    table_num_value=self.table_num_value.get(),
-                                                    seat_num_value=self.seat_num_value.get(),
-                                                    status_value=table_status):
-                    self.clear_entry_value_toplevel()
+                                                      table_num_value=self.table_num_value.get(),
+                                                      seat_num_value=self.seat_num_value.get(),
+                                                      status_value=table_status):
+                    if toplevel.winfo_exists():
+                        self.clear_entry_value_toplevel()
                     toplevel.destroy()
         # Thực hiện reload lại UI danh sách bàn
         self._add_content(tables=self._controller.tables)
+
     def clear_entry_value_toplevel(self):
         try:
             if self.table_num_value is not None:
@@ -243,7 +246,6 @@ class TableView:
                 self.seat_num_value.set("")
         except tk.TclError:
             pass
-
 
     def validate_input(self, text):
         # Chỉ cho phép chữ số

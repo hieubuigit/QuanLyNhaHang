@@ -2,8 +2,9 @@ from datetime import datetime
 from tkinter import messagebox
 import peewee
 from table_order.menu_food_controller import MenuFoodController
+from table_order.table_model import TableModel
 from table_order.table_view import TableView
-from entities.models import User, Table, Billing, Discount
+from entities.models import User, Table, Billing
 from share.common_config import UserType, TableType, BillType, BillStatus
 from share.utils import Utils
 
@@ -13,7 +14,7 @@ class TableController:
         self.__data_table = []
         self.__user_type = Utils.user_profile["type"]
         self.root = window
-        self.create_db_table()
+        self._table_model = TableModel()
         self.__get_table_data()
         self.view = TableView(window, self, self.__user_type)
 
@@ -21,108 +22,54 @@ class TableController:
     def tables(self):
         return self.__data_table
 
-    def create_db_table(self):
-        if not Table.table_exists():
-            Table.create_table()
-        if not Billing.table_exists():
-            Discount.create_table()
-            Billing.create_table()
-
     def __get_table_data(self):
         self.__data_table = []
-        rows = Table.select()
-        self.__data_table.extend(rows)
+        results = self._table_model.get_tables()
+        if results:
+            self.__data_table.extend(results)
         if self.__user_type == UserType.ADMIN.value:
             self.__data_table.insert(0, Table(tableNum="+", table_type=TableType.Add))
 
-    def add_new_table_to_db(self, table_num, seat_num, status):
-        try:
-            table = Table.get_or_none(Table.tableNum == table_num)
-            if table:
-                messagebox.showinfo("", "Số bàn này đã tồn tại")
-                return
-            row_table = Table(tableNum=table_num, seatNum=seat_num, status=status, createdDate=datetime.now())
-            row_table.save()
+    def __update_table(self, id, table_num, seat_num, status):
+        if self._table_model.update_table(id, table_num, seat_num, status) is None:
+            messagebox.showinfo("", "Số bàn này đã tồn tại")
+        else:
             return 1
-        except peewee.InternalError as px:
-            print("Save table failure")
-            print(str(px))
-
-
-    def update_table_to_db(self, id, table_num, seat_num, status):
-        try:
-            table = Table.get_or_none(Table.tableNum == table_num, Table.id != id)
-            if table:
-                messagebox.showinfo("", "Số bàn này đã tồn tại")
-                return
-            table = Table.get(Table.id == id)
-            table.tableNum = table_num
-            table.seatNum = seat_num
-            table.status = status
-            table.updatedDate = datetime.now()
-            table.save()
-            return 1
-        except peewee.InternalError as px:
-            print(str(px))
-
 
     def update_table_status(self, id_table, status):
-        try:
-            table = Table.get(Table.id == id_table)
-            table.status = status
-            table.save()
-            self.__get_table_data()
-            return 1
-        except peewee.InternalError as px:
-            print(str(px))
+        self._table_model.update_table_status(id_table, status)
+        self.__get_table_data()
+        return 1
 
     def __delete_table(self, table_id):
-        try:
-            table = Table.get_or_none(Table.id == table_id)
-            if table:
-                table.delete_instance()
-                messagebox.showinfo("Thông báo", "Xóa bàn thành công")
-            else:
-                messagebox.showinfo("Thông báo", "Xóa bàn thất bại")
-        except peewee.InternalError as px:
-            print(str(px))
+        if self._table_model.delete_table(table_id=table_id):
+            messagebox.showinfo("Thông báo", "Xóa bàn thành công")
+        else:
+            messagebox.showinfo("Thông báo", "Xóa bàn thất bại")
 
     def create_bill(self, id_table, id_user):
-        try:
-            user = User.get(User.id == id_user)
-            table = Table.get(Table.id == id_table)
-
-            b = Billing()
-            b.tableId = table
-            b.userId = user
-            b.type = BillType.REVENUE.value[0]
-            b.status = BillStatus.UNPAID.value
-            b.createdDate = datetime.now()
-            b.save()
-            return 1
-        except peewee.InternalError as px:
-            print(str(px))
+        return self._table_model.create_bill_by_table(id_table, id_user)
 
     def check_my_bill(self, table_id):
-        try:
-            b: Billing = Billing.get_or_none(Billing.tableId == table_id)
-            if not b.userId == Utils.user_profile["id"]:
-                messagebox.showinfo(message="Bàn này đã được đặt và tạo hóa đơn bởi nhân viên khác")
-            else:
-                return 1
-        except peewee.InternalError as px:
-            print(str(px))
+        if self._table_model.is_my_bill(table_id) is None:
+            messagebox.showinfo(message="Bàn này đã được đặt và tạo hóa đơn bởi nhân viên khác")
+        else:
+            return 1
+
     def delete_and_reload(self, table_id):
         self.__delete_table(table_id)
         self.__get_table_data()
 
     def add_new_and_reload(self, table_num_value, seat_num_value, status_value):
-        if self.add_new_table_to_db(table_num_value, seat_num_value, status_value):
-            self.__get_table_data()
-            return 1
+        if self._table_model.get_table_by_table_num(table_num_value):
+            messagebox.showinfo("", "Số bàn này đã tồn tại")
+            return
+        self._table_model.add_new_table(table_num_value, seat_num_value, status_value)
+        self.__get_table_data()
+        return 1
 
     def update_and_reload(self, id, table_num_value, seat_num_value, status_value):
-        if self.update_table_to_db(id, table_num_value, seat_num_value, status_value):
+        if self.__update_table(id, table_num_value, seat_num_value, status_value):
             self.__get_table_data()
             return 1
 
