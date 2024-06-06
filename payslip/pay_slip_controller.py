@@ -1,19 +1,20 @@
 from employee.employee_model import EmployeeModel
 from payslip.pay_slip_model import PaySlipModel
 
+
 class PaySlipController:
     def __init__(self):
         self.__pay_slip_model = PaySlipModel()
         self.__user_model = EmployeeModel()
 
-    def add_new(self, month, **new_data):
+    def add_new(self, **new_data):
         try:
             # Get employee info by use id
             user = self.__user_model.get_emp_by_id(new_data['user_id'])
             if user is not None:
                 new_data.pop('user_id')
                 new_data['user'] = user
-            save_result = self.__pay_slip_model.save(month, **new_data)
+            save_result = self.__pay_slip_model.save(**new_data)
             return save_result
         except Exception as ex:
             print(ex)
@@ -60,3 +61,19 @@ class PaySlipController:
         except Exception as e:
             print("[!Exc:", e)
             return 0
+
+    def is_already_calculate_salary(self, user_id, month_year):
+        try:
+            result = self.__pay_slip_model.is_already_calculate_salary_this_month(user_id, month_year)
+            return result
+        except Exception as e:
+            print("[!Exc:", e)
+            return 0
+
+    def get_employee_combobox(self):
+        try:
+            result = self.__pay_slip_model.get_all_nv()
+            return result
+        except Exception as e:
+            print("[!Exc:", e)
+

@@ -1,0 +1,1 @@
+python -m pwiz -e mysql -u root -P -t payslip quanlynhahang > entities/models.py

@@ -18,6 +18,7 @@ class PayGradeView:
         self.__tree = None
         self.__cols = ["#", "type", "allowance", "pay_per_hours", "created_date", "updated_date"]
         self.init_view(parent)
+        parent.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def init_view(self, parent: ctk.CTkFrame):
         # Action button: Add new, Delete, Update
@@ -38,7 +39,7 @@ class PayGradeView:
         wrap_grid.grid(row=1, column=0, sticky='nsew')
 
     def init_actions(self, parent: ctk.CTkFrame):
-        action_frame = ctk.CTkFrame(parent)
+        action_frame = ctk.CTkFrame(parent, fg_color=Utils.WHITE)
         btn_pack = {'side': tk.LEFT, 'padx': 10, 'pady': 10, 'anchor': "w"}
 
         # Add button
@@ -254,17 +255,3 @@ class PayGradeView:
             self.__form_controls['type_cbo'].set(Utils.get_account_type_str(data.type))
             self.set_value_for_entry('allowance_ent', data.allowance)
             self.set_value_for_entry('pay_per_hours_ent', data.pay_per_hours)
-
-if __name__ == '__main__':
-    root = ctk.CTk()
-    root.state("zoomed")  # full screen
-    root.resizable(True, True)
-    root.focus_set()
-    root.iconbitmap('../../assets/restaurant.ico')
-    root.title("Restaurant Information")
-
-    exFrame = ctk.CTkFrame(root)
-    exFrame.pack(side='top', fill='both', expand=True)
-    employee_view = PayGradeView(exFrame)
-
-    root.mainloop()
