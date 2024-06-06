@@ -1,5 +1,4 @@
 from peewee import JOIN, fn
-
 from entities.models import Payslip, User, Paygrade
 from pay_grade.pay_grade_model import PayGradeModel
 from share.utils import Utils
@@ -78,12 +77,22 @@ class PaySlipModel:
         # Get on pay slip by user id
         query = (Payslip.select(User.user_code, User.first_name, User.last_name, User.gender, User.user_name,
                                 User.birth_date, User.identity, User.type,
-                                Payslip.id, Payslip.hours, Payslip.total_salary, Payslip.created_date,
+                                Payslip.id, Payslip.hours, Payslip.total_salary, Payslip.created_date, Payslip.pay_on_month,
                                 Payslip.updated_date, User.id)
                  .where(User.user_code.contains(conditions['user_id']) if conditions['user_id'] is not None else True)
                  .join(User, JOIN.RIGHT_OUTER, on=(Payslip.user == User.id))
                  .first())
         if query:
+            created_date = ""
+            updated_date = ""
+            if query.created_date is not None:
+                created_date = query.created_date.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                created_date = ''
+            if query.updated_date is not None:
+                updated_date = query.updated_date.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                updated_date = ''
             return {
                 'user_code': query.user.user_code,
                 'full_name': f"{query.user.first_name} {query.user.last_name}",
@@ -94,17 +103,18 @@ class PaySlipModel:
                 'type_name': Utils.get_account_type_str(query.user.type),
                 'type': query.user.type,
                 'hours': query.hours,
+                'pay_on_month': query.pay_on_month,
                 'total_salary': query.total_salary,
-                'created_date': query.created_date,
-                'updated_date': query.updated_date,
+                'created_date': created_date,
+                'updated_date': updated_date,
                 'user_id': query.user.id,
                 'id': query.id,
             }
         else:
             return None
 
-    def is_already_calculate_salary_this_month(self, user_id, month_year: int):
-        query = Payslip.select().where(Payslip.user.id == user_id and Payslip.pay_on_month == month_year).first()
+    def is_already_calculate_salary_this_month(self, user_id, month_year: str):
+        query = Payslip.select().where((Payslip.user == user_id) & (Payslip.pay_on_month == month_year)).first()
         if query:
             return True
         return False

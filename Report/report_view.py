@@ -76,7 +76,7 @@ class ReportView:
                                     border_width=0)
         self.salary_line.grid(row=1, column=1)
 
-        # Employee salary tab
+        # Employee salary grade tab
         salary_grade_img = CTkImage(Image.open("../assets/star.png"), size=(25, 25))
         self.salary_grade_btn = CTkButton(btn_gr,
                                           text="Bậc lương",
@@ -272,12 +272,12 @@ class ReportView:
     def salary_grade_page(self, main_fr):
         salary_grade_fr = ctk.CTkFrame(self.sub_fr)
         pay_grade = PayGradeView(salary_grade_fr)
-        salary_grade_fr.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, anchor='nw')
+        salary_grade_fr.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def salary_page(self, main_fr):
         salary_fr = ctk.CTkFrame(self.sub_fr)
         payslip = PaySlipView(salary_fr)
-        salary_fr.pack(side=tk.TOP, fill=tk.BOTH, expand=True, anchor='nw')
+        salary_fr.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def quarter_button_callback(self):
         value_key_dict = {value: key for key, value in self.__quarters.items()}

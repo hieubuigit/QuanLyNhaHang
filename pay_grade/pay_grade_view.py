@@ -18,6 +18,7 @@ class PayGradeView:
         self.__tree = None
         self.__cols = ["#", "type", "allowance", "pay_per_hours", "created_date", "updated_date"]
         self.init_view(parent)
+        parent.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def init_view(self, parent: ctk.CTkFrame):
         # Action button: Add new, Delete, Update
@@ -38,7 +39,7 @@ class PayGradeView:
         wrap_grid.grid(row=1, column=0, sticky='nsew')
 
     def init_actions(self, parent: ctk.CTkFrame):
-        action_frame = ctk.CTkFrame(parent)
+        action_frame = ctk.CTkFrame(parent, fg_color=Utils.WHITE)
         btn_pack = {'side': tk.LEFT, 'padx': 10, 'pady': 10, 'anchor': "w"}
 
         # Add button

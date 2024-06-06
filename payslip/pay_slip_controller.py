@@ -1,6 +1,7 @@
 from employee.employee_model import EmployeeModel
 from payslip.pay_slip_model import PaySlipModel
 
+
 class PaySlipController:
     def __init__(self):
         self.__pay_slip_model = PaySlipModel()

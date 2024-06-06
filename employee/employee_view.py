@@ -25,7 +25,10 @@ class EmployeeView:
                'status',
                'type',
                'created_date',
-               'updated_date')
+               'col1',
+               'col2'
+               'col3'
+               )
 
     def __init__(self, parent: ctk.CTkFrame):
         ctk.set_default_color_theme("../share/theme.json")
@@ -409,6 +412,9 @@ class EmployeeView:
         self.__tree.heading(EmployeeView.columns[11], text='Trạng thái tài khoản')
         self.__tree.heading(EmployeeView.columns[12], text='Loại nhân viên')
         self.__tree.heading(EmployeeView.columns[13], text='Ngày tạo')
+        self.__tree.heading(EmployeeView.columns[14], text='')
+        self.__tree.heading(EmployeeView.columns[15], text='')
+        self.__tree.heading(EmployeeView.columns[16], text='')
 
         self.__tree.column(EmployeeView.columns[0], width=50, anchor='center')
         self.__tree.column(EmployeeView.columns[1], anchor='center')
@@ -424,6 +430,9 @@ class EmployeeView:
         self.__tree.column(EmployeeView.columns[11], anchor='center')
         self.__tree.column(EmployeeView.columns[12], anchor='center')
         self.__tree.column(EmployeeView.columns[13], anchor='center')
+        self.__tree.column(EmployeeView.columns[14], width=0, stretch=False) # Hide column
+        self.__tree.column(EmployeeView.columns[15], width=0, stretch=False) # Hide column
+        self.__tree.column(EmployeeView.columns[16], width=0, stretch=False) # Hide column
 
         # Set color for odd and even row in grid
         self.__tree.tag_configure('odd', background='#E8E8E8')

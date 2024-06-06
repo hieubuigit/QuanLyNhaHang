@@ -28,7 +28,7 @@ class PaySlipView:
     def init_view(self, parent):
         # Action button: Add new, Delete, Update
         action_frm = self.init_actions(parent)
-        action_frm.grid(column=0, row=0, sticky='nsew')
+        action_frm.grid(column=0, row=0, sticky='nw')
 
         # Init tree view
         wrap_grid = ctk.CTkFrame(parent, fg_color=Utils.WHITE)
@@ -41,7 +41,7 @@ class PaySlipView:
         tree_scroll_y.pack(side=ctk.RIGHT, fill=ctk.Y)
 
         self.__tree.pack(side=ctk.BOTTOM, fill=tk.BOTH, expand=True)
-        wrap_grid.grid(row=1, column=0, sticky='nsew')
+        wrap_grid.grid(row=1, column=0, sticky='nw')
 
     def init_actions(self, parent: ctk.CTkFrame):
         # Create form include: Them, Xoa, Cap Nhat and Tim Kiem by full name, employee id, username
@@ -193,24 +193,12 @@ class PaySlipView:
         # Employee Id
         user_code_list = self.__pay_slip_controller.get_employee_combobox()
 
-        choose_emp_2 = ctk.CTkFrame(left_frm, fg_color=Utils.WHITE)
+        choose_emp = ctk.CTkFrame(left_frm, fg_color=Utils.WHITE)
         emp_lbl = ctk.CTkLabel(left_frm, text="Chọn nhân viên: ")
         emp_lbl.pack(**Utils.label_pack_style)
-        self.__form_controls['emp_cbo'] = ctk.CTkComboBox(master=choose_emp_2, values=user_code_list, command=lambda: self.on_choose_emp)
+        self.__form_controls['emp_cbo'] = ctk.CTkComboBox(master=choose_emp, values=user_code_list, command=self.get_emp_info_clicked)
         self.__form_controls['emp_cbo'].pack(**Utils.entry_pack_style)
-        choose_emp_2.pack(**common_pack)
-
-        choose_emp = ctk.CTkFrame(left_frm, fg_color=Utils.WHITE)
-        self.__form_controls['emp_id_ent'] = Utils.input_component(choose_emp, {'lbl': "Chọn nhân viên: "})
-        self.__form_controls['emp_id_ent'].pack(side=tk.LEFT)
-        get_info_btn = ctk.CTkButton(choose_emp,
-                                     text="Thông tin",
-                                     width=10,
-                                     fg_color="gray",
-                                     command=lambda: self.get_emp_info_clicked())
-        get_info_btn.pack(side=tk.LEFT)
         choose_emp.pack(**common_pack)
-
 
         # Hours: input here to calculate data
         self.__form_controls['hours_ent'] = Utils.input_component(left_frm, {'lbl': "Nhập số giờ làm việc: "})
@@ -277,6 +265,11 @@ class PaySlipView:
         hours_frm['frm'].pack(**common_pack)
         self.__form_controls["hours_lbl"] = hours_frm['value']
 
+        # Pay on months
+        pay_on_month_frm = Utils.init_label_and_value(parent=right_frm, data={'lbl': 'Kỳ lương: ', 'value': ''})
+        pay_on_month_frm['frm'].pack(**common_pack)
+        self.__form_controls["pay_on_month_lbl"] = pay_on_month_frm['value']
+
         # Payslip total salary
         total_salary_frm = Utils.init_label_and_value(parent=right_frm,
                                                       data={'lbl': 'Tiền lương: ', 'value': ''})
@@ -297,8 +290,8 @@ class PaySlipView:
             save_or_update_txt = "Cập nhật"
             # Load data here
             if self.__id_selected > 0:
-                self.set_value_for_entry('emp_id_ent', self.__user_code_selected)
-                self.get_emp_info_clicked()
+                self.__form_controls['emp_cbo'].set(self.__user_code_selected)
+                self.get_emp_info_clicked(self.__user_code_selected)
         else:
             save_or_update_txt = "Thêm"
 
@@ -343,10 +336,11 @@ class PaySlipView:
         self.__form_controls["create_payslip_lbl"].configure(text=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         self.__emp_data['total_salary'] = salary
 
-    def get_emp_info_clicked(self):
+    def get_emp_info_clicked(self, employee_id):
         # Call all employee who will calculate salary
-        employeeId = self.__form_controls['emp_id_ent'].get()
-        data = self.__pay_slip_controller.get_pay_slip_by_user_id(employeeId)
+        # employeeId = self.__form_controls['emp_id_ent'].get()
+        data = self.__pay_slip_controller.get_pay_slip_by_user_id(employee_id)
+        print(data)
         if data is None:
             tkMsgBox.showinfo(title='Thông báo',
                               message='Mã nhân viên không tồn tại hoặc không đúng, vui lòng chọn lại!')
@@ -361,7 +355,9 @@ class PaySlipView:
         self.__form_controls['user_type_lbl'].configure(text=self.__emp_data['type_name'])
         self.__form_controls['payslip_id_lbl'].configure(text=self.__emp_data['id'])
         self.__form_controls['hours_lbl'].configure(text=self.__emp_data['hours'])
+        self.__form_controls['pay_on_month_lbl'].configure(text=self.__emp_data['pay_on_month'])
         self.__form_controls['total_salary_lbl'].configure(text=Utils.format_currency(self.__emp_data['total_salary']))
+        self.__form_controls['create_payslip_lbl'].configure(text=self.__emp_data['created_date'])
 
     def save_or_update_btn_clicked(self, action: Action):
         # Get data from form to save to database
@@ -391,14 +387,15 @@ class PaySlipView:
             'total_salary': total_salary,
             'hours': float(hours),
             'pay_on_month': month_year,
-            'created_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         result = None
         result_msg = ""
         if action == Action.ADD:
+            data['created_date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             result_msg = "Thêm"
             result = self.__pay_slip_controller.add_new(**data)
         elif action == Action.UPDATE:
+            data['updated_date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             result_msg = "Cập nhật"
             result = self.__pay_slip_controller.update_by_id(self.__id_selected, data)
 
@@ -437,9 +434,6 @@ class PaySlipView:
             if pay_slip_list is not None and len(pay_slip_list) > 0:
                 for psl in pay_slip_list:
                     self.__tree.insert('', tk.END, values=psl)
-
-    def on_choose_emp(self, choice):
-        print(choice)
 
 
 if __name__ == '__main__':
