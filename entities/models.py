@@ -96,9 +96,9 @@ class Table(BaseModel):
 
 class Billing(BaseModel):
     id = AutoField(primary_key=True, null=False)
-    tableId = ForeignKeyField(null=True, column_name="TableId", field='id', model=Table)
+    tableId = ForeignKeyField(null=True, column_name="TableId", field='id', model=Table, on_delete='CASCADE')
     userId = ForeignKeyField(null=True, column_name="UserId", field='id', model=User)
-    discountId = ForeignKeyField(null=True, column_name="DiscountId", field='id', model=Discount)
+    discountId = ForeignKeyField(null=True, column_name="DiscountId", field='id', model=Discount, on_delete='CASCADE')
     customerName = CharField(null=True, column_name="CustomerName")
     customerPhoneNumber = CharField(null=True, column_name="CustomerPhoneNumber")
     totalMoney = DecimalField(null=False, column_name="TotalMoney", max_digits=10, decimal_places=0)
@@ -131,7 +131,7 @@ class Payslip(BaseModel):
     total_salary = DecimalField(column_name='TotalSalary', null=True)
     updated_date = DateTimeField(column_name='UpdatedDate', null=True)
     user = ForeignKeyField(column_name='UserId', field='id', model=User)
-
+    pay_on_month = CharField(column_name='PayOnMonth', null=True)
     class Meta:
         table_name = 'payslip'
 

@@ -45,7 +45,8 @@ class MenuFoodView:
         bill_num.configure(text=f"Hóa đơn: {bill_id}")
 
         percents = self.__controller.get_discount_percents()
-        discount_cbb.configure(values=percents)
+        if percents:
+            discount_cbb.configure(values=percents)
 
 
 
