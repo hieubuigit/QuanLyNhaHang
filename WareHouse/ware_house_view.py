@@ -133,11 +133,12 @@ class WareHouseView:
                                      image=img_product,
                                      compound=tk.LEFT,
                                      fg_color="white",
-                                     text_color="DodgerBlue1",
+                                     text_color="#000080",
+                                     hover_color="#63B8FF",
                                      command=lambda: self.__switch_page(root, page=StatePage.Product))
         self.product_btn.grid(row=0, column=0)
         img_discount = CTkImage(Image.open("../assets/discount.png"), size=(25, 25))
-        self.product_line = CTkFrame(gr_btn, fg_color="DodgerBlue1", height=30, width=2, corner_radius=0,
+        self.product_line = CTkFrame(gr_btn, fg_color="#000080", height=30, width=2, corner_radius=0,
                                      border_width=0)
         self.product_line.grid(row=0, column=1)
 
@@ -150,6 +151,7 @@ class WareHouseView:
                                       image=img_discount,
                                       compound=tk.LEFT,
                                       text_color="black",
+                                      hover_color="#63B8FF",
                                       command=lambda: self.__switch_page(root, page=StatePage.Discount))
         self.discount_btn.grid(row=1, column=0)
         self.discount_line = CTkFrame(gr_btn, fg_color="white", height=30, width=2, corner_radius=0, border_width=0)
@@ -298,15 +300,15 @@ class WareHouseView:
             root.update()
         if page == StatePage.Discount:
             self.__controller.nav_discount_page(self.right_fr)
-            self.discount_line.configure(fg_color="DodgerBlue1")
-            self.discount_btn.configure(text_color="DodgerBlue1")
+            self.discount_line.configure(fg_color="#000080")
+            self.discount_btn.configure(text_color="#000080")
             self.product_line.configure(fg_color="white")
             self.product_btn.configure(text_color="black")
 
         else:
             self.product_page()
-            self.product_line.configure(fg_color="DodgerBlue1")
-            self.product_btn.configure(text_color="DodgerBlue1")
+            self.product_line.configure(fg_color="#000080")
+            self.product_btn.configure(text_color="#000080")
             self.discount_line.configure(fg_color="white")
             self.discount_btn.configure(text_color="black")
 

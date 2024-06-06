@@ -80,7 +80,7 @@ class HomeView:
         self.tab_bar_view.pack(side="left")
 
         avt_default = ctk.CTkImage(Image.open("../assets/avatar_default_man.png"), size=(30, 30))
-        profile_btn = ctk.CTkButton(header_view, text="Admin director",
+        profile_btn = ctk.CTkButton(header_view, text=Utils.user_profile["user_name"],
                                     image=avt_default, corner_radius=0,
                                     width=200,
                                     font=font_tab,
@@ -88,6 +88,7 @@ class HomeView:
                                     bg_color="white",
                                     fg_color="white",
                                     compound=tk.RIGHT,
+                                    hover_color=HomeView.hover_color_tab,
                                     command=lambda: animated_panel.animate())
         profile_btn.pack(fill=tk.Y, side="right", anchor="ne", pady=(0, 6))
 
