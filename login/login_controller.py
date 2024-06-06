@@ -38,6 +38,7 @@ class LoginController:
                     "email": user.email,
                     "phone_number": user.phone_number,
                     "password": user.password,
+                    "user_name": user.user_name
                 }
                 Utils.user_profile = user_profile
                 return user

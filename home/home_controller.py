@@ -1,5 +1,5 @@
 import tkinter as tk
-from Home.home_view import HomeView
+from home.home_view import HomeView
 
 
 class HomeController:

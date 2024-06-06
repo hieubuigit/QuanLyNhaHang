@@ -2,17 +2,18 @@ import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
 from PIL import Image
-from Bill.bill_controller import BillController
-from Home.SlidePanel import SlidePanel
-from Report.report_controller import ReportController
-from Table_Order.table_controller import TableController
-from WareHouse.ware_house_controller import WareHouseController
-from change_password.change_password_view import ChangePasswordView
+# from bill.bill_controller import BillController
+from home.SlidePanel import SlidePanel
+from logout.logout_controller import LogoutController
+from report.report_controller import ReportController
+from table_order.table_controller import TableController
+from warehouse.ware_house_controller import WareHouseController
 from employee.employee_view import EmployeeView
 from logout.logout_controller import LogoutController
-from share.common_config import TabType
+from share.common_config import TabType, UserType
 from share.utils import Utils
 import tkinter.messagebox as tkMsgBox
+from change_password.change_password_view import ChangePasswordView
 
 
 class HomeView:
@@ -26,9 +27,10 @@ class HomeView:
     def __init__(self, window, controller):
         self.__root = window
         self.__controller = controller
-        style = ttk.Style()
-        style.theme_use("default")
-        Utils.set_appearance_mode(ctk)
+        self._user_type = Utils.user_profile["type"]
+        # style = ttk.Style()
+        # style.theme_use("default")
+        # Utils.set_appearance_mode(ctk)
         self.home_fr = ctk.CTkFrame(master=window, fg_color="white", corner_radius=0)
         self.home_fr.pack(fill=tk.BOTH, expand=1)
         # Tạo UI thanh tab bar
@@ -39,16 +41,26 @@ class HomeView:
         self.__main_fr.pack(fill="both", expand=1)
 
         # Mặc định chọn tab 1: Hiển thị nhân viên page
-        self.employee_page(self.__main_fr)
-        self.empl_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
+        if self._user_type == UserType.ADMIN.value:
+            HomeView.button_type_clicked = TabType.EMPLOYEE
+            self.employee_page(self.__main_fr)
+            self.empl_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
+            self.table_btn.configure(text="Bàn")
+        else:
+            HomeView.button_type_clicked = TabType.TABLE
+            self.__main_fr.update_idletasks()
+            self.table_page(self.__main_fr)
+            self.table_btn.configure(fg_color=HomeView.fg_color_tab_click, text_color="white")
 
     def __generate_ui_header(self, window):
         # animated widget
         animated_panel = SlidePanel(self.__root, 1, 0.866)
         animated_panel.configure(corner_radius=0, border_color="gray", border_width=1, fg_color="white")
+        ic_change_password = ctk.CTkImage(Image.open("../assets/padlock.png"), size=(25, 25))
         change_password_btn = ctk.CTkButton(animated_panel, text='Đổi mật khẩu',
                                             corner_radius=0, fg_color="white", text_color="black",
                                             hover_color=HomeView.hover_color_tab,
+                                            image=ic_change_password,
                                             font=ctk.CTkFont("Roboto", 16),
                                             command=lambda: self.on_change_pass())
         change_password_btn.pack(expand=False, fill=tk.X, pady=(10, 0), padx=2)
@@ -68,7 +80,7 @@ class HomeView:
         self.tab_bar_view.pack(side="left")
 
         avt_default = ctk.CTkImage(Image.open("../assets/avatar_default_man.png"), size=(30, 30))
-        profile_btn = ctk.CTkButton(header_view, text="Admin director",
+        profile_btn = ctk.CTkButton(header_view, text=Utils.user_profile["user_name"],
                                     image=avt_default, corner_radius=0,
                                     width=200,
                                     font=font_tab,
@@ -76,20 +88,22 @@ class HomeView:
                                     bg_color="white",
                                     fg_color="white",
                                     compound=tk.RIGHT,
+                                    hover_color=HomeView.hover_color_tab,
                                     command=lambda: animated_panel.animate())
         profile_btn.pack(fill=tk.Y, side="right", anchor="ne", pady=(0, 6))
 
         # Tạo các button trong thanh tab bar
-        self.empl_btn = ctk.CTkButton(self.tab_bar_view, text="Nhân viên", compound='top',
-                                      corner_radius=HomeView.radius_tab,
-                                      fg_color=HomeView.fg_color_tab_click,
-                                      font=font_tab,
-                                      hover_color=HomeView.hover_color_tab,
-                                      border_width=1,
-                                      border_color="#0033CC",
-                                      command=lambda: self.__action_tab(button_type=TabType.EMPLOYEE))
-        self.empl_btn.grid(row=0, column=0, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
-        self.__set_ui_default_emp_tab()
+        if self._user_type == UserType.ADMIN.value:
+            self.empl_btn = ctk.CTkButton(self.tab_bar_view, text="Nhân viên", compound='top',
+                                          corner_radius=HomeView.radius_tab,
+                                          fg_color=HomeView.fg_color_tab_click,
+                                          font=font_tab,
+                                          hover_color=HomeView.hover_color_tab,
+                                          border_width=1,
+                                          border_color="#0033CC",
+                                          command=lambda: self.__action_tab(button_type=TabType.EMPLOYEE))
+            self.empl_btn.grid(row=0, column=0, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
+            self.__set_ui_default_emp_tab()
 
         # Table tab
         self.table_btn = ctk.CTkButton(self.tab_bar_view, text="Đặt bàn",
@@ -132,16 +146,17 @@ class HomeView:
         self.__set_ui_default_ware_house_tab()
 
         # Report button
-        self.report_btn = ctk.CTkButton(self.tab_bar_view, text="Báo cáo",
-                                        corner_radius=HomeView.radius_tab,
-                                        fg_color=HomeView.fg_color_tab_normal,
-                                        font=font_tab,
-                                        hover_color=HomeView.hover_color_tab,
-                                        border_width=1,
-                                        border_color="#0033CC",
-                                        compound='top', command=lambda: self.__action_tab(button_type=TabType.REPORT))
-        self.report_btn.grid(row=0, column=4, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
-        self.__set_ui_default_report_tab()
+        if self._user_type == UserType.ADMIN.value:
+            self.report_btn = ctk.CTkButton(self.tab_bar_view, text="Báo cáo",
+                                            corner_radius=HomeView.radius_tab,
+                                            fg_color=HomeView.fg_color_tab_normal,
+                                            font=font_tab,
+                                            hover_color=HomeView.hover_color_tab,
+                                            border_width=1,
+                                            border_color="#0033CC",
+                                            compound='top', command=lambda: self.__action_tab(button_type=TabType.REPORT))
+            self.report_btn.grid(row=0, column=4, sticky='ns', ipady=3, ipadx=ipadx_tab_button)
+            self.__set_ui_default_report_tab()
 
         for i in range(len(self.tab_bar_view.winfo_children())):
             self.tab_bar_view.grid_columnconfigure(i, weight=1)
@@ -186,16 +201,18 @@ class HomeView:
 
     # Cập nhật ui tab đã chọn trước đó
     def __update_tab_clicked(self):
-        if HomeView.button_type_clicked == TabType.EMPLOYEE:
-            self.__set_ui_default_emp_tab()
-        elif HomeView.button_type_clicked == TabType.TABLE:
+        if self._user_type == UserType.ADMIN.value:
+            if HomeView.button_type_clicked == TabType.EMPLOYEE:
+                self.__set_ui_default_emp_tab()
+            elif HomeView.button_type_clicked == TabType.REPORT:
+                self.__set_ui_default_report_tab()
+        if HomeView.button_type_clicked == TabType.TABLE:
             self.__set_ui_default_table_tab()
         elif HomeView.button_type_clicked == TabType.BILL:
             self.__set_ui_default_bill_tab()
         elif HomeView.button_type_clicked == TabType.WARE_HOUSE:
             self.__set_ui_default_ware_house_tab()
-        elif HomeView.button_type_clicked == TabType.REPORT:
-            self.__set_ui_default_report_tab()
+
 
     def __action_tab(self, button_type: TabType):
         self.__update_tab_clicked()

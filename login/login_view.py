@@ -4,7 +4,7 @@ import tkinter.messagebox as tkMessageBox
 from PIL import Image
 from ctypes import windll
 import customtkinter as ctk
-from Home.home_controller import HomeController
+from home.home_controller import HomeController
 from login.login_controller import LoginController
 from entities.models import User, database
 from share.utils import Utils
@@ -15,6 +15,7 @@ class LoginView:
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 12))
+        windll.shcore.SetProcessDpiAwareness(1)
 
         self.__parent = container
         self.__controller = LoginController()
@@ -92,7 +93,7 @@ class LoginView:
 
 
 if __name__ == '__main__':
-    windll.shcore.SetProcessDpiAwareness(1)
+    # windll.shcore.SetProcessDpiAwareness(1)
     root = tk.Tk()
     root.state('zoomed')  # full screen
     root.resizable(True, True)

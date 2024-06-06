@@ -1,7 +1,7 @@
 from datetime import datetime
 import peewee
-from Table_Order.menu_food_view import MenuFoodView
-from entities.models import Product, Billing, Table, OrderList, Discount, User
+from table_order.menu_food_view import MenuFoodView
+from entities.models import Product, Billing, Table, OrderList, Discount
 from tkinter import messagebox
 
 from share.common_config import BillType, BillStatus, StatusTable
@@ -14,10 +14,8 @@ class MenuFoodController:
         self.__bill_id = None
 
         self.get_foods()
-        view = MenuFoodView(parent, self, reload_table_page)
+        view = MenuFoodView(parent, self, reload_table_page, table)
 
-        def reload_table():
-            print("abc")
 
     @property
     def foods(self):
@@ -27,6 +25,13 @@ class MenuFoodController:
     def foods(self, value):
         self.__foods = value
 
+    @property
+    def bill_id(self):
+        return self.__bill_id
+
+    @bill_id.setter
+    def bill_id(self, value):
+        self.__bill_id = value
     def get_foods(self):
         try:
             if not Product.table_exists():
@@ -40,10 +45,9 @@ class MenuFoodController:
         try:
             if self.__table:
                 if Billing.table_exists():
-                    bill = Billing.get_or_none(Billing.status == BillStatus.UNPAID.value
-                                               and Billing.tableId == self.__table.id)
+                    bill = Billing.get_or_none(Billing.tableId == self.__table.id, Billing.status == BillStatus.UNPAID.value)
                     if bill:
-                        self.__bill_id = bill.id
+                        self.bill_id = bill.id
                         if OrderList.table_exists():
                             order_list = OrderList.select().where(OrderList.billing_id == bill.id)
                             return order_list
@@ -57,15 +61,14 @@ class MenuFoodController:
 
     def create_order_list(self, food: Product, quantity_selected):
         try:
-            if self.__bill_id:
+            if self.bill_id:
                 if OrderList.table_exists():
-                    order_list = OrderList.select().where(OrderList.billing_id == self.__bill_id)
                     pr = OrderList.get_or_none(OrderList.billing_id == self.__bill_id,
                                                OrderList.product_id == food.id)
                     if pr:
                         messagebox.showinfo("Thông báo", "Món ăn đã có trong hóa đơn")
                         return
-                    bill = Billing.get(self.__bill_id == Billing.id)
+                    bill = Billing.get(self.bill_id == Billing.id)
                     product = self.get_product_by_id(food.id)
                     row = OrderList()
                     row.billing_id = bill
@@ -106,19 +109,21 @@ class MenuFoodController:
 
     def get_discount_percents(self):
         try:
-            if Discount.table_exists():
+            d = Discount.table_exists()
+            if d:
                 rows = Discount.select()
                 if rows:
-                    percent_list = [i.percent for i in rows]
+                    percent_list = [f"{i.percent:.0f}" for i in rows]
                     return percent_list
         except peewee.InternalError as px:
             print(str(px))
 
-    def update_bill(self, total_money):
-        print("bill id", self.__bill_id)
+    def update_bill(self, total_money, customer_name, customer_phone):
         try:
-            bill = Billing.get_or_none(Billing.id == self.__bill_id)
+            bill: Billing = Billing.get_or_none(Billing.id == self.__bill_id)
             if bill:
+                bill.customerName = customer_name
+                bill.customerPhoneNumber = customer_phone
                 bill.totalMoney = total_money
                 bill.type = BillType.REVENUE.value[0]
                 bill.status = BillStatus.PAID.value

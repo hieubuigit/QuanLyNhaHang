@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from pay_grade.pay_grade_view import PayGradeView
 from payslip.pay_slip_view import PaySlipView
-from share.common_config import BillType, ReportTab
+from share.common_config import BillType, ReportTab, BillStatus
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
@@ -19,6 +19,8 @@ class ReportView:
         self.__controller = controller
         self.__quarters = {1: "Quý 1", 2: "Quý 2", 3: "Quý 3", 4: "Quý 4"}
         self.__quarter_var = tk.StringVar()
+        self._status_values = {BillStatus.PAID.value: "Đã thanh toán", BillStatus.UNPAID.value: "Chưa thanh toán"}
+
         self.__ui_main_content(window)
 
     def __ui_main_content(self, root):
@@ -33,7 +35,7 @@ class ReportView:
 
     def __ui_left_view(self, root, main_fr):
         left_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
-        left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=2, pady=1, ipadx=2)
+        left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=(2, 10), pady=1, ipadx=2)
 
         btn_gr = CTkFrame(left_fr)
         btn_gr.pack(pady=3)
@@ -48,12 +50,12 @@ class ReportView:
                                      image=ic_revenue,
                                      compound=tk.LEFT,
                                      fg_color="white",
-                                     text_color="DodgerBlue1",
+                                     text_color="#000080",
                                      hover_color="#63B8FF",
                                      anchor=tk.W,
                                      command=lambda: self.__switch_page(root, main_fr, page=ReportTab.REVENUE))
         self.revenue_btn.grid(row=0, column=0)
-        self.revenue_line = CTkFrame(btn_gr, fg_color="DodgerBlue1", height=30, width=2, corner_radius=0,
+        self.revenue_line = CTkFrame(btn_gr, fg_color="#000080", height=30, width=2, corner_radius=0,
                                      border_width=0)
         self.revenue_line.grid(row=0, column=1)
 
@@ -76,7 +78,7 @@ class ReportView:
                                     border_width=0)
         self.salary_line.grid(row=1, column=1)
 
-        # Employee salary grade tab
+        # Employee salary tab
         salary_grade_img = CTkImage(Image.open("../assets/star.png"), size=(25, 25))
         self.salary_grade_btn = CTkButton(btn_gr,
                                           text="Bậc lương",
@@ -96,9 +98,10 @@ class ReportView:
         self.salary_grade_line.grid(row=2, column=1)
 
     def ui_right_content_view(self):
+        global pie_chart_fr, bar_chart_fr
         padding = 2
         header_fr = CTkFrame(self.sub_fr, corner_radius=0)
-        header_fr.pack(fill=tk.X, expand=0, padx=padding, pady=padding)
+        header_fr.pack(fill=tk.X, expand=0, padx=padding, pady=(2, 0))
         header_fr.columnconfigure(0, weight=1)
         quarters_values = list(self.__quarters.values())
         current_quarter_key = self.__controller.current_quarter
@@ -116,36 +119,36 @@ class ReportView:
         filter_cbb.pack(fill=tk.BOTH, expand=0, side=tk.RIGHT, anchor=tk.E)
 
         chart_fr = CTkFrame(self.sub_fr, corner_radius=0)
-        chart_fr.pack(fill=tk.BOTH, expand=1, padx=padding, pady=padding)
+        chart_fr.pack(fill=tk.BOTH, expand=1, padx=padding, pady=(2, 0))
 
-        self.left_fr = CTkFrame(chart_fr, corner_radius=0, border_width=1, border_color="gray", fg_color="white")
-        self.left_fr.grid(row=0, column=0)
+        pie_chart_fr = CTkFrame(chart_fr, corner_radius=0, border_width=1, border_color="gray", fg_color="white")
+        pie_chart_fr.grid(row=0, column=0)
 
-        self.open_pie_chart(self.left_fr)
+        self.open_pie_chart(pie_chart_fr)
         chart_fr.grid_columnconfigure(0, weight=1)
 
-        self.right_fr = CTkFrame(chart_fr, corner_radius=0, border_width=1, border_color="gray")
-        self.right_fr.grid(row=0, column=1)
-        self.open_bar_chart(self.right_fr)
+        bar_chart_fr = CTkFrame(chart_fr, corner_radius=0, border_width=1, border_color="gray")
+        bar_chart_fr.grid(row=0, column=1)
+        self.open_bar_chart(bar_chart_fr)
         chart_fr.grid_columnconfigure(1, weight=1)
 
-        self.create_ui_buttom()
+        # Tạo UI Treeview load thông tin hóa đơn
+        self.create_ui_bottom_view()
 
-    def create_ui_buttom(self):
+    def create_ui_bottom_view(self):
         padding = 2
-        bottom_fr = CTkFrame(self.sub_fr)
+        bottom_fr = CTkFrame(self.sub_fr, corner_radius=0)
         bottom_fr.pack(fill=tk.BOTH, expand=1, padx=padding, pady=2)
         # UI TreeView
         style = ttk.Style()
         style.theme_use('default')
-        tree_scrollX = CTkScrollbar(bottom_fr, height=15)
-        tree_scrollX.pack(side=tk.BOTTOM, fill='x')
-        self.tv = ttk.Treeview(bottom_fr, yscrollcommand=tree_scrollX.set)
+
+        self.tv = ttk.Treeview(bottom_fr)
         self.tv.pack(fill=tk.BOTH, expand=1, padx=10, pady=3)
         style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = (
             "id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
-            "total_money", "update_date")
+            "total_money", "status")
         self.tv["show"] = "headings"
         self.tv.column("id", anchor="center", width=50)
         self.tv.column("user_create", anchor="center", width=140)
@@ -155,7 +158,7 @@ class ReportView:
         self.tv.column("create_date", anchor="center", width=100)
         self.tv.column("bill_type", anchor="center", width=60)
         self.tv.column("total_money", anchor="center", width=160)
-        self.tv.column("update_date", anchor="center", width=100)
+        self.tv.column("status", anchor="center", width=100)
 
         self.tv.heading("id", text="ID")
         self.tv.heading("user_create", text="Tên người Tạo")
@@ -165,10 +168,12 @@ class ReportView:
         self.tv.heading("create_date", text="Ngày Tạo")
         self.tv.heading("bill_type", text="Loại")
         self.tv.heading("total_money", text="Tổng Tền")
-        self.tv.heading("update_date", text="Ngày cập nhật")
+        self.tv.heading("status", text="Trạng thái")
         self.tv.tag_configure("normal", background="white")
         self.tv.tag_configure("blue", background="lightblue")
-
+        tree_scrollX = CTkScrollbar(bottom_fr, height=15, orientation=tk.HORIZONTAL, command=self.tv.xview)
+        tree_scrollX.pack(side=tk.BOTTOM, fill='x')
+        self.tv.configure(xscrollcommand=tree_scrollX.set)
         # Fill data vào treeview
         self.__insert_column_values()
 
@@ -180,26 +185,27 @@ class ReportView:
             self.__report_page()
             self.salary_line.configure(fg_color="white")
             self.salary_btn.configure(text_color="black")
-            self.revenue_line.configure(fg_color="DodgerBlue1")
-            self.revenue_btn.configure(text_color="DodgerBlue1")
+            self.revenue_line.configure(fg_color="#000080")
+            self.revenue_btn.configure(text_color="#000080")
             self.salary_grade_btn.configure(text_color="black")
             self.salary_grade_line.configure(fg_color="white")
+
         elif page == ReportTab.SALARY:
             self.salary_page(main_fr)
-            self.revenue_btn.configure(text_color="black")
+            self.salary_line.configure(fg_color="#000080")
+            self.salary_btn.configure(text_color="#000080")
             self.revenue_line.configure(fg_color="white")
-            self.salary_btn.configure(text_color="DodgerBlue1")
-            self.salary_line.configure(fg_color="DodgerBlue1")
+            self.revenue_btn.configure(text_color="black")
             self.salary_grade_btn.configure(text_color="black")
             self.salary_grade_line.configure(fg_color="white")
         elif page == ReportTab.SALARY_GRADE:
             self.salary_grade_page(main_fr)
-            self.revenue_btn.configure(text_color="black")
-            self.revenue_line.configure(fg_color="white")
-            self.salary_btn.configure(text_color="black")
             self.salary_line.configure(fg_color="white")
-            self.salary_grade_btn.configure(text_color="DodgerBlue1")
-            self.salary_grade_line.configure(fg_color="DodgerBlue1")
+            self.salary_btn.configure(text_color="black")
+            self.revenue_line.configure(fg_color="white")
+            self.revenue_btn.configure(text_color="black")
+            self.salary_grade_btn.configure(text_color="#000080")
+            self.salary_grade_line.configure(fg_color="#000080")
 
     def open_pie_chart(self, main_fr):
         input_text = [self.__controller.total_revenue, self.__controller.total_expend]
@@ -272,19 +278,19 @@ class ReportView:
     def salary_grade_page(self, main_fr):
         salary_grade_fr = ctk.CTkFrame(self.sub_fr)
         pay_grade = PayGradeView(salary_grade_fr)
-        salary_grade_fr.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        salary_grade_fr.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, anchor='nw')
 
     def salary_page(self, main_fr):
         salary_fr = ctk.CTkFrame(self.sub_fr)
         payslip = PaySlipView(salary_fr)
-        salary_fr.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        salary_fr.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, anchor='nw')
 
     def quarter_button_callback(self):
         value_key_dict = {value: key for key, value in self.__quarters.items()}
         searched_key = value_key_dict[self.__quarter_var.get()]
         self.__controller.get_bills_and_reload_view(searched_key)
-        self.reload_pie_chart_view(self.left_fr)
-        self.reload_bar_chart_view(self.right_fr)
+        self.reload_pie_chart_view(pie_chart_fr)
+        self.reload_bar_chart_view(bar_chart_fr)
 
     def __insert_column_values(self):
         my_tag = "blue"
@@ -297,14 +303,12 @@ class ReportView:
             # ("id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
             #     "total_money", "update_date")
             user_name = self.__controller.get_user_name_by_id(b.userId)
-            if user_name or user_name == "":
-                user_name = b.creatorName
-            table_num = ""
+            table_num = self.__controller.get_table_num_by_id(b.tableId)
             bill_type = BillType.REVENUE.value[1] if b.type == 0 else BillType.EXPANDING.value[1]
             self.tv.insert("", "end", iid=b.id, text=b.id,
                            values=(b.id, user_name, b.customerName, b.customerPhoneNumber,
-                                   table_num, b.createdDate, bill_type, f"{b.totalMoney:0,.0f}",
-                                   b.updatedDate),
+                                   table_num, f"{b.createdDate:%Y-%m-%d}", bill_type, f"{b.totalMoney:0,.0f}",
+                                   self._status_values.get(b.status)),
                            tags=my_tag)
 
     def reload_treeview(self):
