@@ -17,7 +17,6 @@ class BillView:
         self.__controller = controller
         self.__customer_name_var = tk.StringVar()
         self.__phone_var = tk.StringVar()
-        self.__table_num_var = tk.StringVar()
         self.__bill_status_var = tk.StringVar()
         self.__bill_type_var = tk.StringVar()
         self.__money_var = tk.StringVar()
@@ -183,19 +182,9 @@ class BillView:
         created_date_entry = CEntryDate(self.sub_fr, style="success")
         created_date_entry.grid(row=2, column=1, sticky=tk.NW, pady=entry_padding_y)
 
-        table_lb = ctk.CTkLabel(self.sub_fr, text="Số bàn", anchor=tk.W, font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
-        table_lb.grid(row=3, column=0, sticky=tk.NW)
-        self.table_cbb = ctk.CTkComboBox(self.sub_fr,
-                                         width=150,
-                                         button_color="DodgerBlue2",
-                                         values=["Unknow"],
-                                         state="readonly",
-                                         variable=self.__table_num_var)
-        self.table_cbb.grid(row=3, column=1, sticky=tk.NW, pady=entry_padding_y)
-        self.set_values_table_cbb(self.table_cbb)
         bill_type_lb = ctk.CTkLabel(self.sub_fr, text="Loại hóa đơn", anchor=tk.W,
                                     font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
-        bill_type_lb.grid(row=4, column=0, sticky=tk.NW)
+        bill_type_lb.grid(row=3, column=0, sticky=tk.NW)
 
         bill_type_cbb_values = list(self.__bill_type_dict.values())
         bill_type_cbb = ctk.CTkComboBox(self.sub_fr,
@@ -204,11 +193,11 @@ class BillView:
                                         variable=self.__bill_type_var,
                                         state="readonly",
                                         values=bill_type_cbb_values)
-        bill_type_cbb.grid(row=4, column=1, sticky=tk.NW, pady=entry_padding_y)
+        bill_type_cbb.grid(row=3, column=1, sticky=tk.NW, pady=entry_padding_y)
 
         status_lb = ctk.CTkLabel(self.sub_fr, text="Trạng thái", anchor=tk.W,
                                  font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
-        status_lb.grid(row=5, column=0, sticky=tk.NW)
+        status_lb.grid(row=4, column=0, sticky=tk.NW)
         status_cbb_values = list(self.__status_values.values())
         self.status_cbb = ctk.CTkComboBox(self.sub_fr,
                                           width=150,
@@ -216,10 +205,10 @@ class BillView:
                                           variable=self.__bill_status_var,
                                           state="readonly",
                                           values=status_cbb_values)
-        self.status_cbb.grid(row=5, column=1, sticky=tk.NW, pady=entry_padding_y)
+        self.status_cbb.grid(row=4, column=1, sticky=tk.NW, pady=entry_padding_y)
         self.money_lb = ctk.CTkLabel(self.sub_fr, text="Tổng tiền", anchor=tk.W,
                                      font=ctk.CTkFont("TkDefaultFont", 14, 'bold'))
-        self.money_lb.grid(row=6, column=0, sticky=tk.NW)
+        self.money_lb.grid(row=5, column=0, sticky=tk.NW)
         money_entry = ctk.CTkEntry(self.sub_fr,
                                    textvariable=self.__money_var,
                                    width=entry_width,
@@ -227,7 +216,7 @@ class BillView:
                                    placeholder_text_color="gray",
                                    validate="key",
                                    validatecommand=(self._money_validation, '%S'))
-        money_entry.grid(row=6, column=1, sticky=tk.NW, pady=entry_padding_y)
+        money_entry.grid(row=5, column=1, sticky=tk.NW, pady=entry_padding_y)
         self.valid_lb = ctk.CTkLabel(master=detail_fr,
                                      text="Vui lòng nhập tổng tiền",
                                      font=ctk.CTkFont("TkDefaultFont", 14),
@@ -336,7 +325,6 @@ class BillView:
         status_bill = 0 if self.__status_values.get(0) == self.__bill_status_var.get() else 1
         return {"customerName": self.__customer_name_var.get(),
                 "customerPhoneNumber": self.__phone_var.get(),
-                "table_num": self.__table_num_var.get(),
                 "bill_type": bill_type,
                 "totalMoney": self.__money_var.get(),
                 "status_bill": status_bill,
@@ -366,7 +354,6 @@ class BillView:
             table_cbb.configure(values=dict_tables.values())
 
     def item_treeview_selected(self):
-        self.table_cbb.configure(state="disable")
         # self.status_cbb.configure(state="disable")
         selected_items = self.tv.selection()
         for item in selected_items:
@@ -374,7 +361,6 @@ class BillView:
             self.__bill_id_selected = cols[0]
             self.__customer_name_var.set(cols[2])
             self.__phone_var.set(cols[3])
-            self.__table_num_var.set(cols[4])
             created_date_entry.date_text = cols[5]
             self.__bill_type_var.set(cols[6])
             self.__money_var.set(cols[7].replace(",", ""))

@@ -32,6 +32,7 @@ class EmployeeView:
         self.__controller = EmployeeController()
         self.__employee_model = EmployeeModel()
 
+
         # Tree view
         self.__tree = None
         self.__id_selected = -1

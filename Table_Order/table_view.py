@@ -25,7 +25,7 @@ class TableView:
         self.__table_selected = None
         self.__screen_width = window.winfo_width()
         self.__screen_height = window.winfo_height()
-        self.status_cbb_var = tk.StringVar()
+        self.status_cbb_var = tk.StringVar(value=StatusTable.AVAILABLE.value[1])
 
         # Utils.set_appearance_mode(ctk)
         # Setup UI
@@ -103,15 +103,16 @@ class TableView:
             # order
             if table.status == StatusTable.AVAILABLE.value[0]:
                 if messagebox.askokcancel("Thông báo", "Xác nhận đặt bàn và bắt đầu chọn món"):
-                    if self._controller.create_bill(id_table=table.id, id_user=1):
+                    if self._controller.create_bill(id_table=table.id, id_user=Utils.user_profile["id"]):
                         self.reload_ui_table(table_id=table.id, status=StatusTable.DISABLED.value[0])
                         self._controller.show_menu_food(view_master=self._window,
                                                          reload_table_page=self.reload_table_page,
                                                          table=table)
             else:
-                self._controller.show_menu_food(view_master=self._window,
-                                                 reload_table_page=self.reload_table_page,
-                                                 table=table)
+                if self._controller.check_my_bill(table_id=table.id):
+                    self._controller.show_menu_food(view_master=self._window,
+                                                     reload_table_page=self.reload_table_page,
+                                                     table=table)
 
     def reload_table_page(self):
        self.reload_ui_table(self.__table_selected.id, status=StatusTable.AVAILABLE.value[0])
@@ -156,7 +157,7 @@ class TableView:
         status_combox = ctk.CTkComboBox(sub_fr,
                                         border_width=1,
                                         values=[StatusTable.AVAILABLE.value[1], StatusTable.DISABLED.value[1]],
-                                        state="readonly", variable=self.status_cbb_var)
+                                        state=tk.DISABLED, variable=self.status_cbb_var)
         status_combox.grid(row=2, column=1, pady=(15, 0))
         btn_save = ctk.CTkButton(table_popup_frame, text="Lưu", height=35, width=100,
                                  command=lambda: self.click_button_add_or_edit_popup(action_type))
@@ -221,6 +222,7 @@ class TableView:
                 if self._controller.add_new_and_reload(table_num_value=self.table_num_value.get(),
                                                      seat_num_value=self.seat_num_value.get(),
                                                      status_value=table_status):
+                    self.clear_entry_value_toplevel()
                     toplevel.destroy()
             else:
                 # Thực hiện cập nhật lại database
@@ -229,15 +231,20 @@ class TableView:
                                                     table_num_value=self.table_num_value.get(),
                                                     seat_num_value=self.seat_num_value.get(),
                                                     status_value=table_status):
-
+                    self.clear_entry_value_toplevel()
                     toplevel.destroy()
-            self.clear_entry_value_toplevel()
         # Thực hiện reload lại UI danh sách bàn
         self._add_content(tables=self._controller.tables)
     def clear_entry_value_toplevel(self):
-        self.table_num_value.set("")
-        self.seat_num_value.set("")
-        self.status_cbb_var.set("")
+        try:
+            if self.table_num_value is not None:
+                self.table_num_value.set("")
+            if self.seat_num_value is not None:
+                self.seat_num_value.set("")
+        except tk.TclError:
+            pass
+
+
     def validate_input(self, text):
         # Chỉ cho phép chữ số
         if text.isdigit():

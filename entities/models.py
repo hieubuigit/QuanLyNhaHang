@@ -37,7 +37,7 @@ class Product(BaseModel):
     quantity = IntegerField(column_name="Quantity")
     capacity = FloatField(null=True, column_name="Capacity")
     alcohol = FloatField(null=True, column_name="Alcohol")
-    productType = IntegerField(column_name="Type")
+    productType = IntegerField(column_name="ProductType")
     image = BlobField(column_name="Image", null=True)
     createdDate = DateTimeField(column_name="CreatedDate")
     updatedDate = DateTimeField(null=False, column_name="UpdatedDate")
@@ -55,7 +55,7 @@ class Paygrade(BaseModel):
     updated_date = DateTimeField(column_name='UpdatedDate', null=True)
 
     class Meta:
-        table_name = 'paygrade'
+        table_name = 'PayGrade'
 
 
 class User(BaseModel):
@@ -78,7 +78,7 @@ class User(BaseModel):
     user_name = CharField(column_name='UserName')
 
     class Meta:
-        table_name = 'user'
+        table_name = 'User'
 
 
 class Table(BaseModel):
@@ -133,5 +133,5 @@ class Payslip(BaseModel):
     user = ForeignKeyField(column_name='UserId', field='id', model=User)
     pay_on_month = CharField(column_name='PayOnMonth', null=True)
     class Meta:
-        table_name = 'payslip'
+        table_name = 'Payslip'
 

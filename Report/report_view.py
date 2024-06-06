@@ -1,3 +1,4 @@
+import math
 import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
@@ -261,7 +262,7 @@ class ReportView:
             max_value = expand_max_value if expand_max_value > revenue_max_value else revenue_max_value
             if max_value < 1:
                 max_value = 10
-            step = max_value / 5
+            step = math.ceil(max_value / 5)
             ticks_loc = np.arange(0, max_value, step=step)
             ind_str = [f"Tháng {x}" for x in ind_month]
             ax.bar(r - 0.2, revenue_value_by_month, width, label='Thu')

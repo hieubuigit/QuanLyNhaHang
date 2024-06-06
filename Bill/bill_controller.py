@@ -4,12 +4,13 @@ import peewee
 from bill.bill_view import BillView
 from share.utils import Utils
 from entities.models import Billing, User, Discount, Table, OrderList
-from share.common_config import BillType, BillStatus, StatusTable
+from share.common_config import BillType, BillStatus, StatusTable, UserType
 
 
 class BillController:
     def __init__(self, window):
         self.__bills = []
+        self._user_type = Utils.user_profile["type"]
         self.get_all_bill()
         self.__view = BillView(window, self)
 
@@ -20,10 +21,14 @@ class BillController:
     def get_all_bill(self):
         self.__bills = []
         try:
-            self.table_exits()
-            results = Billing.select().order_by(Billing.createdDate.desc())
-            if results:
-                self.__bills.extend(results)
+            if self._user_type == UserType.ADMIN.value:
+                results = Billing.select().order_by(Billing.createdDate.desc())
+                if results:
+                    self.__bills.extend(results)
+            else:
+                results = Billing.select(Billing, User).join(User).where(Billing.userId == Utils.user_profile["id"])
+                if results:
+                    self.__bills.extend(results)
         except peewee.InternalError as px:
             print(str(px))
         return self.__bills

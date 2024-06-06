@@ -102,6 +102,16 @@ class TableController:
             return 1
         except peewee.InternalError as px:
             print(str(px))
+
+    def check_my_bill(self, table_id):
+        try:
+            b: Billing = Billing.get_or_none(Billing.tableId == table_id)
+            if not b.userId == Utils.user_profile["id"]:
+                messagebox.showinfo(message="Bàn này đã được đặt và tạo hóa đơn bởi nhân viên khác")
+            else:
+                return 1
+        except peewee.InternalError as px:
+            print(str(px))
     def delete_and_reload(self, table_id):
         self.__delete_table(table_id)
         self.__get_table_data()
