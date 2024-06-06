@@ -231,9 +231,13 @@ class TableView:
                                                     status_value=table_status):
 
                     toplevel.destroy()
+            self.clear_entry_value_toplevel()
         # Thực hiện reload lại UI danh sách bàn
         self._add_content(tables=self._controller.tables)
-
+    def clear_entry_value_toplevel(self):
+        self.table_num_value.set("")
+        self.seat_num_value.set("")
+        self.status_cbb_var.set("")
     def validate_input(self, text):
         # Chỉ cho phép chữ số
         if text.isdigit():

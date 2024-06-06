@@ -29,7 +29,7 @@ class MenuFoodView:
         font_title1 = ctk.CTkFont("Roboto", 16)
         toplevel = ctk.CTkToplevel(parent)
         toplevel.resizable(True, False)
-        toplevel.geometry("1350x800")
+        toplevel.geometry("1337x800")
         toplevel.state('zoomed')
         toplevel.title("Thực đơn nhà hàng")
         half_width = 669
@@ -47,8 +47,10 @@ class MenuFoodView:
         percents = self.__controller.get_discount_percents()
         if percents:
             discount_cbb.configure(values=percents)
-
-
+            discount_btn.configure(state=tk.NORMAL)
+        else:
+            discount_cbb.configure(values=[])
+            discount_btn.configure(state=tk.DISABLED)
 
     def validate_input(self, text):
         # Chỉ cho phép chữ số
@@ -57,12 +59,12 @@ class MenuFoodView:
         else:
             return False
     def create_ui_bill(self, parent):
-        global order_fr, bill_num, orders_canvas, discount_cbb
+        global order_fr, bill_num, orders_canvas, discount_cbb, payment_btn, discount_btn
         bill_fr = ctk.CTkFrame(parent)
         bill_fr.pack(side=tk.LEFT, fill=tk.Y, expand=0)
         # UI Thông tin khách hàng, thông tin bàn
-        header_bill_fr = ctk.CTkFrame(bill_fr, fg_color="white", corner_radius=0)
-        customer_info_fr = ctk.CTkFrame(header_bill_fr)
+        header_bill_fr = ctk.CTkFrame(bill_fr, fg_color="transparent", corner_radius=0)
+        customer_info_fr = ctk.CTkFrame(header_bill_fr, corner_radius=0)
         customer_info_fr.pack(fill=tk.X, expand=0, side="left", padx=10)
         customer_name_lb = ctk.CTkLabel(customer_info_fr, text="Họ tên KH", font=font_title1)
         customer_name_lb.grid(row=0, column=0, sticky="w", padx=5)
@@ -168,7 +170,7 @@ class MenuFoodView:
                                          text_color="black", state="readonly",
                                          textvariable=self._money_to_pay_var)
         money_to_pay_btn.pack()
-        payment_btn = ctk.CTkButton(money_to_pay_fr, text="Thanh toán", height=40, corner_radius=5,
+        payment_btn = ctk.CTkButton(money_to_pay_fr, text="Thanh toán", height=40, corner_radius=5, state=tk.DISABLED,
                                     fg_color="#007700", command=lambda: self.payment_onclick())
         payment_btn.pack(padx=10)
 
@@ -347,5 +349,7 @@ class MenuFoodView:
         # Tính tổng cộng
         total = sub_total + service_charge - discount_value + tax_value
         total_str = f"{total:0,.0f}"
+        if total > 0:
+            payment_btn.configure(state=tk.NORMAL)
         self._money_to_pay_var.set(total_str)
 

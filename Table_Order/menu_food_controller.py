@@ -109,7 +109,8 @@ class MenuFoodController:
 
     def get_discount_percents(self):
         try:
-            if Discount.table_exists():
+            d = Discount.table_exists()
+            if d:
                 rows = Discount.select()
                 if rows:
                     percent_list = [f"{i.percent:.0f}" for i in rows]

@@ -350,6 +350,8 @@ class WareHouseView:
             if self.__img_thumbnail_bytes:
                 image_encode = base64.b64encode(self.__img_thumbnail_bytes)
             if not self.is_validate_form_detail():
+                product_type = ProductType.Drink.value[0] if self.product_type_var.get() == ProductType.Drink.value[
+                    1] else ProductType.Food.value[0]
                 self.__controller.add_new_and_reload(id=self.__product_id_selected,
                                                      name=self.product_name_var.get(),
                                                      price=self.product_price_var.get(),
@@ -357,7 +359,7 @@ class WareHouseView:
                                                      quantity=self.product_quantity_var.get(),
                                                      capacity=self.product_capacity_var.get(),
                                                      alcohol=self.product_alcohol_var.get(),
-                                                     productType=self.product_type_var.get(),
+                                                     productType=product_type,
                                                      image=image_encode)
                 self.reload_treeview()
                 self.clear_form_detail()

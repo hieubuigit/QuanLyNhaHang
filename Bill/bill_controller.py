@@ -3,9 +3,8 @@ from tkinter import messagebox
 import peewee
 from bill.bill_view import BillView
 from share.utils import Utils
-from table_order.table_model import TableModel
 from entities.models import Billing, User, Discount, Table, OrderList
-from share.common_config import BillType, BillStatus
+from share.common_config import BillType, BillStatus, StatusTable
 
 
 class BillController:
@@ -65,6 +64,12 @@ class BillController:
             b = Billing.get_or_none(Billing.id == bill_id)
             if b:
                 OrderList.delete().where(OrderList.billing_id == b.id)
+                if b.tableId:
+                    t = Table.get_or_none(Table.id == b.tableId)
+                    if t:
+                        table = t
+                        table.status = StatusTable.AVAILABLE.value[0]
+                        table.save()
                 b.delete_instance()
         except peewee.InternalError as px:
             print(str(px))
@@ -117,10 +122,9 @@ class BillController:
         self.get_all_bill()
 
     def get_tables(self):
-        table_model = TableModel()
         tables = []
         try:
-            rows = table_model.get_data()
+            rows = Table.select()
             tables.extend(rows)
         except peewee.InternalError as px:
             print(str(px))
