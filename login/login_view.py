@@ -1,7 +1,8 @@
 import tkinter as tk
+from tkinter import ttk
 import tkinter.messagebox as tkMessageBox
 from PIL import Image
-# from ctypes import windll
+from ctypes import windll
 import customtkinter as ctk
 from home.home_controller import HomeController
 from login.login_controller import LoginController
@@ -11,6 +12,11 @@ from share.utils import Utils
 
 class LoginView:
     def __init__(self, container):
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 12))
+        windll.shcore.SetProcessDpiAwareness(1)
+
         self.__parent = container
         self.__controller = LoginController()
         self.__login_page = ctk.CTkFrame(container)
