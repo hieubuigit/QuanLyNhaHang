@@ -96,7 +96,7 @@ class EmployeeView:
         self.__popup.geometry("900x600")
         self.__popup.title("Thông tin nhân viên")
         self.__popup.resizable(False, False)
-        self.__popup.wm_attributes("-topmost", True)
+        # self.__popup.wm_attributes("-topmost", True)
 
         emp_frame = ctk.CTkFrame(self.__popup, width=700)
         column1 = ctk.CTkFrame(emp_frame, fg_color=Utils.WHITE)
@@ -479,16 +479,3 @@ class EmployeeView:
 
         self.__tree.pack(side=ctk.BOTTOM, fill=tk.BOTH, expand=True)
         wrap_grid.grid(row=1, column=0, sticky='nsew')
-
-
-if __name__ == '__main__':
-    root = ctk.CTk()
-    root.state("zoomed")  # full screen
-    root.resizable(True, True)
-    root.focus_set()
-    # root.iconbitmap('../assets/restaurant.ico')
-    root.title("Restaurant Information")
-    exFrame = ctk.CTkFrame(root)
-    exFrame.pack(side='top', fill='both', expand=True)
-    employee_view = EmployeeView(exFrame)
-    root.mainloop()

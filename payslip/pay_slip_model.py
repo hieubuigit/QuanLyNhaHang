@@ -82,6 +82,13 @@ class PaySlipModel:
                  .where(User.user_code.contains(conditions['user_id']) if conditions['user_id'] is not None else True)
                  .join(User, JOIN.RIGHT_OUTER, on=(Payslip.user == User.id))
                  .first())
+
+        # Get allowance
+        allowance_by_type = Paygrade.select().where(Paygrade.type == query.user.type).first()
+        allowance = 0
+        if allowance_by_type:
+            allowance = allowance_by_type.allowance
+
         if query:
             created_date = ""
             updated_date = ""
@@ -109,6 +116,7 @@ class PaySlipModel:
                 'updated_date': updated_date,
                 'user_id': query.user.id,
                 'id': query.id,
+                'allowance': allowance,
             }
         else:
             return None

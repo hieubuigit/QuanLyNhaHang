@@ -248,11 +248,13 @@ class PaySlipView:
         months = list(map(lambda x: str(x), range(1, 13)))
 
         # Choose month
+        now_month = datetime.today().strftime('%m')
         month_frm = ctk.CTkFrame(master=right_frm, fg_color=Utils.WHITE)
         type_lbl = ctk.CTkLabel(month_frm, text="Kỳ lương tháng: ")
         type_lbl.pack(**Utils.label_pack_style)
         self.__form_controls['month_cbo'] = ctk.CTkComboBox(master=month_frm, values=months)
         self.__form_controls['month_cbo'].pack(**Utils.entry_pack_style)
+        self.__form_controls['month_cbo'].set(now_month)
         month_frm.pack(**common_pack)
 
         # Payslip id
@@ -269,6 +271,11 @@ class PaySlipView:
         pay_on_month_frm = Utils.init_label_and_value(parent=right_frm, data={'lbl': 'Kỳ lương: ', 'value': ''})
         pay_on_month_frm['frm'].pack(**common_pack)
         self.__form_controls["pay_on_month_lbl"] = pay_on_month_frm['value']
+
+        # Allowance
+        allowance_frm = Utils.init_label_and_value(parent=right_frm, data={'lbl': 'Trợ cấp: ', 'value': ''})
+        allowance_frm['frm'].pack(**common_pack)
+        self.__form_controls["allowance_lbl"] = allowance_frm['value']
 
         # Payslip total salary
         total_salary_frm = Utils.init_label_and_value(parent=right_frm,
@@ -338,7 +345,6 @@ class PaySlipView:
 
     def get_emp_info_clicked(self, employee_id):
         # Call all employee who will calculate salary
-        # employeeId = self.__form_controls['emp_id_ent'].get()
         data = self.__pay_slip_controller.get_pay_slip_by_user_id(employee_id)
         print(data)
         if data is None:
@@ -346,18 +352,35 @@ class PaySlipView:
                               message='Mã nhân viên không tồn tại hoặc không đúng, vui lòng chọn lại!')
             return
         self.__emp_data = data
+
+        now_month_year = datetime.today().strftime('%Y-%m')
+        print('now_month_year=', now_month_year)
+        month = '1'
+        if self.__emp_data['pay_on_month']:
+            month = self.__emp_data['pay_on_month'].split("-")[1]
+        else:
+            month = datetime.today().strftime('%m')
+        self.__form_controls['month_cbo'].set(month)
         self.__form_controls['user_code_lbl'].configure(text=self.__emp_data['user_code'])
         self.__form_controls['full_name_lbl'].configure(text=self.__emp_data['full_name'])
         self.__form_controls['gender_lbl'].configure(text=self.__emp_data['gender'])
         self.__form_controls['user_name_lbl'].configure(text=self.__emp_data['user_name'])
         self.__form_controls['birthday_lbl'].configure(text=self.__emp_data['birth_date'])
         self.__form_controls['identity_lbl'].configure(text=self.__emp_data['identity'])
-        self.__form_controls['user_type_lbl'].configure(text=self.__emp_data['type_name'])
+        if self.__emp_data['type_name']:
+            self.__form_controls['user_type_lbl'].configure(text=self.__emp_data['type_name'])
         self.__form_controls['payslip_id_lbl'].configure(text=self.__emp_data['id'])
-        self.__form_controls['hours_lbl'].configure(text=self.__emp_data['hours'])
-        self.__form_controls['pay_on_month_lbl'].configure(text=self.__emp_data['pay_on_month'])
-        self.__form_controls['total_salary_lbl'].configure(text=Utils.format_currency(self.__emp_data['total_salary']))
+        if self.__emp_data['hours']:
+            self.__form_controls['hours_lbl'].configure(text="{:,.0f} vnd".format(float(self.__emp_data['hours'])))
+        if self.__emp_data['pay_on_month']:
+            self.__form_controls['pay_on_month_lbl'].configure(text=self.__emp_data['pay_on_month'])
+        else:
+            self.__form_controls['pay_on_month_lbl'].configure(text=now_month_year)
+        if self.__emp_data['total_salary']:
+            self.__form_controls['total_salary_lbl'].configure(text=Utils.format_currency(self.__emp_data['total_salary']))
         self.__form_controls['create_payslip_lbl'].configure(text=self.__emp_data['created_date'])
+        if self.__emp_data['allowance']:
+            self.__form_controls['allowance_lbl'].configure(text= Utils.format_currency(self.__emp_data['allowance']))
 
     def save_or_update_btn_clicked(self, action: Action):
         # Get data from form to save to database
@@ -378,7 +401,7 @@ class PaySlipView:
             return
         is_already_calculate = self.__pay_slip_controller.is_already_calculate_salary(self.__emp_data['user_id'],
                                                                                       month_year)
-        if is_already_calculate:
+        if action == Action.ADD and is_already_calculate:
             tkMsgBox.showinfo(title='Thông báo', message="Nhân viên này đã tính lương rồi, vui lòng kiểm tra lại!")
             return
 
@@ -434,20 +457,3 @@ class PaySlipView:
             if pay_slip_list is not None and len(pay_slip_list) > 0:
                 for psl in pay_slip_list:
                     self.__tree.insert('', tk.END, values=psl)
-
-
-if __name__ == '__main__':
-    root = ctk.CTk()
-
-    root.state("zoomed")  # full screen
-    root.resizable(True, True)
-    root.focus_set()
-
-    root.iconbitmap('../assets/restaurant.ico')
-    root.title("Restaurant Information")
-
-    main_frame = ctk.CTkFrame(root)
-    pay_slip_frame = PaySlipView(main_frame)
-    main_frame.pack(side='top', fill='both', expand=True)
-
-    root.mainloop()
