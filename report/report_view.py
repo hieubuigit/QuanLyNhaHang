@@ -35,7 +35,7 @@ class ReportView:
         self.__report_page()
 
     def __ui_left_view(self, root, main_fr):
-        left_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
+        left_fr = CTkFrame(main_fr, border_width=1, border_color="gray", fg_color="white")
         left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=(2, 10), pady=1, ipadx=2)
 
         btn_gr = CTkFrame(left_fr)
@@ -101,7 +101,7 @@ class ReportView:
     def ui_right_content_view(self):
         global pie_chart_fr, bar_chart_fr
         padding = 2
-        header_fr = CTkFrame(self.sub_fr, corner_radius=0)
+        header_fr = CTkFrame(self.sub_fr, corner_radius=0, fg_color="white")
         header_fr.pack(fill=tk.X, expand=0, padx=padding, pady=(2, 0))
         header_fr.columnconfigure(0, weight=1)
         quarters_values = list(self.__quarters.values())

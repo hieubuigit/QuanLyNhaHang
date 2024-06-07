@@ -52,35 +52,56 @@ class EmployeeView:
         # Add button
         add_button = ctk.CTkButton(action_frame,
                                    text="Thêm",
-                                   width=100,
-                                   fg_color="blue",
+                                   corner_radius=18,
+                                   border_width=0,
+                                   height=36,
+                                   fg_color="DodgerBlue1",
+                                   hover_color="#63B8FF",
+                                   text_color="black",
+                                   font=ctk.CTkFont("TkDefaultFont", 16),
                                    command=lambda: self.init_add_or_update_popup(container, Action.ADD))
         add_button.pack(side=tk.LEFT, padx=10, pady=10, anchor="w")
 
         # Update button
         update_btn = ctk.CTkButton(action_frame,
                                    text="Cập nhật",
-                                   width=100,
-                                   fg_color="green",
+                                   corner_radius=18,
+                                   border_width=0,
+                                   height=36,
+                                   fg_color="LimeGreen",
+                                   hover_color="#54FF9F",
+                                   text_color="black",
+                                   font=ctk.CTkFont("TkDefaultFont", 16),
                                    command=lambda: self.init_add_or_update_popup(container, Action.UPDATE))
         update_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="w")
 
         # Delete button
         delete_btn = ctk.CTkButton(action_frame,
                                    text="Xoá",
-                                   width=100,
-                                   fg_color="red",
+                                   corner_radius=18,
+                                   border_width=0,
+                                   height=36,
+                                   fg_color="Firebrick1",
+                                   hover_color="#FFC0CB",
+                                   text_color="black",
+                                   font=ctk.CTkFont("TkDefaultFont", 16),
                                    command=lambda: self.delete_item())
         delete_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="w")
 
         # Search controls
         search_frame = ctk.CTkFrame(action_frame, fg_color=Utils.WHITE)
-        search_ent = ctk.CTkEntry(master=search_frame, width=500)
+        search_ent = ctk.CTkEntry(master=search_frame, width=500, height=36)
         search_ent.pack(side=tk.LEFT, fill='none', anchor='e', expand=True, padx=5, pady=5)
         search_btn = ctk.CTkButton(search_frame,
                                    text="Tìm",
+                                   corner_radius=6,
+                                   border_width=0,
+                                   height=36,
                                    width=100,
-                                   fg_color="purple",
+                                   fg_color="DodgerBlue1",
+                                   hover_color="#63B8FF",
+                                   text_color="black",
+                                   font=ctk.CTkFont("TkDefaultFont", 16),
                                    command=lambda: self.search(search_ent.get()))
         search_btn.pack(side=tk.LEFT, fill='x', anchor=tk.W, expand=False)
         search_frame.pack(side=tk.LEFT, expand=True, anchor='center', fill=tk.X, ipadx=5, ipady=5, padx=5, pady=5)

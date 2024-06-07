@@ -45,24 +45,39 @@ class PayGradeView:
         # Add button
         add_button = ctk.CTkButton(action_frame,
                                    text="Thêm",
-                                   width=100,
-                                   fg_color="blue",
+                                   corner_radius=18,
+                                   border_width=0,
+                                   height=36,
+                                   fg_color="DodgerBlue1",
+                                   hover_color="#63B8FF",
+                                   text_color="black",
+                                   font=ctk.CTkFont("TkDefaultFont", 16),
                                    command=lambda: self.init_add_or_update_popup(parent, Action.ADD))
         add_button.pack(**btn_pack)
 
         # Update button
         update_btn = ctk.CTkButton(action_frame,
                                    text="Cập nhật",
-                                   width=100,
-                                   fg_color="green",
+                                   corner_radius=18,
+                                   border_width=0,
+                                   height=36,
+                                   fg_color="LimeGreen",
+                                   hover_color="#54FF9F",
+                                   text_color="black",
+                                   font=ctk.CTkFont("TkDefaultFont", 16),
                                    command=lambda: self.init_add_or_update_popup(parent, Action.UPDATE))
         update_btn.pack(**btn_pack)
 
         # Delete button
         delete_btn = ctk.CTkButton(action_frame,
                                    text="Xoá",
-                                   width=100,
-                                   fg_color="red",
+                                   corner_radius=18,
+                                   border_width=0,
+                                   height=36,
+                                   fg_color="Firebrick1",
+                                   hover_color="#FFC0CB",
+                                   text_color="black",
+                                   font=ctk.CTkFont("TkDefaultFont", 16),
                                    command=lambda: self.delete_clicked())
         delete_btn.pack(**btn_pack)
         return action_frame

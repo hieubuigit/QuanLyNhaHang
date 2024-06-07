@@ -132,7 +132,7 @@ class TableView:
         toplevel.geometry("300x250")
 
         validation = window.register(self.validate_input)
-        table_popup_frame = ctk.CTkFrame(toplevel)
+        table_popup_frame = ctk.CTkFrame(toplevel, fg_color="white")
 
         sub_fr = ctk.CTkFrame(table_popup_frame, fg_color="white")
         sub_fr.pack(fill=tk.BOTH, expand=1)

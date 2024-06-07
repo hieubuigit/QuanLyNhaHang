@@ -26,14 +26,12 @@ class BillView:
         self.__bill_id_selected = None
         self._user_type = Utils.user_profile["type"]
         # Setup UI
-        Utils.set_appearance_mode(ctk)
         self._phone_validation = window.register(self.validate_phone_number_input)
         self._money_validation = window.register(self.validation_money_input)
         self.__generate_ui_content(window)
 
     def __generate_ui_content(self, window):
         style = ttk.Style()
-        style.theme_use("default")
         main_fr = ctk.CTkFrame(window)
         main_fr.pack(fill=tk.BOTH, expand=1)
 
@@ -43,7 +41,7 @@ class BillView:
         self.tv = ttk.Treeview(main_fr)
         self.tv.pack(fill=tk.X, expand=0, padx=10, pady=10)
 
-        style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
+        style.configure("Custom.Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = (
             "id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
             "total_money", "status")
@@ -77,9 +75,6 @@ class BillView:
             self.__ui_detail_form(main_fr)
 
     def ui_header(self, main_fr):
-        style = ttk.Style()
-        style.configure("default")
-
         global date_entry_filter
         option_fr = ctk.CTkFrame(main_fr, fg_color="transparent")
         option_fr.pack(fill=tk.X, expand=0, pady=10, padx=20)
@@ -100,7 +95,7 @@ class BillView:
             group_option = ctk.CTkFrame(option_fr)
             group_option.pack(side="right", ipadx=5)
             add_btn = ctk.CTkButton(group_option,
-                                    text="Thêm mới",
+                                    text="Thêm",
                                     corner_radius=18,
                                     border_width=0,
                                     height=36,
@@ -112,7 +107,7 @@ class BillView:
             add_btn.pack(fill=tk.X, expand=0, side="left")
 
             update_btn = ctk.CTkButton(group_option,
-                                       text="Chỉnh sửa",
+                                       text="Cập nhật",
                                        corner_radius=18,
                                        border_width=0,
                                        height=36,

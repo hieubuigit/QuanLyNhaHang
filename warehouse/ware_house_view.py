@@ -35,9 +35,6 @@ class WareHouseView:
         self.__product_id_selected = None
         self._user_type = Utils.user_profile["type"]
         # UI
-        # style = ttk.Style()
-        # style.theme_use("default")
-        # Utils.set_appearance_mode(customtkinter)
         self.__ui_main_content(root=root)
         # default right content
         self.product_page()
@@ -55,7 +52,7 @@ class WareHouseView:
             option_group_fr.pack(fill=tk.X, expand=0, side="left", anchor="nw")
 
             add_btn = CTkButton(option_group_fr,
-                                text="Thêm mới",
+                                text="Thêm",
                                 corner_radius=18,
                                 border_width=0,
                                 height=36,
@@ -67,7 +64,7 @@ class WareHouseView:
             add_btn.grid(row=0, column=0)
 
             update_btn = CTkButton(option_group_fr,
-                                   text="Chỉnh sửa",
+                                   text="Cập nhật",
                                    corner_radius=18,
                                    border_width=0,
                                    height=36,
@@ -116,11 +113,11 @@ class WareHouseView:
 
         self.__ui_left_view(root, main_fr)
 
-        self.right_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
+        self.right_fr = CTkFrame(main_fr, border_width=1, border_color="gray", fg_color="white")
         self.right_fr.pack(fill=tk.BOTH, expand=1, side="right", pady=10)
 
     def __ui_left_view(self, root, main_fr):
-        left_fr = CTkFrame(main_fr, border_width=1, border_color="gray")
+        left_fr = CTkFrame(main_fr, border_width=1, border_color="gray", fg_color="white")
         left_fr.pack(fill=tk.Y, expand=0, side="left", anchor="nw", padx=10, pady=10, ipadx=2)
         gr_btn = CTkFrame(left_fr)
         gr_btn.pack(pady=3)

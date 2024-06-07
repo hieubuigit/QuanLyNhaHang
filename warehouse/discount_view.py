@@ -80,7 +80,7 @@ class DiscountView:
         detail_lb = CTkLabel(option_fr, text="Thông tin chi tiết", text_color="#000088",
                              font=heading2)
         detail_lb.pack(fill=tk.X, expand=0, padx=20, side="top", pady=5)
-        self.sub_fr = CTkFrame(option_fr, corner_radius=0)
+        self.sub_fr = CTkFrame(option_fr, corner_radius=0, fg_color="white")
         self.sub_fr.pack(fill=tk.BOTH, expand=1, padx=padding_x, pady=20, ipadx=10)
         self.sub_fr.columnconfigure(0, weight=1)
         self.sub_fr.rowconfigure(0, weight=1)
