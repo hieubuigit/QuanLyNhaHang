@@ -86,7 +86,11 @@ create table Billing
     Type                int            not null,
     Status              int            not null,
     CreatedDate         DATETIME,
-    UpdatedDate         DATETIME
+    UpdatedDate         DATETIME,
+
+    constraint FK_TABLE__BILLING foreign key (TableId) references `Table` (Id) on delete CASCADE,
+    constraint FK_DISCOUNT_BILLING foreign key (DiscountId) references Discount (Id) on delete CASCADE,
+    constraint FK_USER_BILLING foreign key (UserId) references User (Id) on delete CASCADE
 );
 
 create table OrderList
@@ -99,8 +103,8 @@ create table OrderList
     CreatedDate DATETIME,
     UpdatedDate DATETIME,
 
-    constraint FK_BILLING_ORDERlIST foreign key (BillingId) references Billing (Id),
-    constraint FK_PRODUCT_ORDERLIST foreign key (ProductId) references Product (Id)
+    constraint FK_BILLING_ORDERlIST foreign key (BillingId) references Billing (Id) on delete CASCADE,
+    constraint FK_PRODUCT_ORDERLIST foreign key (ProductId) references Product (Id) on delete CASCADE
 );
 
 create table Discount

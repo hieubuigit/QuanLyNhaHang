@@ -19,9 +19,9 @@ class TableView:
         self._window = window
         self._controller = controller
         self.__user_type = user_type
-        self.table_num_value = tk.StringVar()
-        self.seat_num_value = tk.StringVar()
-        self.status_value = tk.StringVar()
+        self._table_num_value = tk.StringVar()
+        self._seat_num_value = tk.StringVar()
+        self._status_value = tk.StringVar()
         self.__table_selected = None
         self.__screen_width = window.winfo_width()
         self.__screen_height = window.winfo_height()
@@ -139,7 +139,7 @@ class TableView:
         lb_table_num = ctk.CTkLabel(sub_fr, text="Số bàn")
         lb_table_num.grid(row=0, column=0, padx=(30, 15), pady=(30, 15), sticky="w")
         entry_table_num = ctk.CTkEntry(sub_fr,
-                                       textvariable=self.table_num_value,
+                                       textvariable=self._table_num_value,
                                        border_width=1,
                                        border_color="gray",
                                        validate="key", fg_color=("white", "white"))
@@ -147,7 +147,7 @@ class TableView:
 
         lb_seat_num = ctk.CTkLabel(sub_fr, text="Số ghế")
         lb_seat_num.grid(row=1, column=0, sticky="w", padx=(30, 15))
-        entry_seat_num = ctk.CTkEntry(sub_fr, textvariable=self.seat_num_value, validate="key",
+        entry_seat_num = ctk.CTkEntry(sub_fr, textvariable=self._seat_num_value, validate="key",
                                       validatecommand=(validation, '%S'),
                                       fg_color="white",
                                       border_width=1, border_color="gray", state="normal")
@@ -170,8 +170,8 @@ class TableView:
         else:
             toplevel.title("Cập nhật thông tin bàn")
             btn_save.configure(text="Cập nhật")
-            self.table_num_value.set(self.__table_selected.tableNum)
-            self.seat_num_value.set(self.__table_selected.seatNum)
+            self._table_num_value.set(self.__table_selected.tableNum)
+            self._seat_num_value.set(self.__table_selected.seatNum)
             if self.__table_selected.status == 0:
                 self.status_cbb_var.set(StatusTable.AVAILABLE.value[1])
             else:
@@ -212,40 +212,36 @@ class TableView:
         else:
             table_status = 0
 
-        if (self.table_num_value.get().isspace() or self.table_num_value.get() == ''
-                or self.table_num_value.get() == '0'
-                or self.seat_num_value.get() == '0' or self.seat_num_value.get() == ''):
+        if (self._table_num_value.get().isspace() or self._table_num_value.get() == ''
+                or self._table_num_value.get() == '0'
+                or self._seat_num_value.get() == '0' or self._seat_num_value.get() == ''):
             messagebox.showinfo("", "Vui lòng điền đầy đủ thông tin")
             return
         else:
             if action_type == Action.ADD:
                 # Thực hiện thêm vào database
-                if self._controller.add_new_and_reload(table_num_value=self.table_num_value.get(),
-                                                       seat_num_value=self.seat_num_value.get(),
+                if self._controller.add_new_and_reload(table_num_value=self._table_num_value.get(),
+                                                       seat_num_value=self._seat_num_value.get(),
                                                        status_value=table_status):
-                    if toplevel.winfo_exists():
                         self.clear_entry_value_toplevel()
-                    toplevel.destroy()
+                        toplevel.destroy()
             else:
                 # Thực hiện cập nhật lại database
                 if self._controller.update_and_reload(id=self.__table_selected.id,
-                                                      table_num_value=self.table_num_value.get(),
-                                                      seat_num_value=self.seat_num_value.get(),
+                                                      table_num_value=self._table_num_value.get(),
+                                                      seat_num_value=self._seat_num_value.get(),
                                                       status_value=table_status):
-                    if toplevel.winfo_exists():
                         self.clear_entry_value_toplevel()
-                    toplevel.destroy()
+                        toplevel.destroy()
         # Thực hiện reload lại UI danh sách bàn
         self._add_content(tables=self._controller.tables)
 
     def clear_entry_value_toplevel(self):
-        try:
-            if self.table_num_value is not None:
-                self.table_num_value.set("")
-            if self.seat_num_value is not None:
-                self.seat_num_value.set("")
-        except tk.TclError:
-            pass
+
+        if self._table_num_value is not None:
+            self._table_num_value.set("")
+        if self._seat_num_value is not None:
+            self._seat_num_value.set("")
 
     def validate_input(self, text):
         # Chỉ cho phép chữ số
