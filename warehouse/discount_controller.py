@@ -28,6 +28,7 @@ class DiscountController:
     def search_discount(self, key):
         self.__discounts = []
         rows = self._discount_model.search_discounts(key)
+        self.__discounts.extend(rows)
         self.view.reload_treeview()
 
     def add_new_and_reload(self):

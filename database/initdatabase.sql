@@ -27,12 +27,13 @@ create table User
     UpdatedDate DATETIME
 );
 
-create table PaySlip
+create table Payslip
 (
     Id          INT not null AUTO_INCREMENT PRIMARY KEY,
     UserId      INT not null,
     TotalSalary decimal(15, 2),
     Hours       float,
+    PayOnMonth  VARCHAR(255),
     CreatedDate DATETIME,
     UpdatedDate DATETIME,
     constraint FK_USER_PAY_SLIP foreign key (UserId) references User (Id)
@@ -51,7 +52,7 @@ create table PayGrade
 create table `Table`
 (
     Id          INT not null AUTO_INCREMENT PRIMARY KEY,
-    TableNum    int not null,
+    TableNum    varchar(255)  not null,
     SeatNum     int not null,
     Status      int comment 'Available or Empty',
     CreatedDate DATETIME,
@@ -68,33 +69,22 @@ create table Product
     Capacity    float          not null,
     Alcohol     float          not null comment 'tinh thue tieu thu dac biet',
     ProductType int            not null comment 'Food/Drink',
-    Image       varchar(255)   not null comment 'Image of food/drink',
+    Image       BLOB   comment 'Image of food/drink',
     CreatedDate DATETIME       not null,
     UpdatedDate DATETIME
 );
 
-create table Warehouse
-(
-    Id          INT            not null AUTO_INCREMENT PRIMARY KEY,
-    UserId      int            not null,
-    InvoiceCode varchar(25),
-    TotalMoney  decimal(15, 2) not null,
-    CreatedDate DATETIME,
-    UpdatedDate DATETIME,
-
-    constraint FK_USER_WAREHOUSE foreign key (UserId) references User (Id)
-);
-
-
 create table Billing
 (
     Id                  INT            not null AUTO_INCREMENT PRIMARY KEY,
-    TableId             int            not null,
+    TableId             int,
     UserId              int            not null,
-    DiscountId          int            not null,
+    DiscountId          int,
     CustomerName        varchar(50)    not null,
     CustomerPhoneNumber varchar(12)    not null,
     TotalMoney          decimal(15, 2) not null,
+    Type                int            not null,
+    Status              int            not null,
     CreatedDate         DATETIME,
     UpdatedDate         DATETIME
 );

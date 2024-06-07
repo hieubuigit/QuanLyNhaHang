@@ -319,7 +319,7 @@ class WareHouseView:
             self.__product_id_selected = cols[0]
             self.product_name_var.set(cols[1])
             self.product_unit_var.set(cols[2])
-            self.product_price_var.set(cols[3])
+            self.product_price_var.set(cols[3].replace(",",""))
             self.product_quantity_var.set(cols[4])
             self.product_capacity_var.set(cols[5])
             self.product_alcohol_var.set(cols[6])
@@ -433,7 +433,7 @@ class WareHouseView:
                 # ("id", "name", "unit", "price", "quantity", "capacity",
                 #  "alcohol", "type", "create_date", "update_date")
                 self.tv.insert("", "end", iid=p.id, text=p.id,
-                               values=(p.id, p.name, p.unit, p.price, p.quantity,
+                               values=(p.id, p.name, p.unit, f"{p.price:0,.0f}", p.quantity,
                                        p.capacity, p.alcohol, p.productType, f"{p.createdDate:%Y-%m-%d}"))
 
     def clear_form_detail(self):
