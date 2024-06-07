@@ -76,17 +76,17 @@ class PaySlipView:
         update_btn.pack(**btn_pack)
 
         # Delete button
-        delete_btn = ctk.CTkButton(action_frame,
-                                   text="Xoá",
-                                   corner_radius=18,
-                                   border_width=0,
-                                   height=36,
-                                   fg_color="Firebrick1",
-                                   hover_color="#FFC0CB",
-                                   text_color="black",
-                                   font=ctk.CTkFont("TkDefaultFont", 16),
-                                   command=lambda: self.delete_clicked())
-        delete_btn.pack(**btn_pack)
+        # delete_btn = ctk.CTkButton(action_frame,
+        #                            text="Xoá",
+        #                            corner_radius=18,
+        #                            border_width=0,
+        #                            height=36,
+        #                            fg_color="Firebrick1",
+        #                            hover_color="#FFC0CB",
+        #                            text_color="black",
+        #                            font=ctk.CTkFont("TkDefaultFont", 16),
+        #                            command=lambda: self.delete_clicked())
+        # delete_btn.pack(**btn_pack)
 
         # Search controls
         search_frame = ctk.CTkFrame(action_frame, fg_color=Utils.WHITE)
@@ -392,7 +392,7 @@ class PaySlipView:
             self.__form_controls['user_type_lbl'].configure(text=self.__emp_data['type_name'])
         self.__form_controls['payslip_id_lbl'].configure(text=self.__emp_data['id'])
         if self.__emp_data['hours']:
-            self.__form_controls['hours_lbl'].configure(text="{:,.0f} vnd".format(float(self.__emp_data['hours'])))
+            self.__form_controls['hours_lbl'].configure(text="{:,.0f}h".format(float(self.__emp_data['hours'])))
         if self.__emp_data['pay_on_month']:
             self.__form_controls['pay_on_month_lbl'].configure(text=self.__emp_data['pay_on_month'])
         else:
