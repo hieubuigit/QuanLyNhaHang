@@ -142,8 +142,6 @@ class ReportView:
         bottom_fr.pack(fill=tk.BOTH, expand=1, padx=padding, pady=2)
         # UI TreeView
         style = ttk.Style()
-        style.theme_use('default')
-
         self.tv = ttk.Treeview(bottom_fr)
         self.tv.pack(fill=tk.BOTH, expand=1, padx=10, pady=3)
         style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))

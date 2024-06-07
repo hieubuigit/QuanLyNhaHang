@@ -42,12 +42,15 @@ class DiscountController:
             self._discount_model.save_discount(desc, percent, start_date, end_date, quantity)
             self.get_data()
             self.view.reload_treeview()
+            self.view.refresh_detail_form()
 
     def delete_and_reload(self):
-        _id = self.view.id_selected
-        self._discount_model.delete_discount(_id)
-        self.get_data()
-        self.view.reload_treeview()
+        if messagebox.askokcancel(message="Bạn có chắc chắn xóa không?"):
+            _id = self.view.id_selected
+            self._discount_model.delete_discount(_id)
+            self.get_data()
+            self.view.reload_treeview()
+            self.view.refresh_detail_form()
 
     def update_and_reload(self):
         values = self.view.get_detail_values()
@@ -61,6 +64,7 @@ class DiscountController:
             self._discount_model.update_discount(_id, percent, desc, quantity, start_date, end_date)
             self.get_data()
             self.view.reload_treeview()
+            self.view.refresh_detail_form()
 
     def is_not_validate(self, description, percent, quantity):
         mess = None

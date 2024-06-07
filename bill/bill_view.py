@@ -31,17 +31,17 @@ class BillView:
         self.__generate_ui_content(window)
 
     def __generate_ui_content(self, window):
-        style = ttk.Style()
+        style = ttk.Style(window)
         main_fr = ctk.CTkFrame(window)
         main_fr.pack(fill=tk.BOTH, expand=1)
 
         self.ui_header(main_fr)
+        style.configure("Custom.Treeview.Heading", forceground="DodgerBlue1", font=("TkDefaultFont", 18))
 
         # UI TreeView
-        self.tv = ttk.Treeview(main_fr)
+        self.tv = ttk.Treeview(main_fr, style="Custom.Treeview")
         self.tv.pack(fill=tk.X, expand=0, padx=10, pady=10)
 
-        style.configure("Custom.Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
         self.tv["columns"] = (
             "id", "user_create", "customer_name", "customer_phone", "table_num", "create_date", "bill_type",
             "total_money", "status")
@@ -220,6 +220,14 @@ class BillView:
         self.valid_lb.pack(fill=tk.BOTH, expand=0, padx=padding_x, pady=padding_y)
         self.hidden_validate()
 
+        clear_btn = ctk.CTkButton(detail_fr, text="Làm mới", height=30, width=65,
+                                  command=lambda: self.refresh_detail_form())
+        clear_btn.pack()
+
+    def refresh_detail_form(self):
+        self.reset_text_entry()
+        self.clear_selection()
+
     def hidden_validate(self):
         self.valid_lb.pack_forget()
         self.valid_lb.update_idletasks()
@@ -305,8 +313,11 @@ class BillView:
             self.reset_text_entry()
 
     def reset_text_entry(self):
+        self.__bill_id_selected = None
         self.__phone_var.set("")
         self.__customer_name_var.set("")
+        self.__bill_type_var.set("")
+        self.__bill_status_var.set("")
         self.__money_var.set("")
 
     def reload_treeview(self):
@@ -355,3 +366,7 @@ class BillView:
             self.__bill_type_var.set(cols[6])
             self.__money_var.set(cols[7].replace(",", ""))
             self.__bill_status_var.set(cols[8])
+
+    def clear_selection(self):
+        for item in self.tv.selection():
+            self.tv.selection_remove(item)

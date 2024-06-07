@@ -202,7 +202,7 @@ class WareHouseView:
         line = CTkFrame(self.right_fr, height=1, fg_color="gray")
         line.pack(fill=tk.X, expand=0)
 
-        option_fr = CTkFrame(self.right_fr, corner_radius=10, fg_color="white")
+        option_fr = CTkFrame(self.right_fr, corner_radius=10, fg_color="white", border_width=1, border_color="gray")
         option_fr.pack(expand=0, pady=10)
 
         heading2 = CTkFont("TkDefaultFont", 16, 'bold')
@@ -266,6 +266,18 @@ class WareHouseView:
                                      anchor="c", fg_color="white", hover_color="white")
         self.add_img_btn.grid(row=5, column=1, pady=entry_padding)
 
+        clear_btn = CTkButton(option_fr, text="Làm mới", height=30, width=65,
+                              command=lambda: self.refresh_detail_form())
+        clear_btn.pack(pady=(0, 15))
+
+    def refresh_detail_form(self):
+        self.clear_form_detail()
+        self.clear_selection()
+
+    def clear_selection(self):
+        for item in self.tv.selection():
+            self.tv.selection_remove(item)
+
     def show_file_dialog(self):
         file_path = filedialog.askopenfilename(title="Chọn hình",
                                                filetypes=(("jpeg", "*.jpg"), ("png", "*.png")))
@@ -316,7 +328,7 @@ class WareHouseView:
             self.__product_id_selected = cols[0]
             self.product_name_var.set(cols[1])
             self.product_unit_var.set(cols[2])
-            self.product_price_var.set(cols[3].replace(",",""))
+            self.product_price_var.set(cols[3].replace(",", ""))
             self.product_quantity_var.set(cols[4])
             self.product_capacity_var.set(cols[5])
             self.product_alcohol_var.set(cols[6])
@@ -341,6 +353,7 @@ class WareHouseView:
             self.clear_form_detail()
         else:
             self.__controller.search_discount(self.__search_var.get())
+
     def add_click(self):
         if self.__current_page == StatePage.Product:
             image_encode = None

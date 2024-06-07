@@ -72,7 +72,7 @@ class DiscountView:
         line = CTkFrame(main_fr, height=2, corner_radius=0, border_width=0)
         line.pack(fill=tk.X, expand=0)
 
-        option_fr = CTkFrame(main_fr, corner_radius=10, fg_color="white")
+        option_fr = CTkFrame(main_fr, corner_radius=10, fg_color="white", border_color="gray", border_width=1)
         option_fr.pack(expand=0, pady=10)
 
         heading2 = CTkFont("TkDefaultFont", 16, 'bold')
@@ -123,6 +123,25 @@ class DiscountView:
 
         end_date_entry = CEntryDate(self.sub_fr, style="danger")
         end_date_entry.grid(row=4, column=1, sticky=tk.W)
+
+        clear_btn = CTkButton(option_fr, text="Làm mới", height=30, width=65,
+                              command=lambda: self.refresh_detail_form())
+        clear_btn.pack(pady=(0, 15))
+
+    def refresh_detail_form(self):
+        self.clear_detail_form()
+        self.clear_selection()
+
+    def clear_selection(self):
+        for item in self.tv.selection():
+            self.tv.selection_remove(item)
+    def clear_detail_form(self):
+        self.id_selected =None
+        self._description_var.set("")
+        self._quantity_var.set("")
+        self._percent_var.set("")
+        start_date_entry.date_text = f"{datetime.now():%Y-%m-%d}"
+        end_date_entry.date_text = f"{datetime.now():%Y-%m-%d}"
 
     def insert_row_treeview(self):
         pass

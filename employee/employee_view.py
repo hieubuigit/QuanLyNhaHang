@@ -418,7 +418,9 @@ class EmployeeView:
 
     def init_employee_grid_data(self, parent):
         # Define column for grid
+        style = ttk.Style()
         self.__tree = ttk.Treeview(parent, columns=EmployeeView.columns, show='headings')
+        style.configure("Treeview.Heading", background="DodgerBlue1", forceground="white", font=("TkDefaultFont", 18))
 
         self.__tree.heading(EmployeeView.columns[0], text='No')
         self.__tree.heading(EmployeeView.columns[1], text='Mã nhân viên')
