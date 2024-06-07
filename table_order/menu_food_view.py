@@ -18,11 +18,13 @@ class MenuFoodView:
         self.__transience_var = tk.StringVar(value="0")
         self._money_to_pay_var = tk.StringVar(value="0")
         self.__tax_rate = 8
-        self.__service__charge_rate = 10
+        self.__service_charge_rate = 10
         self.__table_info = table_info
         self.__discount_percent_var = tk.StringVar()
         self.__customer_phone_var = tk.StringVar()
         self.__customer_name_var = tk.StringVar()
+        self._vat_money_var = tk.StringVar()
+        self._service_charge_rate_var = tk.StringVar()
 
         # Setup UI
         global toplevel, font_title1, half_width
@@ -58,6 +60,7 @@ class MenuFoodView:
             return True
         else:
             return False
+
     def create_ui_bill(self, parent):
         global order_fr, bill_num, orders_canvas, discount_cbb, payment_btn, discount_btn
         bill_fr = ctk.CTkFrame(parent)
@@ -118,7 +121,7 @@ class MenuFoodView:
 
         # Tạo một canvas để chứa
         orders_canvas = ctk.CTkCanvas(bill_content_fr,
-                                    yscrollcommand=order_vertical_sb.set, background="white")
+                                      yscrollcommand=order_vertical_sb.set, background="white")
 
         orders_canvas.pack(fill=tk.BOTH, expand=True, side="left")
         orders_canvas.bind('<Configure>', lambda e: orders_canvas.configure(scrollregion=orders_canvas.bbox("all")))
@@ -140,16 +143,17 @@ class MenuFoodView:
                                         text_color="black", anchor="w", state="readonly",
                                         textvariable=self.__transience_var)
         total_money_btn.grid(row=0, column=1)
-        vat_lb = ctk.CTkLabel(info_money, text="VAT", fg_color="transparent", font=font_title1)
+        vat_lb = ctk.CTkLabel(info_money, text="VAT (8%)", fg_color="transparent", font=font_title1)
         vat_lb.grid(row=1, column=0)
-        vat_btn = ctk.CTkButton(info_money, text="8%", fg_color="transparent",
+        vat_btn = ctk.CTkButton(info_money, text="0", fg_color="transparent", textvariable=self._vat_money_var,
                                 text_color="black", anchor="w", state="readonly")
         vat_btn.grid(row=1, column=1)
-        service_charge_rate_lb = ctk.CTkLabel(info_money, text="Phí dịch vụ", fg_color="transparent",
+        service_charge_rate_lb = ctk.CTkLabel(info_money, text="Phí dịch vụ (10%)", fg_color="transparent",
                                               font=font_title1)
         service_charge_rate_lb.grid(row=2, column=0)
-        service_charge_rate_value = ctk.CTkButton(info_money, text="10%", fg_color="transparent",
-                                text_color="black", anchor="w", state="readonly")
+        service_charge_rate_value = ctk.CTkButton(info_money, text="0", fg_color="transparent",
+                                                  text_color="black", anchor="w", state="readonly",
+                                                  textvariable=self._service_charge_rate_var)
         service_charge_rate_value.grid(row=2, column=1)
 
         discount_lb = ctk.CTkLabel(info_money, text="Khuyến mãi", fg_color="transparent", font=font_title1)
@@ -177,6 +181,7 @@ class MenuFoodView:
     def update_scroll_region(self):
         order_fr.update_idletasks()
         orders_canvas.config(scrollregion=orders_canvas.bbox("all"))
+
     def create_row_bill(self, parent, row_num, item_order):
         global quantity_selected_var, into_money_var
         quantity_selected_var = tk.StringVar()
@@ -256,7 +261,7 @@ class MenuFoodView:
         # Tạo một frame con để chứa món ăn
         menu_fr = ctk.CTkFrame(menu_canvas, fg_color="white", corner_radius=0)
         menu_canvas.create_window((0, 0), window=menu_fr, anchor="ne")
-        
+
         # Thêm món ăn vào menu
         _foods = self.__controller.foods
         self._insert_food_to_menu(menu_fr, _foods)
@@ -316,15 +321,16 @@ class MenuFoodView:
         cur_price = food.price * quantity
         self.update_quantity_and_reload(order_list=order_list, quantity=quantity, cur_price=cur_price)
 
-
     def apply_onclick(self):
         discount_percent = Decimal(self.__discount_percent_var.get())
         self.calculate_bill(discount_percent)
+
     def update_quantity_and_reload(self, order_list, quantity, cur_price):
         if self.__controller.update_quantity(order_list_id=order_list.id, new_quantity=quantity, cur_price=cur_price):
             for widget in order_fr.winfo_children():
                 widget.destroy()
             self.setup_data_bill()
+
     def payment_onclick(self):
         total = self._money_to_pay_var.get().replace(",", "")
         if self.__controller.update_bill(total_money=total, customer_name=self.__customer_name_var.get(),
@@ -338,18 +344,16 @@ class MenuFoodView:
         sub_total_str = f"{sub_total:0,.0f}"
         self.__transience_var.set(sub_total_str)
         # Tính phí dịch vụ, mặc định phần trăm phí dị vụ 10%
-        service_charge = sub_total * (self.__service__charge_rate / Decimal(100))
-
+        service_charge = sub_total * (self.__service_charge_rate / Decimal(100))
+        self._service_charge_rate_var.set(f"{service_charge:0,.0f}")
         # Tính thuế, mặc định phần trăm thuế 8%
         tax_value = sub_total * (self.__tax_rate / Decimal(100))
-
+        self._vat_money_var.set(f"{tax_value:0,.0f}")
         # Tính giá trị chiết khấu
         discount_value = sub_total * (discount_percent / Decimal(100))
-
         # Tính tổng cộng
         total = sub_total + service_charge - discount_value + tax_value
         total_str = f"{total:0,.0f}"
         if total > 0:
             payment_btn.configure(state=tk.NORMAL)
         self._money_to_pay_var.set(total_str)
-
