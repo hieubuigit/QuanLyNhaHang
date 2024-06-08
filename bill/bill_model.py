@@ -27,12 +27,20 @@ class BillModel(Model):
 
     def get_bill_by_date(self, by_date):
         try:
-            results = Billing.select().where(Billing.createdDate.year == by_date.year
-                                             and Billing.createdDate.month == by_date.month
-                                             and Billing.createdDate.day == by_date.day)
-
-            if results:
-                return results
+            if Utils.user_profile["type"] == UserType.ADMIN.value:
+                results = Billing.select().where(Billing.createdDate.year == by_date.year
+                                   and Billing.createdDate.month == by_date.month
+                                   and Billing.createdDate.day == by_date.day)
+                if results:
+                    return results
+            else:
+                results = Billing.select(Billing, User).join(User).where(
+                    Billing.userId == Utils.user_profile["id"]).switch(
+                    Billing).where(Billing.createdDate.year == by_date.year
+                                   and Billing.createdDate.month == by_date.month
+                                   and Billing.createdDate.day == by_date.day)
+                if results:
+                    return results
         except InternalError as px:
             print(str(px))
 

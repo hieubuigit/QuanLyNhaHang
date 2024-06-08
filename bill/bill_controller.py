@@ -29,8 +29,10 @@ class BillController:
         return self.__bills
 
     def get_data_by_date(self, by_date):
-       return self._bill_model.get_bill_by_date(by_date)
-
+        self.__bills = []
+        rows = self._bill_model.get_bill_by_date(by_date)
+        if rows:
+            self.bills.extend(rows)
 
     def add_new_bill_and_reload(self, bill_id):
         b = Billing.get_or_none(Billing.id == bill_id)

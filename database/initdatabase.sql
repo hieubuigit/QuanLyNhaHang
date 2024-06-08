@@ -64,7 +64,7 @@ create table Product
     Id          INT            not null AUTO_INCREMENT PRIMARY KEY,
     Name        varchar(255)   not null,
     Price       decimal(15, 2) not null,
-    Unit        int            not null,
+    Unit        varchar(255)   not null,
     Quantity    float          not null,
     Capacity    float          not null,
     Alcohol     float          not null comment 'tinh thue tieu thu dac biet',

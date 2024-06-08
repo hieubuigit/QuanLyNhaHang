@@ -239,18 +239,9 @@ class BillView:
         self.valid_lb.pack(fill=tk.BOTH, expand=0, padx=padding_x, pady=padding_y)
         self.valid_lb.update_idletasks()
 
-    def change_date_reload_view(self):
-        date_selected = datetime.strptime(date_entry_filter.date_text, "%Y-%m-%d")
-        bills = self.__controller.get_data_by_date(by_date=date_selected)
-        for item in self.tv.get_children():
-            self.tv.delete(item)
-        self.__insert_column_values(bill_list=bills)
-
-    def __insert_column_values(self, bill_list=None):
+    def __insert_column_values(self):
         my_tag = "blue"
         bills = self.__controller.bills
-        if bill_list:
-            bills = bill_list
         for b in bills:
             if b.type == BillType.REVENUE.value[1]:
                 my_tag = "blue"
@@ -325,6 +316,10 @@ class BillView:
             self.tv.delete(item)
         self.__insert_column_values()
 
+    def change_date_reload_view(self):
+        date_selected = datetime.strptime(date_entry_filter.date_text, "%Y-%m-%d")
+        self.__controller.get_data_by_date(by_date=date_selected)
+        self.reload_treeview()
     def get_detail_form_values(self):
         bill_type = BillType.REVENUE.value[0] if self.__bill_type_dict.get(
             BillType.REVENUE.value[0]) == self.__bill_type_var.get() else BillType.EXPANDING.value[0]

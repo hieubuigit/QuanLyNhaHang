@@ -362,6 +362,7 @@ class WareHouseView:
             if not self.is_validate_form_detail():
                 product_type = ProductType.Drink.value[0] if self.product_type_var.get() == ProductType.Drink.value[
                     1] else ProductType.Food.value[0]
+
                 self.__controller.add_new_and_reload(id=self.__product_id_selected,
                                                      name=self.product_name_var.get(),
                                                      price=self.product_price_var.get(),
