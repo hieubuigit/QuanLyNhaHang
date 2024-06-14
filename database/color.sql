@@ -1,0 +1,18 @@
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (1, 'White', '#ffffff', null, '2021-01-09 01:44:08');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (2, 'Black', '#000000', null, '2021-01-09 01:44:13');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (3, 'FloralWhite', '#FFFAF0', null, '2021-01-09 01:44:29');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (4, 'Chartreuse', '#7FFF00', null, '2021-01-09 14:23:12');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (5, 'DarkCyan', '#008B8B', null, '2021-01-09 14:42:52');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (6, 'Green', '#517805', null, '2021-01-10 14:28:44');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (7, 'Red', '#ee3838', null, '2021-01-11 14:27:47');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (8, 'Gold', '#FFD700', null, '2021-01-09 15:06:15');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (9, 'Roasted sand', '#0000CD', null, '2021-01-10 14:34:20');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (10, 'Orange', '#FFA500', null, '2021-01-09 15:15:18');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (11, 'SkyBlue', '#87CEEB', null, '2021-01-09 15:18:58');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (12, 'Teal', '#008080', null, '2021-01-09 15:19:30');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (13, 'Tan', '#D2B48C', null, '2021-01-09 15:19:58');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (14, 'Silver', '#C0C0C0', null, '2021-01-09 15:22:39');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (15, 'Taupr', '#bf9c65', null, '2021-01-11 14:30:51');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (16, 'Plum', '	#DDA0DD', '2018-11-22 20:43:47', '2021-01-09 15:24:20');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (17, 'Goldenrod', '#DAA520', '2018-11-25 22:58:26', '2021-01-09 15:47:07');
+INSERT INTO pet_store.color (id, color_name, code, created_at, updated_at) VALUES (18, 'LightCoral', '#F08080', '2018-11-25 23:03:49', '2021-01-09 15:35:45');
