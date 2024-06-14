@@ -29,9 +29,7 @@ class HomeView:
         self.__root = window
         self.__controller = controller
         self._user_type = Utils.user_profile["type"]
-        # style = ttk.Style()
-        # style.theme_use("default")
-        # Utils.set_appearance_mode(ctk)
+
         self.home_fr = ctk.CTkFrame(master=window, fg_color="white", corner_radius=0)
         self.home_fr.pack(fill=tk.BOTH, expand=1)
         # Tạo UI thanh tab bar
